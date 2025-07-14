@@ -1,0 +1,14 @@
+function: refund_policy
+version: v3.2
+rules:
+  - id: late
+    if: { field: "is_late", operator: "==", value: true }
+    then: { refund: 100, reason: "Late delivery" }
+
+  - id: damaged
+    if: { field: "issue", operator: "==", value: "damaged" }
+    then: { refund: 50, reason: "Damaged item" }
+
+default:
+  refund: 0
+  reason: "Not eligible"

@@ -33,7 +33,9 @@ cd decision-layer
 
 pip install -r requirements.txt
 
-python cli.py refund_policy v3.2 --input examples/refund_input.json
+python -m decision_layer.cli \
+  --policy policies/refund_policy.yaml \
+  --input tests/data/sample_order.json
 ```
 
 You’ll see:
@@ -46,7 +48,15 @@ You’ll see:
 }
 ```
 
-Trace saved to `demo_trace.jsonl`
+---
+
+## ✅ Run tests
+
+```bash
+pytest
+```
+
+The test suite runs the policy engine with example input and checks the result.
 
 ---
 
@@ -97,6 +107,27 @@ default:
 
 ---
 
+## 🧱 Project structure
+
+```
+decision_layer/
+  cli.py
+  executor.py
+  registry.py
+  trace_sink.py
+  ...
+
+policies/
+  refund_policy.yaml
+
+tests/
+  test_refund_policy.py
+  data/
+    sample_order.json
+```
+
+---
+
 ## ⚠️ Not yet supported
 
 - Nested logic
@@ -110,11 +141,11 @@ This is the starter kit, not the whole platform. Yet!
 
 ## 📂 Files
 
-- `refund_policy.yaml` — your logic
-- `cli.py` — run it
-- `test_decision.py` — validate it
-- `demo_trace.jsonl` — trace it
-- `entities.py` — your input model
+- `policies/refund_policy.yaml` — your logic
+- `decision_layer/cli.py` — run it
+- `tests/test_refund_policy.py` — validate it
+- `tests/data/sample_order.json` — example input
+- `decision_layer/entities.py` — your input model
 
 ---
 

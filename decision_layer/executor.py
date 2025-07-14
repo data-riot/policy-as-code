@@ -1,3 +1,9 @@
+def resolve_field(obj, field: str):
+    try:
+        return getattr(obj, field)
+    except AttributeError:
+        raise ValueError(f"Field '{field}' not found on object {obj}")
+
 import json
 from dataclasses import asdict
 from datetime import datetime

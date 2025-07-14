@@ -1,4 +1,5 @@
 import yaml
+from decision_layer.executor import resolve_field
 
 def load_yaml_policy(path):
     with open(path) as f:
@@ -8,10 +9,11 @@ def load_yaml_policy(path):
     default = data["default"]
 
     def decision_fn(obj):
-        context = obj.__dict__
+
         for rule in rules:
             cond = rule["if"]
-            if context.get(cond["field"]) == cond["value"]:
+            actual_value = resolve_field(obj, cond["field"])
+            if actual_value == cond["value"]:
                 result = rule["then"].copy()
                 result["rule_id"] = rule["id"]
                 return result

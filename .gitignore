@@ -1,1 +1,32 @@
+# OS junk
 .DS_Store
+Thumbs.db
+
+# Python cache
+__pycache__/
+*.py[cod]
+
+# Test artifacts
+.coverage
+*.log
+htmlcov/
+.pytest_cache/
+.cache/
+
+# Virtualenvs
+.env
+.venv
+env/
+venv/
+
+# IDE/editor configs
+.vscode/
+.idea/
+
+# Traces and logs
+*.jsonl
+
+# Build/dist
+build/
+dist/
+*.egg-info/

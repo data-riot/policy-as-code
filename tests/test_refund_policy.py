@@ -26,7 +26,8 @@ def test_refund_full_amount(setup_executor):
         customer=customer,
         order_date=datetime(2024,6,1),
         delivery_date=datetime(2024,6,5),
-        issue="late"
+        issue="late"  # this triggers is_late = True via @property
     )
+
     result = setup_executor.run("refund_policy", "v3.2", order)
     assert result["refund"] == 100, f"Expected 100, got {result['refund']}"

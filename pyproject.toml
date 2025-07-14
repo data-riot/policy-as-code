@@ -1,0 +1,25 @@
+[project]
+name = "decision-layer"
+version = "0.1.0"
+description = "A minimal, testable, versioned decision engine using YAML policies"
+authors = [
+  { name="Eevamaija Virtanen" }
+]
+readme = "README.md"
+requires-python = ">=3.8"
+dependencies = [
+  "pyyaml"
+]
+
+[project.optional-dependencies]
+dev = [
+  "pytest",
+  "pytest-cov"
+]
+
+[build-system]
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+include = ["decision_layer"]

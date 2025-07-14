@@ -1,6 +1,0 @@
-site_name: decision-layer
-theme: readthedocs
-nav:
-  - Home: index.md
-  - DSL Guide: dsl.md
-  - Examples: examples.md

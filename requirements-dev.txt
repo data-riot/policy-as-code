@@ -1,3 +1,6 @@
+pydantic>=1.10
 pyyaml
+fastapi
+uvicorn
 pytest
 pytest-cov

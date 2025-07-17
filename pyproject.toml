@@ -1,14 +1,22 @@
+
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
 [project]
 name = "decision-layer"
 version = "0.1.0"
-description = "A minimal, testable, versioned decision engine using YAML policies"
+description = "A lightweight policy evaluation engine for versioned, testable business logic in YAML"
 authors = [
   { name="Eevamaija Virtanen" }
 ]
 readme = "README.md"
 requires-python = ">=3.8"
 dependencies = [
-  "pyyaml"
+  "pydantic>=1.10",
+  "pyyaml",
+  "fastapi",
+  "uvicorn",
 ]
 
 [project.optional-dependencies]
@@ -20,6 +28,6 @@ dev = [
 [build-system]
 requires = ["setuptools", "wheel"]
 build-backend = "setuptools.build_meta"
-
 [tool.setuptools.packages.find]
 include = ["decision_layer"]
+where = ["."]

@@ -8,7 +8,7 @@ Treat business logic like code.
 
 Most companies still make decisions like it's 2005:
 - `if` statements scattered across services
-- Refund logic in a Notion doc
+- Decision logic in a Notion doc
 - Rules buried in dashboards
 - No way to test, version, or trace any of it
 

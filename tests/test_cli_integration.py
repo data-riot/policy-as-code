@@ -5,13 +5,23 @@ import tempfile
 import os
 from pathlib import Path
 
+def get_project_root():
+    """Get the project root directory (where pyproject.toml is located)"""
+    current_dir = Path(__file__).parent
+    while current_dir != current_dir.parent:
+        if (current_dir / "pyproject.toml").exists():
+            return str(current_dir)
+        current_dir = current_dir.parent
+    # Fallback to current working directory
+    return os.getcwd()
+
 def test_cli_basic_functionality():
     """Test basic CLI functionality with valid inputs"""
     result = subprocess.run([
         "python3", "-m", "decision_layer.cli",
         "--policy", "policies/refund_policy.yaml",
         "--input", "tests/data/sample_order.json"
-    ], capture_output=True, text=True, cwd="/workspace")
+    ], capture_output=True, text=True, cwd=get_project_root())
     
     assert result.returncode == 0
     output = json.loads(result.stdout)
@@ -28,7 +38,7 @@ def test_cli_with_trace_output(tmp_path):
         "--policy", "policies/refund_policy.yaml",
         "--input", "tests/data/sample_order.json",
         "--trace", str(trace_file)
-    ], capture_output=True, text=True, cwd="/workspace")
+    ], capture_output=True, text=True, cwd=get_project_root())
     
     assert result.returncode == 0
     output = json.loads(result.stdout)
@@ -49,7 +59,7 @@ def test_cli_with_custom_version(tmp_path):
         "--policy", "policies/refund_policy.yaml",
         "--input", "tests/data/sample_order.json",
         "--version", "custom-v1"
-    ], capture_output=True, text=True, cwd="/workspace")
+    ], capture_output=True, text=True, cwd=get_project_root())
     
     assert result.returncode == 0
 
@@ -59,7 +69,7 @@ def test_cli_missing_policy_file():
         "python3", "-m", "decision_layer.cli",
         "--policy", "nonexistent.yaml",
         "--input", "tests/data/sample_order.json"
-    ], capture_output=True, text=True, cwd="/workspace")
+    ], capture_output=True, text=True, cwd=get_project_root())
     
     assert result.returncode != 0
     assert "No such file or directory" in result.stderr or "FileNotFoundError" in result.stderr
@@ -70,7 +80,7 @@ def test_cli_missing_input_file():
         "python3", "-m", "decision_layer.cli",
         "--policy", "policies/refund_policy.yaml",
         "--input", "nonexistent.json"
-    ], capture_output=True, text=True, cwd="/workspace")
+    ], capture_output=True, text=True, cwd=get_project_root())
     
     assert result.returncode != 0
     assert "No such file or directory" in result.stderr or "FileNotFoundError" in result.stderr
@@ -80,7 +90,7 @@ def test_cli_help():
     result = subprocess.run([
         "python3", "-m", "decision_layer.cli",
         "--help"
-    ], capture_output=True, text=True, cwd="/workspace")
+    ], capture_output=True, text=True, cwd=get_project_root())
     
     assert result.returncode == 0
     assert "Run a decision policy" in result.stdout
@@ -110,7 +120,7 @@ def test_cli_with_different_order_data(tmp_path):
         "python3", "-m", "decision_layer.cli",
         "--policy", "policies/refund_policy.yaml",
         "--input", str(input_file)
-    ], capture_output=True, text=True, cwd="/workspace")
+    ], capture_output=True, text=True, cwd=get_project_root())
     
     assert result.returncode == 0
     output = json.loads(result.stdout)

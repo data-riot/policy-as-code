@@ -1,6 +1,6 @@
 
 [build-system]
-requires = ["setuptools>=61.0"]
+requires = ["setuptools>=61.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
@@ -17,6 +17,7 @@ dependencies = [
   "pyyaml",
   "fastapi",
   "uvicorn",
+  "httpx",
 ]
 
 [project.optional-dependencies]
@@ -25,9 +26,6 @@ dev = [
   "pytest-cov"
 ]
 
-[build-system]
-requires = ["setuptools", "wheel"]
-build-backend = "setuptools.build_meta"
 [tool.setuptools.packages.find]
-include = ["decision_layer"]
+include = ["decision_layer", "api"]
 where = ["."]

@@ -1,12 +1,16 @@
 import pytest
-from datetime import datetime
-from dataclasses import dataclass
-from decision_layer.executor import DecisionExecutor, resolve_field, serialize_for_json
-from decision_layer.registry import DecisionRegistry
-from decision_layer.trace_sink import TraceSink, FileSink
-from decision_layer.dsl_loader import load_yaml_policy
 import tempfile
 import os
+import json
+from datetime import datetime
+from dataclasses import dataclass
+from typing import Dict, Any
+
+from decision_layer.executor import DecisionExecutor, resolve_field, serialize_for_json
+from decision_layer.registry import DecisionRegistry
+from decision_layer.trace_sink import FileSink, TraceSink
+from decision_layer.dsl_loader import load_yaml_policy
+from decision_layer.schemas import DecisionSchema, SchemaField, FieldType
 
 @dataclass
 class EmptyObject:
@@ -19,6 +23,41 @@ class NestedObject:
 class TestTraceSink(TraceSink):
     def emit(self, trace):
         pass
+
+def create_test_schema() -> DecisionSchema:
+    """Create a basic test schema for testing"""
+    input_schema = {
+        "value": SchemaField(name="value", type=FieldType.STRING, required=True)
+    }
+    
+    output_schema = {
+        "result": SchemaField(name="result", type=FieldType.STRING, required=True)
+    }
+    
+    return DecisionSchema(
+        input_schema=input_schema,
+        output_schema=output_schema,
+        version="v1.0",
+        function_id="test_decision"
+    )
+
+def create_complex_test_schema() -> DecisionSchema:
+    """Create a complex test schema for testing"""
+    input_schema = {
+        "customer": SchemaField(name="customer", type=FieldType.OBJECT, required=True),
+        "issue": SchemaField(name="issue", type=FieldType.STRING, required=True)
+    }
+    
+    output_schema = {
+        "result": SchemaField(name="result", type=FieldType.STRING, required=True)
+    }
+    
+    return DecisionSchema(
+        input_schema=input_schema,
+        output_schema=output_schema,
+        version="v1.0",
+        function_id="test_decision"
+    )
 
 def test_resolve_field_empty_path():
     """Test resolve_field with empty path"""
@@ -84,7 +123,8 @@ def test_executor_with_none_sink():
     def test_decision(obj):
         return {"result": "success"}
     
-    registry.register("test_decision", "v1.0", test_decision)
+    schema = create_test_schema()
+    registry.register("test_decision", "v1.0", test_decision, schema)
     
     @dataclass
     class TestInput:
@@ -141,7 +181,7 @@ def test_registry_get_nonexistent():
     assert result is None
 
 def test_registry_register_overwrite():
-    """Test registry can overwrite existing functions"""
+    """Test registry cannot overwrite existing functions"""
     registry = DecisionRegistry()
     
     def func1(obj):
@@ -150,11 +190,16 @@ def test_registry_register_overwrite():
     def func2(obj):
         return {"version": "2"}
     
-    registry.register("test", "v1.0", func1)
-    registry.register("test", "v1.0", func2)  # Overwrite
+    schema = create_test_schema()
+    registry.register("test", "v1.0", func1, schema)
     
+    # Should raise ValueError when trying to overwrite
+    with pytest.raises(ValueError, match="Function test.v1.0 already registered"):
+        registry.register("test", "v1.0", func2, schema)
+    
+    # Verify the original function is still there
     result = registry.get("test", "v1.0")
-    assert result is func2
+    assert result.logic == func1
 
 def test_dsl_loader_with_complex_rules():
     """Test DSL loader with more complex rule conditions"""
@@ -208,15 +253,16 @@ default:
             os.unlink(yaml_path)
 
 def test_executor_error_handling():
-    """Test executor handles decision function errors gracefully"""
+    """Test executor error handling"""
     registry = DecisionRegistry()
     sink = TestTraceSink()
     executor = DecisionExecutor(registry, sink, caller="test")
     
     def failing_decision(obj):
-        raise ValueError("Decision function failed")
+        raise ValueError("Test error")
     
-    registry.register("failing_decision", "v1.0", failing_decision)
+    schema = create_test_schema()
+    registry.register("failing_decision", "v1.0", failing_decision, schema)
     
     @dataclass
     class TestInput:
@@ -224,7 +270,7 @@ def test_executor_error_handling():
     
     input_obj = TestInput("test")
     
-    with pytest.raises(ValueError, match="Decision function failed"):
+    with pytest.raises(RuntimeError, match="Decision execution failed: Test error"):
         executor.run("failing_decision", "v1.0", input_obj)
 
 def test_resolve_field_deep_nesting():

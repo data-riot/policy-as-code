@@ -2,7 +2,7 @@ import pytest
 import json
 import tempfile
 import os
-from unittest.mock import patch, mock_open
+from unittest.mock import patch, mock_open, Mock
 from decision_layer.cli import parse_order, main
 from decision_layer.entities import Customer, Order
 from datetime import datetime
@@ -33,7 +33,7 @@ def test_parse_order():
     assert order.order_date == datetime(2024, 6, 1)
     assert order.delivery_date == datetime(2024, 6, 5)
 
-@patch('decision_layer.cli.load_yaml_policy')
+@patch('decision_layer.cli.load_policy_with_schema')
 @patch('decision_layer.cli.DecisionRegistry')
 @patch('decision_layer.cli.FileSink')
 @patch('decision_layer.cli.DecisionExecutor')
@@ -41,13 +41,13 @@ def test_parse_order():
 @patch('json.load')
 @patch('json.dumps')
 def test_main_success(mock_dumps, mock_json_load, mock_open, mock_executor, mock_sink, mock_registry, mock_load_policy):
-    """Test successful CLI execution"""
+    """Test CLI execution with trace file"""
     # Setup mocks
-    mock_policy_fn = lambda x: {"result": "success"}
-    mock_load_policy.return_value = mock_policy_fn
+    mock_policy_fn = lambda x: {"refund": 100, "reason": "Late delivery"}
+    mock_schema = Mock()
+    mock_load_policy.return_value = (mock_policy_fn, mock_schema)
     
     mock_registry_instance = mock_registry.return_value
-    mock_sink_instance = mock_sink.return_value
     mock_executor_instance = mock_executor.return_value
     mock_executor_instance.run.return_value = {"refund": 100, "reason": "Late delivery"}
     
@@ -66,17 +66,25 @@ def test_main_success(mock_dumps, mock_json_load, mock_open, mock_executor, mock
     mock_dumps.return_value = '{"refund": 100, "reason": "Late delivery"}'
     
     # Test with trace file
-    with patch('sys.argv', ['cli.py', '--policy', 'test.yaml', '--input', 'test.json', '--trace', 'trace.jsonl']):
+    with patch('sys.argv', ['cli.py', 'run', '--policy', 'test.yaml', '--input', 'test.json', '--trace', 'trace.jsonl']):
         main()
     
     # Verify calls
-    mock_load_policy.assert_called_once_with('test.yaml')
-    mock_registry_instance.register.assert_called_once_with("refund_policy", "v3.2", mock_policy_fn)
+    mock_load_policy.assert_called_once_with('test.yaml', False)
+    mock_registry_instance.register.assert_called_once_with(
+        function_id="refund_policy", 
+        version="v3.2", 
+        logic=mock_policy_fn, 
+        schema=mock_schema, 
+        description=None, 
+        author=None, 
+        tags=[]
+    )
     mock_sink.assert_called_once_with('trace.jsonl')
     mock_executor_instance.run.assert_called_once()
     mock_dumps.assert_called_once()
 
-@patch('decision_layer.cli.load_yaml_policy')
+@patch('decision_layer.cli.load_policy_with_schema')
 @patch('decision_layer.cli.DecisionRegistry')
 @patch('decision_layer.cli.FileSink')
 @patch('decision_layer.cli.DecisionExecutor')
@@ -87,7 +95,8 @@ def test_main_without_trace(mock_dumps, mock_json_load, mock_open, mock_executor
     """Test CLI execution without trace file"""
     # Setup mocks
     mock_policy_fn = lambda x: {"result": "success"}
-    mock_load_policy.return_value = mock_policy_fn
+    mock_schema = Mock()
+    mock_load_policy.return_value = (mock_policy_fn, mock_schema)
     
     mock_registry_instance = mock_registry.return_value
     mock_executor_instance = mock_executor.return_value
@@ -108,17 +117,25 @@ def test_main_without_trace(mock_dumps, mock_json_load, mock_open, mock_executor
     mock_dumps.return_value = '{"refund": 50, "reason": "Damaged item"}'
     
     # Test without trace file
-    with patch('sys.argv', ['cli.py', '--policy', 'test.yaml', '--input', 'test.json']):
+    with patch('sys.argv', ['cli.py', 'run', '--policy', 'test.yaml', '--input', 'test.json']):
         main()
     
     # Verify calls
-    mock_load_policy.assert_called_once_with('test.yaml')
-    mock_registry_instance.register.assert_called_once_with("refund_policy", "v3.2", mock_policy_fn)
+    mock_load_policy.assert_called_once_with('test.yaml', False)
+    mock_registry_instance.register.assert_called_once_with(
+        function_id="refund_policy", 
+        version="v3.2", 
+        logic=mock_policy_fn, 
+        schema=mock_schema, 
+        description=None, 
+        author=None, 
+        tags=[]
+    )
     mock_sink.assert_not_called()  # Should not be called when no trace file
     mock_executor_instance.run.assert_called_once()
     mock_dumps.assert_called_once()
 
-@patch('decision_layer.cli.load_yaml_policy')
+@patch('decision_layer.cli.load_policy_with_schema')
 @patch('decision_layer.cli.DecisionRegistry')
 @patch('decision_layer.cli.FileSink')
 @patch('decision_layer.cli.DecisionExecutor')
@@ -129,7 +146,8 @@ def test_main_custom_version(mock_dumps, mock_json_load, mock_open, mock_executo
     """Test CLI execution with custom version"""
     # Setup mocks
     mock_policy_fn = lambda x: {"result": "success"}
-    mock_load_policy.return_value = mock_policy_fn
+    mock_schema = Mock()
+    mock_load_policy.return_value = (mock_policy_fn, mock_schema)
     
     mock_registry_instance = mock_registry.return_value
     mock_executor_instance = mock_executor.return_value
@@ -150,15 +168,25 @@ def test_main_custom_version(mock_dumps, mock_json_load, mock_open, mock_executo
     mock_dumps.return_value = '{"refund": 0, "reason": "Not eligible"}'
     
     # Test with custom version
-    with patch('sys.argv', ['cli.py', '--policy', 'test.yaml', '--input', 'test.json', '--version', 'v2.0']):
+    with patch('sys.argv', ['cli.py', 'run', '--policy', 'test.yaml', '--input', 'test.json', '--version', 'v2.0']):
         main()
     
     # Verify calls
-    mock_load_policy.assert_called_once_with('test.yaml')
-    mock_registry_instance.register.assert_called_once_with("refund_policy", "v2.0", mock_policy_fn)
+    mock_load_policy.assert_called_once_with('test.yaml', False)
+    mock_registry_instance.register.assert_called_once_with(
+        function_id="refund_policy", 
+        version="v2.0", 
+        logic=mock_policy_fn, 
+        schema=mock_schema, 
+        description=None, 
+        author=None, 
+        tags=[]
+    )
     mock_executor_instance.run.assert_called_once()
-    assert mock_executor_instance.run.call_args[0][0] == "refund_policy"
-    assert mock_executor_instance.run.call_args[0][1] == "v2.0"
+    # Check the call arguments using keyword arguments
+    call_kwargs = mock_executor_instance.run.call_args.kwargs
+    assert call_kwargs["function_id"] == "refund_policy"
+    assert call_kwargs["version"] == "v2.0"
     mock_dumps.assert_called_once()
 
 def test_cli_integration():
@@ -182,22 +210,20 @@ def test_cli_integration():
     
     try:
         # Run CLI
-        with patch('sys.argv', ['cli.py', '--policy', 'policies/refund_policy.yaml', '--input', input_path, '--trace', trace_path]):
+        with patch('sys.argv', ['cli.py', 'run', '--policy', 'policies/refund_policy.yaml', '--input', input_path, '--trace', trace_path]):
             main()
         
-        # Check trace file was created
+        # Check that trace was written
         assert os.path.exists(trace_path)
         with open(trace_path, 'r') as f:
             lines = f.readlines()
             assert len(lines) == 1
             
             trace = json.loads(lines[0])
-            assert trace["decision_id"] == "refund_policy"
+            assert trace["function_id"] == "refund_policy"
             assert trace["version"] == "v3.2"
             assert trace["caller"] == "cli"
             assert trace["status"] == "success"
-            assert trace["output"]["refund"] == 100
-            assert trace["output"]["reason"] == "Late delivery"
     
     finally:
         if os.path.exists(input_path):

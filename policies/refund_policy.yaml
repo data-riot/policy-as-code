@@ -1,14 +1,115 @@
 function: refund_policy
 version: v3.2
-rules:
-  - id: late
-    if: { field: "is_late", operator: "==", value: true }
-    then: { refund: 100, reason: "Late delivery" }
+description: "Determine refund amount for customer orders with comprehensive validation"
 
-  - id: damaged
+input_schema:
+  id:
+    type: string
+    required: true
+    description: "Order ID"
+    pattern: "^[A-Z0-9]+$"
+  
+  issue:
+    type: string
+    required: true
+    enum: ["late", "damaged", "wrong_item", "none"]
+    description: "Issue type"
+  
+  order_date:
+    type: datetime
+    required: true
+    description: "Order date"
+  
+  delivery_date:
+    type: datetime
+    required: true
+    description: "Expected delivery date"
+  
+  customer:
+    type: object
+    required: true
+    description: "Customer information"
+    properties:
+      id:
+        type: string
+        required: true
+        description: "Customer ID"
+      signup_date:
+        type: datetime
+        required: true
+        description: "Customer signup date"
+      status:
+        type: string
+        required: true
+        enum: ["bronze", "silver", "gold", "platinum"]
+        description: "Customer tier status"
+
+output_schema:
+  refund:
+    type: integer
+    required: true
+    min_value: 0
+    max_value: 1000
+    description: "Refund amount in cents"
+  
+  reason:
+    type: string
+    required: true
+    description: "Reason for refund decision"
+  
+  rule_id:
+    type: string
+    required: false
+    description: "ID of the rule that matched"
+  
+  customer_tier_multiplier:
+    type: float
+    required: false
+    description: "Multiplier applied based on customer tier"
+
+rules:
+  - id: late_delivery
+    if: { field: "issue", operator: "==", value: "late" }
+    then: 
+      refund: 100
+      reason: "Late delivery"
+      rule_id: "late_delivery"
+      customer_tier_multiplier: 1.0
+
+  - id: damaged_item
     if: { field: "issue", operator: "==", value: "damaged" }
-    then: { refund: 50, reason: "Damaged item" }
+    then: 
+      refund: 50
+      reason: "Damaged item"
+      rule_id: "damaged_item"
+      customer_tier_multiplier: 1.0
+
+  - id: wrong_item
+    if: { field: "issue", operator: "==", value: "wrong_item" }
+    then: 
+      refund: 75
+      reason: "Wrong item received"
+      rule_id: "wrong_item"
+      customer_tier_multiplier: 1.0
+
+  - id: gold_customer_bonus
+    if: { field: "customer.status", operator: "==", value: "gold" }
+    then: 
+      refund: 25
+      reason: "Gold customer bonus"
+      rule_id: "gold_customer_bonus"
+      customer_tier_multiplier: 1.2
+
+  - id: platinum_customer_bonus
+    if: { field: "customer.status", operator: "==", value: "platinum" }
+    then: 
+      refund: 50
+      reason: "Platinum customer bonus"
+      rule_id: "platinum_customer_bonus"
+      customer_tier_multiplier: 1.5
 
 default:
   refund: 0
-  reason: "Not eligible"
+  reason: "Not eligible for refund"
+  rule_id: "default"
+  customer_tier_multiplier: 1.0

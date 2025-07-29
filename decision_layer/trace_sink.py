@@ -1,15 +1,17 @@
+import os
 import json
-from datetime import datetime
+from typing import Dict, Any
 
-class FileSink:
-    def __init__(self, filepath):
+class TraceSink:
+    def emit(self, trace: Dict[str, Any]):
+        raise NotImplementedError
+
+
+class FileSink(TraceSink):
+    def __init__(self, filepath: str):
         self.filepath = filepath
+        os.makedirs(os.path.dirname(filepath), exist_ok=True)
 
-    def write(self, trace):
-        def default(o):
-            if isinstance(o, datetime):
-                return o.isoformat()
-            raise TypeError(f"Object of type {type(o).__name__} is not JSON serializable")
-
+    def emit(self, trace: Dict[str, Any]):
         with open(self.filepath, "a") as f:
-            f.write(json.dumps(trace, default=default) + "\n")
+            f.write(json.dumps(trace) + "\n")

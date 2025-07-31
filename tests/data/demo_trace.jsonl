@@ -1,1 +1,0 @@
-{"input": {"id": "A1", "customer": {"id": "123", "signup_date": "2023-01-01T00:00:00", "status": "gold"}, "order_date": "2024-06-01T00:00:00", "delivery_date": "2024-06-05T00:00:00", "issue": "late", "is_late": true}, "output": {"refund": 100, "reason": "Late delivery"}, "version": "v3.2", "timestamp": "2025-07-14T09:07:23.484068", "caller": "cli", "rule_id": "late"}

@@ -1,32 +1,88 @@
-# OS junk
-.DS_Store
-Thumbs.db
-
-# Python cache
+# Python
 __pycache__/
 *.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
 
-# Test artifacts
-.coverage
-*.log
-htmlcov/
-.pytest_cache/
-.cache/
-
-# Virtualenvs
+# Virtual environments
 .env
 .venv
 env/
 venv/
+ENV/
+env.bak/
+venv.bak/
 
-# IDE/editor configs
+# Testing
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+.hypothesis/
+.pytest_cache/
+cover/
+htmlcov/
+.tox/
+.nox/
+
+# IDEs
 .vscode/
 .idea/
+*.iml
+*.ipr
+*.iws
+*.code-workspace
 
-# Traces and logs
+# OS
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs_vista.db
+*.tmp
+*.temp
+Desktop.ini
+$RECYCLE.BIN/
+
+# Project-specific
+traces/
+logs/
 *.jsonl
+*.log
 
-# Build/dist
-build/
-dist/
-*.egg-info/
+# Security
+.env.local
+.env.production
+.env.staging
+*.key
+*.pem
+*.p12
+*.pfx
+
+# Temporary
+*.bak
+*.backup
+*~

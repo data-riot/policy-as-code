@@ -1,0 +1,24 @@
+{
+  "refund_test": {
+    "issue": "late",
+    "customer": {
+      "tier": "gold",
+      "id": "customer-123"
+    },
+    "order_amount": 1000
+  },
+  "risk_test": {
+    "amount": 7500,
+    "customer_history": {
+      "previous_fraud": false,
+      "account_age_days": 45,
+      "transaction_count": 12
+    },
+    "location": {
+      "country": "US",
+      "city": "New York"
+    },
+    "time_of_day": "day",
+    "device_type": "desktop"
+  }
+} 

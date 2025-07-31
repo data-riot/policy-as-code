@@ -1,31 +1,51 @@
+[tool.black]
+line-length = 88
+target-version = ['py38', 'py39', 'py310', 'py311']
+include = '\.pyi?$'
+extend-exclude = '''
+/(
+  # directories
+  \.eggs
+  | \.git
+  | \.hg
+  | \.mypy_cache
+  | \.tox
+  | \.venv
+  | build
+  | dist
+)/
+'''
 
-[build-system]
-requires = ["setuptools>=61.0", "wheel"]
-build-backend = "setuptools.build_meta"
+[tool.isort]
+profile = "black"
+multi_line_output = 3
+line_length = 88
+known_first_party = ["decision_layer"]
 
-[project]
-name = "decision-layer"
-version = "0.1.0"
-description = "A lightweight policy evaluation engine for versioned, testable business logic in YAML"
-authors = [
-  { name="Eevamaija Virtanen" }
+[tool.mypy]
+python_version = "3.8"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = true
+disallow_incomplete_defs = true
+check_untyped_defs = true
+disallow_untyped_decorators = true
+no_implicit_optional = true
+warn_redundant_casts = true
+warn_unused_ignores = true
+warn_no_return = true
+warn_unreachable = true
+strict_equality = true
+
+[[tool.mypy.overrides]]
+module = [
+    "streamlit.*",
+    "plotly.*",
+    "pandas.*",
+    "asyncpg.*",
+    "fastapi.*",
+    "uvicorn.*",
+    "click.*",
+    "pyyaml.*",
 ]
-readme = "README.md"
-requires-python = ">=3.8"
-dependencies = [
-  "pydantic>=1.10",
-  "pyyaml",
-  "fastapi",
-  "uvicorn",
-  "httpx",
-]
-
-[project.optional-dependencies]
-dev = [
-  "pytest",
-  "pytest-cov"
-]
-
-[tool.setuptools.packages.find]
-include = ["decision_layer", "api"]
-where = ["."]
+ignore_missing_imports = true 

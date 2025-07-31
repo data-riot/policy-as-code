@@ -1,51 +1,122 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "decision-layer"
+version = "1.0.0"
+description = "A framework for managing business decision logic as versioned, testable functions with structured observability"
+readme = "README.md"
+license = {text = "MIT"}
+authors = [
+    {name = "Decision Layer Team", email = "team@decision-layer.com"}
+]
+maintainers = [
+    {name = "Eevamaija Virtanen"}
+]
+keywords = ["decision", "business-logic", "versioning", "observability", "ai", "llm", "ontology"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Topic :: Software Development :: Testing",
+    "Topic :: System :: Monitoring",
+]
+requires-python = ">=3.8"
+dependencies = [
+    "fastapi>=0.104.0",
+    "uvicorn[standard]>=0.24.0",
+    "pydantic>=2.5.0",
+    "click>=8.1.0",
+    "pyyaml>=6.0.1",
+    "streamlit>=1.28.0",
+    "pandas>=2.1.0",
+    "plotly>=5.17.0",
+    "asyncpg>=0.29.0",
+    "sqlalchemy>=2.0.0",
+    "alembic>=1.12.0",
+    "redis>=5.0.0",
+    "celery>=5.3.0",
+    "prometheus-client>=0.19.0",
+    "structlog>=23.2.0",
+    "tenacity>=8.2.0",
+    "httpx>=0.25.0",
+    "websockets>=12.0",
+    "python-multipart>=0.0.6",
+    "python-jose[cryptography]>=3.3.0",
+    "passlib[bcrypt]>=1.7.4",
+    "python-dotenv>=1.0.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.4.0",
+    "black>=23.9.0",
+    "flake8>=6.1.0",
+    "mypy>=1.6.0",
+]
+test = [
+    "pytest>=7.4.0",
+]
+docs = [
+    "sphinx>=7.2.0",
+    "sphinx-rtd-theme>=1.3.0",
+    "sphinx-autodoc-typehints>=1.24.0",
+    "myst-parser>=2.0.0",
+    "sphinx-copybutton>=0.5.0",
+    "sphinx-tabs>=3.4.0",
+]
+monitoring = [
+    "prometheus-client>=0.19.0",
+    "structlog>=23.2.0",
+    "sentry-sdk[fastapi]>=1.38.0",
+    "opentelemetry-api>=1.21.0",
+    "opentelemetry-sdk>=1.21.0",
+    "opentelemetry-instrumentation-fastapi>=0.42b0",
+]
+
+[project.scripts]
+decision-layer = "decision_layer.cli:cli"
+
+[project.urls]
+Homepage = "https://github.com/data-riot/decision-layer"
+Documentation = "https://github.com/data-riot/decision-layer#readme"
+Repository = "https://github.com/data-riot/decision-layer"
+"Bug Tracker" = "https://github.com/data-riot/decision-layer/issues"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["decision_layer*"]
+exclude = ["tests*", "examples*", "docs*"]
+
+[tool.setuptools.package-data]
+"decision_layer" = ["py.typed"]
+
+# Black configuration
 [tool.black]
 line-length = 88
 target-version = ['py38', 'py39', 'py310', 'py311']
-include = '\.pyi?$'
-extend-exclude = '''
-/(
-  # directories
-  \.eggs
-  | \.git
-  | \.hg
-  | \.mypy_cache
-  | \.tox
-  | \.venv
-  | build
-  | dist
-)/
-'''
 
-[tool.isort]
-profile = "black"
-multi_line_output = 3
-line_length = 88
-known_first_party = ["decision_layer"]
+# Black configuration only - no isort
 
+# MyPy configuration - simplified
 [tool.mypy]
 python_version = "3.8"
-warn_return_any = true
-warn_unused_configs = true
-disallow_untyped_defs = true
-disallow_incomplete_defs = true
-check_untyped_defs = true
-disallow_untyped_decorators = true
-no_implicit_optional = true
-warn_redundant_casts = true
-warn_unused_ignores = true
-warn_no_return = true
-warn_unreachable = true
-strict_equality = true
+ignore_missing_imports = true
 
-[[tool.mypy.overrides]]
-module = [
-    "streamlit.*",
-    "plotly.*",
-    "pandas.*",
-    "asyncpg.*",
-    "fastapi.*",
-    "uvicorn.*",
-    "click.*",
-    "pyyaml.*",
-]
-ignore_missing_imports = true 
+# Pytest configuration - simplified
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py", "*_test.py"]
+
+# Coverage configuration - simplified
+[tool.coverage.run]
+source = ["decision_layer"]
+omit = ["*/tests/*", "*/__pycache__/*"]

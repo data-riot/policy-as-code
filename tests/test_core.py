@@ -6,6 +6,7 @@ from typing import Any, Dict
 import pytest
 
 from decision_layer import DecisionContext, DecisionEngine
+from decision_layer.errors import ExecutionError, FunctionNotFoundError
 
 
 @pytest.fixture
@@ -144,6 +145,10 @@ def decision_function(input_data: Dict[str, Any], context: DecisionContext) -> D
         result = await engine.execute("test_policy", {}, version="v2.0")
         assert result["version"] == "v2.0"
 
+        # Test latest version (should be v2.0)
+        result = await engine.execute("test_policy", {})
+        assert result["version"] == "v2.0"
+
     @pytest.mark.asyncio
     async def test_error_handling(self, engine):
         """Test error handling"""
@@ -159,7 +164,7 @@ def decision_function(input_data: Dict[str, Any], context: DecisionContext) -> D
         await engine.deploy_function("error_policy", "v1.0", error_code)
 
         # Test that error is properly handled
-        with pytest.raises(RuntimeError) as exc_info:
+        with pytest.raises(ExecutionError) as exc_info:
             await engine.execute("error_policy", {})
 
         assert "Test error" in str(exc_info.value)
@@ -167,10 +172,10 @@ def decision_function(input_data: Dict[str, Any], context: DecisionContext) -> D
     @pytest.mark.asyncio
     async def test_function_not_found(self, engine):
         """Test handling of non-existent functions"""
-        with pytest.raises(ValueError) as exc_info:
+        with pytest.raises(FunctionNotFoundError) as exc_info:
             await engine.execute("non_existent", {})
 
-        assert "No versions found" in str(exc_info.value)
+        assert "not found" in str(exc_info.value)
 
 
 class TestPlugins:

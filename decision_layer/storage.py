@@ -2,6 +2,7 @@
 Storage backends for Decision Layer
 """
 
+import importlib.util
 from abc import ABC, abstractmethod
 from pathlib import Path
 from typing import Any, Dict, List
@@ -78,8 +79,6 @@ class FileStorage(StorageBackend):
         code = await self.load_function(function_id, version)
 
         # Create module and execute
-        import importlib.util
-
         spec = importlib.util.spec_from_loader("temp_module", loader=None)
         module = importlib.util.module_from_spec(spec)
         exec(code, module.__dict__)

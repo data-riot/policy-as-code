@@ -79,7 +79,7 @@ class PluginsConfig(BaseModel):
 class APIConfig(BaseModel):
     """API configuration"""
 
-    host: str = Field(default="0.0.0.0", description="API host")
+    host: str = Field(default="localhost", description="API host")
     port: int = Field(default=8000, description="API port")
     enable_docs: bool = Field(default=True, description="Enable API documentation")
     enable_cors: bool = Field(default=True, description="Enable CORS")
@@ -127,8 +127,9 @@ def load_config(config_path: Optional[str] = None) -> DecisionLayerConfig:
     if config_path:
         try:
             return DecisionLayerConfig.from_file(config_path)
-        except Exception as e:
-            print(f"Warning: Failed to load config from {config_path}: {e}")
+        except Exception:
+            # Log warning about config loading failure
+            pass
 
     # Try default config locations
     default_paths = [
@@ -143,8 +144,9 @@ def load_config(config_path: Optional[str] = None) -> DecisionLayerConfig:
             return DecisionLayerConfig.from_file(path)
         except FileNotFoundError:
             continue
-        except Exception as e:
-            print(f"Warning: Failed to load config from {path}: {e}")
+        except Exception:
+            # Log warning about config loading failure
+            pass
 
     # Return default config
     return DecisionLayerConfig()

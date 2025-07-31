@@ -1,3 +1,7 @@
+"""
+Core components for the Decision Layer framework
+"""
+
 import asyncio
 import hashlib
 import json
@@ -5,8 +9,6 @@ import uuid
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from datetime import datetime
-
-# importlib.util moved to where it's used
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Protocol
 
@@ -141,14 +143,14 @@ class CachingPlugin(DecisionPlugin):
         self, data: Dict[str, Any], context: DecisionContext
     ) -> Dict[str, Any]:
         """Check cache for existing result"""
-        cache_key = f"{context.function_id}:{context.input_hash}"
+        cache_key = f"{context.function_id}:{context.version}:{context.input_hash}"
         if cache_key in self.cache:
             return self.cache[cache_key]
         return data
 
     async def cache_result(self, context: DecisionContext, result: Dict[str, Any]):
         """Cache the result"""
-        cache_key = f"{context.function_id}:{context.input_hash}"
+        cache_key = f"{context.function_id}:{context.version}:{context.input_hash}"
         self.cache[cache_key] = result
 
     @property

@@ -291,7 +291,7 @@ def init(ctx):
                 "tracing": {"enabled": True, "path": "./traces"},
                 "caching": {"enabled": True, "ttl": 300},
             },
-            "api": {"host": "0.0.0.0", "port": 8000, "cors": True},
+            "api": {"host": "localhost", "port": 8000, "cors": True},
         }
 
         with open(config_file, "w") as f:

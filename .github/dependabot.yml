@@ -8,10 +8,6 @@ updates:
       day: "monday"
       time: "09:00"
     open-pull-requests-limit: 10
-    reviewers:
-      - "eevamaija"
-    assignees:
-      - "eevamaija"
     commit-message:
       prefix: "deps"
       prefix-development: "deps-dev"
@@ -25,10 +21,6 @@ updates:
       day: "monday"
       time: "09:00"
     open-pull-requests-limit: 5
-    reviewers:
-      - "eevamaija"
-    assignees:
-      - "eevamaija"
     commit-message:
       prefix: "ci"
       include: "scope" 

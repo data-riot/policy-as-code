@@ -1,68 +1,40 @@
 """
-Enhanced error handling for Decision Layer
+Custom exception classes for Decision Layer
 """
 
-from dataclasses import dataclass
 from typing import Any, Dict, Optional
 
 
-@dataclass
 class DecisionLayerError(Exception):
-    """Base exception for Decision Layer errors"""
+    """Base exception for Decision Layer"""
 
-    message: str
-    error_code: str
-    details: Optional[Dict[str, Any]] = None
-
-    def __str__(self):
-        return f"{self.error_code}: {self.message}"
-
-
-class FunctionNotFoundError(DecisionLayerError):
-    """Raised when a function is not found"""
-
-    def __init__(self, function_id: str, version: Optional[str] = None):
-        super().__init__(
-            message=f"Function '{function_id}' not found",
-            error_code="FUNCTION_NOT_FOUND",
-            details={"function_id": function_id, "version": version},
-        )
-
-
-class VersionNotFoundError(DecisionLayerError):
-    """Raised when a specific version is not found"""
-
-    def __init__(self, function_id: str, version: str):
-        super().__init__(
-            message=f"Version '{version}' not found for function '{function_id}'",
-            error_code="VERSION_NOT_FOUND",
-            details={"function_id": function_id, "version": version},
-        )
+    def __init__(
+        self, message: str, error_code: str = "UNKNOWN", details: Optional[Dict] = None
+    ):
+        self.message = message
+        self.error_code = error_code
+        self.details = details or {}
+        super().__init__(self.message)
 
 
 class ValidationError(DecisionLayerError):
     """Raised when input validation fails"""
 
-    def __init__(self, field: str, message: str, value: Any = None):
-        super().__init__(
-            message=f"Validation error for field '{field}': {message}",
-            error_code="VALIDATION_ERROR",
-            details={"field": field, "message": message, "value": value},
-        )
+    def __init__(self, field: str, message: str):
+        super().__init__(message, "VALIDATION_ERROR", {"field": field})
 
 
 class ExecutionError(DecisionLayerError):
-    """Raised when function execution fails"""
+    """Raised when decision execution fails"""
 
     def __init__(self, function_id: str, version: str, original_error: Exception):
         super().__init__(
-            message=f"Execution failed for function '{function_id}' version '{version}': {str(original_error)}",
-            error_code="EXECUTION_ERROR",
-            details={
+            f"Execution failed for {function_id} v{version}: {str(original_error)}",
+            "EXECUTION_ERROR",
+            {
                 "function_id": function_id,
                 "version": version,
                 "original_error": str(original_error),
-                "error_type": type(original_error).__name__,
             },
         )
 
@@ -72,9 +44,21 @@ class DeploymentError(DecisionLayerError):
 
     def __init__(self, function_id: str, version: str, reason: str):
         super().__init__(
-            message=f"Deployment failed for function '{function_id}' version '{version}': {reason}",
-            error_code="DEPLOYMENT_ERROR",
-            details={"function_id": function_id, "version": version, "reason": reason},
+            f"Deployment failed for {function_id} v{version}: {reason}",
+            "DEPLOYMENT_ERROR",
+            {"function_id": function_id, "version": version, "reason": reason},
+        )
+
+
+class FunctionNotFoundError(DecisionLayerError):
+    """Raised when a function is not found"""
+
+    def __init__(self, function_id: str, version: Optional[str] = None):
+        version_info = f" v{version}" if version else ""
+        super().__init__(
+            f"Function {function_id}{version_info} not found",
+            "FUNCTION_NOT_FOUND",
+            {"function_id": function_id, "version": version},
         )
 
 
@@ -83,35 +67,31 @@ class StorageError(DecisionLayerError):
 
     def __init__(self, operation: str, reason: str):
         super().__init__(
-            message=f"Storage operation '{operation}' failed: {reason}",
-            error_code="STORAGE_ERROR",
-            details={"operation": operation, "reason": reason},
+            f"Storage operation '{operation}' failed: {reason}",
+            "STORAGE_ERROR",
+            {"operation": operation, "reason": reason},
         )
 
 
-class PluginError(DecisionLayerError):
-    """Raised when plugin operations fail"""
+class RegistryError(DecisionLayerError):
+    """Raised when registry operations fail"""
 
-    def __init__(self, plugin_name: str, operation: str, reason: str):
+    def __init__(self, operation: str, reason: str):
         super().__init__(
-            message=f"Plugin '{plugin_name}' operation '{operation}' failed: {reason}",
-            error_code="PLUGIN_ERROR",
-            details={
-                "plugin_name": plugin_name,
-                "operation": operation,
-                "reason": reason,
-            },
+            f"Registry operation '{operation}' failed: {reason}",
+            "REGISTRY_ERROR",
+            {"operation": operation, "reason": reason},
         )
 
 
-class ConfigurationError(DecisionLayerError):
-    """Raised when configuration is invalid"""
+class ShadowExecutionError(DecisionLayerError):
+    """Raised when shadow execution fails"""
 
-    def __init__(self, config_key: str, reason: str):
+    def __init__(self, function_id: str, version: str, reason: str):
         super().__init__(
-            message=f"Configuration error for '{config_key}': {reason}",
-            error_code="CONFIGURATION_ERROR",
-            details={"config_key": config_key, "reason": reason},
+            f"Shadow execution failed for {function_id} v{version}: {reason}",
+            "SHADOW_EXECUTION_ERROR",
+            {"function_id": function_id, "version": version, "reason": reason},
         )
 
 

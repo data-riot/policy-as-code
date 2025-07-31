@@ -3,50 +3,64 @@
 Run the Decision Layer Streamlit UI
 """
 
+import os
 import subprocess
 import sys
-import os
 from pathlib import Path
+
 
 def main():
     """Run the Streamlit application"""
-    print("🚀 Starting Decision Layer Web UI...")
-    
+    # Starting Decision Layer Web UI
+
     # Check if streamlit is installed
     try:
         import streamlit
-        print("✅ Streamlit is available")
+
+        # Streamlit is available
     except ImportError:
-        print("❌ Streamlit not found. Installing...")
+        # Streamlit not found, installing...
         subprocess.check_call([sys.executable, "-m", "pip", "install", "streamlit"])
-    
+
     # Check if the app file exists
     app_file = Path("streamlit_app.py")
     if not app_file.exists():
-        print("❌ streamlit_app.py not found")
+        # streamlit_app.py not found
         return
-    
+
     # Set environment variables for better UX
     os.environ["STREAMLIT_SERVER_PORT"] = "8501"
     os.environ["STREAMLIT_SERVER_ADDRESS"] = "localhost"
     os.environ["STREAMLIT_SERVER_HEADLESS"] = "true"
     os.environ["STREAMLIT_BROWSER_GATHER_USAGE_STATS"] = "false"
-    
-    print("🌐 Starting Streamlit server...")
-    print("📱 Web UI will be available at: http://localhost:8501")
-    print("Press Ctrl+C to stop the server")
-    
+
+    # Starting Streamlit server
+    # Web UI will be available at: http://localhost:8501
+    # Press Ctrl+C to stop the server
+
     try:
         # Run streamlit
-        subprocess.run([
-            sys.executable, "-m", "streamlit", "run", "streamlit_app.py",
-            "--server.port", "8501",
-            "--server.address", "localhost"
-        ])
+        subprocess.run(
+            [
+                sys.executable,
+                "-m",
+                "streamlit",
+                "run",
+                "streamlit_app.py",
+                "--server.port",
+                "8501",
+                "--server.address",
+                "localhost",
+            ]
+        )
     except KeyboardInterrupt:
-        print("\n🛑 Server stopped by user")
+        # Server stopped by user
+        print("Server stopped by user")
     except Exception as e:
-        print(f"❌ Error running Streamlit: {e}")
+        # Error running Streamlit
+        print(f"Error running Streamlit: {e}")
+        raise
+
 
 if __name__ == "__main__":
-    main() 
+    main()

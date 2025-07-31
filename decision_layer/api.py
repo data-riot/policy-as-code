@@ -56,7 +56,9 @@ class APIError(BaseModel):
 class DecisionLayerAPI:
     """REST API for Decision Layer"""
 
-    def __init__(self, engine: DecisionEngine, host: str = "0.0.0.0", port: int = 8000):
+    def __init__(
+        self, engine: DecisionEngine, host: str = "localhost", port: int = 8000
+    ):
         self.engine = engine
         self.host = host
         self.port = port
@@ -251,7 +253,10 @@ class DecisionLayerAPI:
             """Test a decision function with sample data"""
             try:
                 # Use provided input or default test data
-                test_input = request.input_data or {"amount": 500, "test": True}
+                test_input = request.input_data or {
+                    "amount": 500,
+                    "customer_score": 750,
+                }
 
                 result = await self.engine.execute(
                     function_id, test_input, request.version
@@ -322,7 +327,7 @@ class DecisionLayerAPI:
 
 
 def create_api(
-    engine: DecisionEngine, host: str = "0.0.0.0", port: int = 8000
+    engine: DecisionEngine, host: str = "localhost", port: int = 8000
 ) -> DecisionLayerAPI:
     """Create a Decision Layer API instance"""
     return DecisionLayerAPI(engine, host, port)

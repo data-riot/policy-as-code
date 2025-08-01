@@ -13,7 +13,7 @@ import plotly.express as px
 import plotly.graph_objects as go
 import streamlit as st
 
-from decision_layer import DecisionEngine, load_config
+from decision_layer import DecisionEngine, load_config, create_yaml_template, validate_yaml_decision, load_decision_from_yaml
 from decision_layer.errors import DecisionLayerError
 
 # Page configuration
@@ -772,6 +772,170 @@ def show_traces():
         st.info("No traces found for the selected filters")
 
 
+def show_yaml_interface():
+    """Show YAML decision interface"""
+    st.title("📝 YAML Decision Interface")
+    st.markdown("Create and test decision logic using simple YAML files - no Python programming required!")
+
+    # Initialize session state for YAML content
+    if "yaml_content" not in st.session_state:
+        st.session_state.yaml_content = ""
+
+    # Tabs for different YAML operations
+    tab1, tab2, tab3, tab4 = st.tabs(["📋 Template", "✏️ Editor", "🧪 Test", "📊 Validate"])
+
+    with tab1:
+        st.subheader("📋 YAML Template")
+        st.markdown("Use this template to create your own decision logic:")
+        
+        if st.button("📄 Generate Template"):
+            template = create_yaml_template()
+            st.code(template, language="yaml")
+            
+            # Download button
+            st.download_button(
+                label="📥 Download Template",
+                data=template,
+                file_name="decision_template.yaml",
+                mime="text/yaml"
+            )
+
+    with tab2:
+        st.subheader("✏️ YAML Editor")
+        st.markdown("Write or paste your YAML decision logic here:")
+        
+        # YAML editor
+        yaml_content = st.text_area(
+            "YAML Decision Logic",
+            value=st.session_state.yaml_content,
+            height=400,
+            placeholder="Paste your YAML decision logic here...",
+            help="Define your decision logic in YAML format",
+            key="yaml_editor"
+        )
+        
+        # Update session state
+        st.session_state.yaml_content = yaml_content
+        
+        if yaml_content:
+            # Validate the YAML
+            validation = validate_yaml_decision(yaml_content)
+            
+            if validation["valid"]:
+                st.success("✅ YAML is valid!")
+                if validation["info"]:
+                    st.info(f"📊 Decision info: {validation['info']}")
+            else:
+                st.error("❌ YAML validation failed:")
+                for error in validation["errors"]:
+                    st.error(f"   - {error}")
+            
+            if validation["warnings"]:
+                st.warning("⚠️ Warnings:")
+                for warning in validation["warnings"]:
+                    st.warning(f"   - {warning}")
+
+    with tab3:
+        st.subheader("🧪 Test Decision Logic")
+        st.markdown("Test your YAML decision logic with sample data:")
+        
+        # Test data input
+        col1, col2 = st.columns(2)
+        
+        with col1:
+            st.markdown("**Sample Test Data:**")
+            sample_data = st.text_area(
+                "Input Data (JSON)",
+                value='{\n  "amount": 15000,\n  "customer_score": 650,\n  "customer_tier": "premium"\n}',
+                height=200,
+                help="Enter test data in JSON format",
+                key="test_data"
+            )
+        
+        with col2:
+            st.markdown("**Test Results:**")
+            if st.button("🚀 Run Test") and st.session_state.yaml_content:
+                try:
+                    import json
+                    test_data = json.loads(sample_data)
+                    
+                    # Load decision function from YAML content
+                    from decision_layer import YAMLDecisionParser
+                    parser = YAMLDecisionParser()
+                    decision_function = parser.create_decision_function(st.session_state.yaml_content)
+                    
+                    # Create context
+                    import hashlib
+                    import uuid
+                    from datetime import datetime
+                    from decision_layer import DecisionContext
+                    
+                    input_hash = hashlib.sha256(json.dumps(test_data, sort_keys=True).encode()).hexdigest()
+                    trace_id = str(uuid.uuid4())
+                    
+                    context = DecisionContext(
+                        function_id="yaml_test",
+                        version="1.0",
+                        input_hash=input_hash,
+                        timestamp=datetime.now(),
+                        trace_id=trace_id
+                    )
+                    
+                    # Execute decision
+                    result = decision_function(test_data, context)
+                    
+                    st.json(result)
+                    
+                    if result.get("approved"):
+                        st.success("✅ Decision: APPROVED")
+                    else:
+                        st.error("❌ Decision: REJECTED")
+                        
+                except Exception as e:
+                    st.error(f"❌ Test failed: {e}")
+            elif not st.session_state.yaml_content:
+                st.warning("⚠️ Please enter YAML content in the Editor tab first")
+
+    with tab4:
+        st.subheader("📊 Validation Results")
+        st.markdown("Detailed validation of your YAML decision logic:")
+        
+        if st.session_state.yaml_content:
+            validation = validate_yaml_decision(st.session_state.yaml_content)
+            
+            # Validation summary
+            col1, col2, col3 = st.columns(3)
+            
+            with col1:
+                if validation["valid"]:
+                    st.success("✅ Valid")
+                else:
+                    st.error("❌ Invalid")
+            
+            with col2:
+                st.metric("Rules", validation["info"].get("rule_count", 0))
+            
+            with col3:
+                st.metric("Input Fields", len(validation["info"].get("input_fields", [])))
+            
+            # Detailed results
+            if validation["errors"]:
+                st.error("**Errors:**")
+                for error in validation["errors"]:
+                    st.error(f"• {error}")
+            
+            if validation["warnings"]:
+                st.warning("**Warnings:**")
+                for warning in validation["warnings"]:
+                    st.warning(f"• {warning}")
+            
+            if validation["info"]:
+                st.info("**Decision Information:**")
+                st.json(validation["info"])
+        else:
+            st.info("📝 Enter YAML content in the Editor tab to see validation results")
+
+
 def show_settings():
     """Show settings page"""
     st.title("⚙️ Settings")
@@ -831,7 +995,7 @@ def main():
     st.sidebar.title("🎯 Decision Layer")
 
     page = st.sidebar.selectbox(
-        "Navigation", ["Dashboard", "Functions", "Deploy", "Traces", "Settings"]
+        "Navigation", ["Dashboard", "Functions", "Deploy", "YAML Interface", "Traces", "Settings"]
     )
 
     # Page routing
@@ -841,6 +1005,8 @@ def main():
         show_functions()
     elif page == "Deploy":
         show_deploy()
+    elif page == "YAML Interface":
+        show_yaml_interface()
     elif page == "Traces":
         show_traces()
     elif page == "Settings":

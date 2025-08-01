@@ -1,0 +1,193 @@
+# Approval Decision - YAML Example
+# This file shows how data governance teams can define decision logic
+# without writing Python code
+
+name: "loan_approval_decision"
+description: "Loan approval decision based on customer profile and request amount"
+
+# Define input fields and their types
+input_fields:
+  amount:
+    type: "number"
+    required: true
+    description: "Requested loan amount"
+
+  customer_score:
+    type: "number"
+    required: true
+    description: "Customer credit score (300-850)"
+
+  customer_tier:
+    type: "string"
+    required: false
+    description: "Customer tier (standard, premium, vip)"
+    default: "standard"
+
+  employment_status:
+    type: "string"
+    required: false
+    description: "Employment status"
+    default: "employed"
+
+  monthly_income:
+    type: "number"
+    required: false
+    description: "Monthly income"
+
+  loan_purpose:
+    type: "string"
+    required: false
+    description: "Purpose of the loan"
+    default: "personal"
+
+# Define decision rules (evaluated in order)
+rules:
+  # Rule 1: Reject if credit score is too low
+  - name: "minimum_credit_score"
+    description: "Reject applications with very low credit scores"
+    conditions:
+      - field: "customer_score"
+        operator: "less_than"
+        value: 500
+    result:
+      approved: false
+      reason: "Credit score below minimum threshold"
+      max_allowed: 0
+      risk_level: "high"
+
+  # Rule 2: High amount with low score
+  - name: "high_amount_low_score"
+    description: "Reject high amounts for low credit scores"
+    conditions:
+      - field: "amount"
+        operator: "greater_than"
+        value: 10000
+      - field: "customer_score"
+        operator: "less_than"
+        value: 650
+    logic: "AND"
+    result:
+      approved: false
+      reason: "Amount too high for credit score"
+      max_allowed: 5000
+      risk_level: "high"
+
+  # Rule 3: Standard tier limits
+  - name: "standard_tier_limits"
+    description: "Apply limits for standard tier customers"
+    conditions:
+      - field: "customer_tier"
+        operator: "equals"
+        value: "standard"
+      - field: "amount"
+        operator: "greater_than"
+        value: 5000
+    logic: "AND"
+    result:
+      approved: false
+      reason: "Amount exceeds standard tier limit"
+      max_allowed: 5000
+      risk_level: "medium"
+
+  # Rule 4: Income verification for large amounts
+  - name: "income_verification"
+    description: "Require income verification for amounts over 5000"
+    conditions:
+      - field: "amount"
+        operator: "greater_than"
+        value: 5000
+      - field: "monthly_income"
+        operator: "is_empty"
+    logic: "AND"
+    result:
+      approved: false
+      reason: "Income verification required for large amounts"
+      max_allowed: 5000
+      risk_level: "medium"
+
+  # Rule 5: Debt-to-income ratio check
+  - name: "debt_to_income_check"
+    description: "Check debt-to-income ratio for large loans"
+    conditions:
+      - field: "amount"
+        operator: "greater_than"
+        value: 10000
+      - field: "monthly_income"
+        operator: "greater_than"
+        value: 0
+    logic: "AND"
+    result:
+      approved: true
+      reason: "Large loan approved with income verification"
+      limit: 25000
+      risk_level: "low"
+      conditions:
+        - "Monthly payment must not exceed 40% of income"
+
+  # Rule 6: Premium tier with good score
+  - name: "premium_good_score"
+    description: "Approve premium customers with good scores"
+    conditions:
+      - field: "customer_tier"
+        operator: "equals"
+        value: "premium"
+      - field: "customer_score"
+        operator: "greater_equal"
+        value: 700
+    logic: "AND"
+    result:
+      approved: true
+      reason: "Premium customer with good credit score"
+      limit: 50000
+      risk_level: "low"
+
+  # Rule 7: VIP customers
+  - name: "vip_customers"
+    description: "Approve VIP customers with higher limits"
+    conditions:
+      - field: "customer_tier"
+        operator: "equals"
+        value: "vip"
+    result:
+      approved: true
+      reason: "VIP customer approved"
+      limit: 100000
+      risk_level: "low"
+
+  # Rule 8: Small personal loans
+  - name: "small_personal_loans"
+    description: "Approve small personal loans for employed customers"
+    conditions:
+      - field: "amount"
+        operator: "less_equal"
+        value: 5000
+      - field: "employment_status"
+        operator: "equals"
+        value: "employed"
+      - field: "customer_score"
+        operator: "greater_equal"
+        value: 600
+    logic: "AND"
+    result:
+      approved: true
+      reason: "Small personal loan approved"
+      limit: 5000
+      risk_level: "low"
+
+# Default result if no rules match
+default_result:
+  approved: false
+  reason: "Decision criteria not met"
+  limit: 0
+  risk_level: "high"
+
+# Metadata
+metadata:
+  version: "1.0"
+  author: "Data Governance Team"
+  created_date: "2025-08-01"
+  last_updated: "2025-08-01"
+  tags: ["loan", "approval", "credit", "risk"]
+  business_owner: "Credit Risk Team"
+  compliance_required: true
+  audit_trail: true

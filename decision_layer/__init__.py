@@ -10,6 +10,7 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional
 
 from .core import DecisionContext, DecisionEngine, DecisionFunction, DecisionPlugin
+from .config import DecisionLayerConfig, load_config
 from .errors import (
     DecisionLayerError,
     DeploymentError,
@@ -36,6 +37,12 @@ from .registry import FunctionRegistry, FunctionStatus
 from .schemas import DecisionSchema, FieldType, SchemaField, create_schema_from_dict
 from .shadow_runner import ShadowRunner
 from .storage import FileStorage, PostgreSQLStorage, StorageBackend
+from .yaml_interface import (
+    YAMLDecisionParser,
+    load_decision_from_yaml,
+    create_yaml_template,
+    validate_yaml_decision,
+)
 
 __version__ = "1.0.0"
 __author__ = "Decision Layer Team"
@@ -48,6 +55,9 @@ __all__ = [
     "DecisionEngine",
     "DecisionFunction",
     "DecisionPlugin",
+    # Configuration
+    "DecisionLayerConfig",
+    "load_config",
     # Registry and storage
     "FunctionRegistry",
     "FunctionStatus",
@@ -61,6 +71,11 @@ __all__ = [
     "create_schema_from_dict",
     # Shadow testing
     "ShadowRunner",
+    # YAML interface
+    "YAMLDecisionParser",
+    "load_decision_from_yaml",
+    "create_yaml_template",
+    "validate_yaml_decision",
     # Cross-domain integration
     "LLMIntegration",
     "OntologyIntegration",

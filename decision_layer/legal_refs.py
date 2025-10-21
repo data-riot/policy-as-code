@@ -74,9 +74,7 @@ class LawReference:
 
     def _is_valid_eurlex_uri(self, uri: str) -> bool:
         """Validate EUR-Lex URI format"""
-        eurlex_pattern = (
-            r"^https://eur-lex\.europa\.eu/legal-content/EN/TXT/\?uri=CELEX:\d+[A-Z]?$"
-        )
+        eurlex_pattern = r"^https://eur-lex\.europa\.eu/legal-content/EN/TXT/\?uri=CELEX:\d+[A-Z]?\d*$"
         return bool(re.match(eurlex_pattern, uri))
 
     def to_dict(self) -> Dict[str, Any]:

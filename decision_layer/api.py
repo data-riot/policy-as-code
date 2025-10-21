@@ -19,10 +19,29 @@ from .release import ReleaseManager, SignerRole, create_release_manager
 from .explain import create_explanation_api
 from .audit_service import create_audit_service
 from .df_constraints import DeterministicFunction, create_deterministic_function
-from .llm_integration import LLMIntegration, create_llm_integration, AgenticContext, ReasoningMode
-from .conversational_interface import ConversationalInterface, create_conversational_interface, ConversationChannel
-from .workflow_orchestration import WorkflowOrchestrator, create_workflow_orchestrator, WorkflowDefinition, WorkflowTask, TaskStatus
-from .agent_performance_monitor import AgentPerformanceMonitor, create_agent_performance_monitor, PerformanceMetric
+from .llm_integration import (
+    LLMIntegration,
+    create_llm_integration,
+    AgenticContext,
+    ReasoningMode,
+)
+from .conversational_interface import (
+    ConversationalInterface,
+    create_conversational_interface,
+    ConversationChannel,
+)
+from .workflow_orchestration import (
+    WorkflowOrchestrator,
+    create_workflow_orchestrator,
+    WorkflowDefinition,
+    WorkflowTask,
+    TaskStatus,
+)
+from .agent_performance_monitor import (
+    AgentPerformanceMonitor,
+    create_agent_performance_monitor,
+    PerformanceMetric,
+)
 from .config import DecisionLayerConfig, load_config
 from typing import Dict, Any, Optional, List
 import datetime
@@ -109,21 +128,26 @@ class AuditReportResponse(BaseModel):
 
 # Agentic AI Request/Response Models
 
+
 class AgenticDecisionRequest(BaseModel):
     """Request model for agentic decision making"""
-    
+
     function_id: str = Field(..., description="Decision function ID")
     input_data: Dict[str, Any] = Field(..., description="Input data for the decision")
     citizen_id: Optional[str] = Field(None, description="Citizen identifier")
     service_type: Optional[str] = Field(None, description="Type of service")
-    urgency_level: str = Field("normal", description="Urgency level (low, normal, high, critical)")
-    reasoning_mode: str = Field("autonomous", description="Reasoning mode (autonomous, assisted, explanatory)")
+    urgency_level: str = Field(
+        "normal", description="Urgency level (low, normal, high, critical)"
+    )
+    reasoning_mode: str = Field(
+        "autonomous", description="Reasoning mode (autonomous, assisted, explanatory)"
+    )
     legal_framework: Optional[str] = Field(None, description="Legal framework to apply")
 
 
 class ConversationRequest(BaseModel):
     """Request model for conversational interface"""
-    
+
     message: str = Field(..., description="Citizen message")
     session_id: str = Field(..., description="Session identifier")
     citizen_id: Optional[str] = Field(None, description="Citizen identifier")
@@ -133,14 +157,16 @@ class ConversationRequest(BaseModel):
 
 class WorkflowRequest(BaseModel):
     """Request model for workflow orchestration"""
-    
+
     workflow_definition: Dict[str, Any] = Field(..., description="Workflow definition")
-    initial_context: Optional[Dict[str, Any]] = Field(None, description="Initial context data")
+    initial_context: Optional[Dict[str, Any]] = Field(
+        None, description="Initial context data"
+    )
 
 
 class PerformanceMetricsRequest(BaseModel):
     """Request model for performance metrics"""
-    
+
     agent_id: str = Field(..., description="Agent identifier")
     metric_type: str = Field(..., description="Type of metric")
     value: float = Field(..., description="Metric value")
@@ -150,19 +176,21 @@ class PerformanceMetricsRequest(BaseModel):
 
 class AgenticDecisionResponse(BaseModel):
     """Response model for agentic decisions"""
-    
+
     decision: Dict[str, Any] = Field(..., description="Decision result")
     confidence: float = Field(..., description="Confidence score")
     reasoning_steps: List[str] = Field(..., description="Reasoning steps")
     legal_basis: List[str] = Field(..., description="Legal basis")
-    alternatives_considered: List[str] = Field(..., description="Alternatives considered")
+    alternatives_considered: List[str] = Field(
+        ..., description="Alternatives considered"
+    )
     risk_assessment: Dict[str, Any] = Field(..., description="Risk assessment")
     trace_id: str = Field(..., description="Trace identifier")
 
 
 class ConversationResponse(BaseModel):
     """Response model for conversational interface"""
-    
+
     message: str = Field(..., description="Agent response message")
     actions: List[Dict[str, Any]] = Field(..., description="Actions to take")
     next_steps: List[str] = Field(..., description="Next steps")
@@ -173,7 +201,7 @@ class ConversationResponse(BaseModel):
 
 class WorkflowResponse(BaseModel):
     """Response model for workflow orchestration"""
-    
+
     execution_id: str = Field(..., description="Workflow execution ID")
     status: str = Field(..., description="Execution status")
     started_at: str = Field(..., description="Start timestamp")
@@ -182,10 +210,12 @@ class WorkflowResponse(BaseModel):
 
 class PerformanceReportResponse(BaseModel):
     """Response model for performance reports"""
-    
+
     agent_id: str = Field(..., description="Agent identifier")
     performance_score: float = Field(..., description="Overall performance score")
-    effectiveness_metrics: Dict[str, Any] = Field(..., description="Effectiveness metrics")
+    effectiveness_metrics: Dict[str, Any] = Field(
+        ..., description="Effectiveness metrics"
+    )
     trend_analysis: Dict[str, str] = Field(..., description="Trend analysis")
     recommendations: List[str] = Field(..., description="Recommendations")
     data_points: int = Field(..., description="Number of data points")

@@ -13,4 +13,4 @@ psycopg2-binary>=2.9.0  # PostgreSQL adapter
 python-multipart>=0.0.6  # For file uploads
 httpx>=0.25.2  # For API testing
 pandas>=2.0.0  # For analytics
-numpy>=1.25.0  # For numerical operations 
+numpy>=1.24.0  # For numerical operations 

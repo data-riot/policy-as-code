@@ -68,8 +68,8 @@ schema = DecisionSchema(
         "user_id": SchemaField(name="user_id", type=FieldType.INTEGER, required=True),
         "amount": SchemaField(name="amount", type=FieldType.FLOAT, min_value=0.0),
         "product": SchemaField(
-            name="product", 
-            type=FieldType.ENUM, 
+            name="product",
+            type=FieldType.ENUM,
             enum_values=["loan", "credit", "insurance"]
         )
     },
@@ -315,7 +315,7 @@ class CustomValidationPlugin(DecisionPlugin):
     async def process(self, data: Dict[str, Any], context: DecisionContext) -> Dict[str, Any]:
         # Custom validation logic
         return data
-    
+
     @property
     def name(self) -> str:
         return "custom_validation"
@@ -379,4 +379,4 @@ class CustomValidationPlugin(DecisionPlugin):
 6. **Cross-Domain**: Seamless integration across different knowledge representations
 7. **Production-Ready**: Enterprise-grade reliability and performance
 
-This architecture provides a robust foundation for managing decision logic with the same rigor applied to other software artifacts, while enabling innovative cross-domain communication capabilities. 
+This architecture provides a robust foundation for managing decision logic with the same rigor applied to other software artifacts, while enabling innovative cross-domain communication capabilities.

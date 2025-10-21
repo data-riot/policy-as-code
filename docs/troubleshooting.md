@@ -48,10 +48,10 @@ bash: python: command not found
    # Ubuntu/Debian
    sudo apt update
    sudo apt install python3 python3-pip python3-venv
-   
+
    # macOS
    brew install python3
-   
+
    # Windows
    # Download from python.org
    ```
@@ -147,7 +147,7 @@ Error: Address already in use
    ```bash
    # Check what's using port 8000
    lsof -i :8000
-   
+
    # Kill the process
    kill -9 <PID>
    ```
@@ -204,10 +204,10 @@ Error: connection to server at "localhost" (127.0.0.1), port 5432 failed
    ```bash
    # Ubuntu/Debian
    sudo systemctl status postgresql
-   
+
    # macOS
    brew services list | grep postgresql
-   
+
    # Start if not running
    sudo systemctl start postgresql
    ```
@@ -222,7 +222,7 @@ Error: connection to server at "localhost" (127.0.0.1), port 5432 failed
    ```bash
    # Check pg_hba.conf
    sudo cat /etc/postgresql/*/main/pg_hba.conf | grep -v '^#'
-   
+
    # Restart PostgreSQL
    sudo systemctl restart postgresql
    ```
@@ -311,10 +311,10 @@ Field 'credit_score': Value must be between 300 and 850
 2. **Validate input manually**:
    ```python
    from decision_layer.schemas import SchemaValidator
-   
+
    # Create validator
    validator = SchemaValidator(schema)
-   
+
    # Validate input
    try:
        validator.validate_input(input_data)
@@ -381,7 +381,7 @@ decision-layer config show
    ```bash
    # Check if variables are set
    env | grep DECISION_LAYER
-   
+
    # Set in current shell
    export DECISION_LAYER_DEBUG=true
    ```
@@ -391,7 +391,7 @@ decision-layer config show
    # Create .env file
    echo "DECISION_LAYER_API_KEY=your-key" > .env
    echo "DECISION_LAYER_DATABASE_URL=postgresql://..." >> .env
-   
+
    # Load .env file
    source .env
    ```
@@ -410,7 +410,7 @@ Error: Configuration file not found: config.yaml
    ```bash
    # Copy example configuration
    cp config.example.yaml config.yaml
-   
+
    # Or create minimal config
    cat > config.yaml << EOF
    core:
@@ -475,7 +475,7 @@ decision-layer execute loan_approval input.json
    ```bash
    # Monitor CPU and memory
    htop
-   
+
    # Check disk I/O
    iostat -x 1
    ```
@@ -711,7 +711,7 @@ Error: Rate limit exceeded
    ```python
    import time
    import requests
-   
+
    def throttled_request(url, headers, delay=0.1):
        time.sleep(delay)
        return requests.get(url, headers=headers)
@@ -813,4 +813,4 @@ When reporting issues, include:
 - **Read the [Configuration Guide](configuration.md)** for detailed configuration options
 - **Check the [Deployment Guide](deployment.md)** for deployment troubleshooting
 - **Review the [API Reference](api.md)** for API-specific issues
-- **Explore the [Examples](../examples/)** for working solutions 
+- **Explore the [Examples](../examples/)** for working solutions

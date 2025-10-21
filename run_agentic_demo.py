@@ -19,7 +19,7 @@ if __name__ == "__main__":
     print("🚀 Starting Agentic AI Demo...")
     print("This demo showcases the new agentic capabilities added to policy-as-code")
     print("=" * 60)
-    
+
     try:
         asyncio.run(main())
     except KeyboardInterrupt:

@@ -41,7 +41,7 @@ target_end = datetime(2017, 4, 30, 23, 59, 59, tzinfo=timezone.utc)
 for function in functions:
     function_id = function['function_id']
     print(f"Processing {function_id}...")
-    
+
     # Get detailed info for this function
     try:
         result = subprocess.run(
@@ -49,19 +49,19 @@ for function in functions:
             capture_output=True, text=True, check=True
         )
         function_details = json.loads(result.stdout)
-        
+
         # Check each version
         for version_info in function_details.get('versions', []):
             version = version_info['version']
             created_at = datetime.fromisoformat(version_info['created_at'].replace('Z', '+00:00'))
             status = version_info['status']
-            
+
             # Check if active during April 2017
-            if (status == 'approved' and 
+            if (status == 'approved' and
                 created_at <= target_end and
-                (version_info.get('deprecated_at') is None or 
+                (version_info.get('deprecated_at') is None or
                  datetime.fromisoformat(version_info['deprecated_at'].replace('Z', '+00:00')) >= target_start)):
-                
+
                 active_policies.append({
                     'function_id': function_id,
                     'version': version,
@@ -73,7 +73,7 @@ for function in functions:
                     'policy_references': version_info.get('policy_references', []),
                     'compliance_requirements': version_info.get('compliance_requirements', [])
                 })
-                
+
     except subprocess.CalledProcessError as e:
         print(f"Error processing {function_id}: {e}")
 
@@ -107,9 +107,9 @@ all_traces = []
 for policy in active_policies:
     function_id = policy['function_id']
     version = policy['version']
-    
+
     print(f"Getting traces for {function_id} v{version}...")
-    
+
     try:
         # Get traces for April 2017
         result = subprocess.run([
@@ -119,12 +119,12 @@ for policy in active_policies:
             '--version', version,
             '--format', 'json'
         ], capture_output=True, text=True, check=True)
-        
+
         traces = json.loads(result.stdout)
         traces['function_id'] = function_id
         traces['version'] = version
         all_traces.append(traces)
-        
+
     except subprocess.CalledProcessError as e:
         print(f"Error getting traces for {function_id}: {e}")
 
@@ -161,18 +161,18 @@ for traces_data in all_traces:
     function_id = traces_data['function_id']
     version = traces_data['version']
     traces = traces_data.get('traces', [])
-    
+
     # Calculate metrics
     total_executions = len(traces)
     successful_executions = len([t for t in traces if t.get('status') == 'success'])
     error_executions = len([t for t in traces if t.get('status') == 'error'])
-    
+
     success_rate = successful_executions / total_executions if total_executions > 0 else 0
-    
+
     # Calculate average execution time
     execution_times = [t.get('execution_time_ms', 0) for t in traces if t.get('execution_time_ms')]
     avg_execution_time = sum(execution_times) / len(execution_times) if execution_times else 0
-    
+
     metrics = {
         'function_id': function_id,
         'version': version,
@@ -182,7 +182,7 @@ for traces_data in all_traces:
         'success_rate': success_rate,
         'average_execution_time_ms': avg_execution_time
     }
-    
+
     performance_metrics.append(metrics)
 
 # Save metrics
@@ -220,7 +220,7 @@ report = {
         'total_executions': sum(m['total_executions'] for m in performance_metrics),
         'total_successful_executions': sum(m['successful_executions'] for m in performance_metrics),
         'total_error_executions': sum(m['error_executions'] for m in performance_metrics),
-        'overall_success_rate': sum(m['successful_executions'] for m in performance_metrics) / 
+        'overall_success_rate': sum(m['successful_executions'] for m in performance_metrics) /
                                sum(m['total_executions'] for m in performance_metrics) if sum(m['total_executions'] for m in performance_metrics) > 0 else 0
     },
     'policies': []
@@ -228,9 +228,9 @@ report = {
 
 # Combine policy and performance data
 for policy in active_policies:
-    metrics = next((m for m in performance_metrics 
+    metrics = next((m for m in performance_metrics
                    if m['function_id'] == policy['function_id'] and m['version'] == policy['version']), None)
-    
+
     policy_report = {
         'function_id': policy['function_id'],
         'version': policy['version'],
@@ -242,7 +242,7 @@ for policy in active_policies:
         'compliance_requirements': policy['compliance_requirements'],
         'performance': metrics or {}
     }
-    
+
     report['policies'].append(policy_report)
 
 # Save report
@@ -271,4 +271,4 @@ echo "  • april_2017_comprehensive_report.json - Comprehensive report"
 echo ""
 echo "To view the results:"
 echo "  cat april_2017_comprehensive_report.json | jq '.summary'"
-echo "  cat april_2017_comprehensive_report.json | jq '.policies[] | {function_id, version, title, performance}'" 
+echo "  cat april_2017_comprehensive_report.json | jq '.policies[] | {function_id, version, title, performance}'"

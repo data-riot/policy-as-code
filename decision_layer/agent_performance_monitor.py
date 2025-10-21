@@ -261,23 +261,23 @@ class AgentPerformanceMonitor:
             # Use LLM to analyze coordination patterns
             prompt = f"""
             Analyze agent coordination patterns and suggest optimizations.
-            
+
             Coordination Data: {json.dumps(coordination_data, indent=2)}
-            
+
             Analyze:
             1. Communication efficiency between agents
             2. Task handoff patterns
             3. Resource utilization
             4. Bottlenecks and delays
             5. Error propagation patterns
-            
+
             Suggest specific optimizations for:
             1. Communication protocols
             2. Task scheduling
             3. Resource allocation
             4. Error handling
             5. Performance monitoring
-            
+
             Return JSON with optimization recommendations.
             """
 

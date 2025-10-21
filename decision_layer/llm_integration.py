@@ -131,18 +131,18 @@ class LLMIntegration:
         try:
             prompt = f"""
             You are coordinating a government task that requires multiple agents.
-            
+
             Task: {task_description}
             Required Capabilities: {', '.join(required_capabilities)}
             Context: {json.dumps(context.__dict__, default=str)}
-            
+
             Design a coordination plan that:
             1. Identifies which agents are needed
             2. Defines the sequence of operations
             3. Establishes communication protocols
             4. Sets up error handling and fallbacks
             5. Ensures compliance with legal requirements
-            
+
             Return a JSON response with the coordination plan.
             """
 
@@ -175,18 +175,18 @@ class LLMIntegration:
         try:
             prompt = f"""
             Analyze the performance of this decision function and suggest improvements.
-            
+
             Function: {decision_function.function_id}
             Current Performance: {json.dumps(performance_metrics)}
             Feedback: {json.dumps(feedback)}
-            
+
             Suggest specific improvements to:
             1. Decision logic
             2. Input validation
             3. Output quality
             4. Legal compliance
             5. Citizen experience
-            
+
             Return a JSON response with specific, actionable recommendations.
             """
 
@@ -219,18 +219,18 @@ class LLMIntegration:
         try:
             prompt = f"""
             Explain this government decision in simple, clear language for citizens.
-            
+
             Decision: {json.dumps(decision_result)}
             Context: {json.dumps(decision_context.__dict__, default=str)}
             Language: {citizen_language}
-            
+
             The explanation should:
             1. Be clear and jargon-free
             2. Explain the reasoning behind the decision
             3. Reference relevant laws or policies
             4. Provide next steps if applicable
             5. Include contact information for questions
-            
+
             Write in a helpful, professional tone.
             """
 
@@ -258,28 +258,28 @@ class LLMIntegration:
 
         prompt = f"""
         You are an AI agent making government decisions. {mode_instructions[reasoning_mode]}
-        
+
         Decision Function: {decision_function.function_id}
         Function Description: {getattr(decision_function, 'description', 'No description available')}
-        
+
         Input Data: {json.dumps(input_data, indent=2)}
-        
+
         Context:
         - Citizen ID: {context.citizen_id or 'Not provided'}
         - Service Type: {context.service_type or 'Not specified'}
         - Urgency: {context.urgency_level}
         - Legal Framework: {context.legal_framework or 'Standard government regulations'}
-        
+
         Historical Precedents: {json.dumps(context.historical_precedents or [], indent=2)}
         Cross-Agency Data: {json.dumps(context.cross_agency_data or {}, indent=2)}
-        
+
         Requirements:
         1. Consider all relevant factors and context
         2. Ensure compliance with legal requirements
         3. Provide clear reasoning for your decision
         4. Assess risks and alternatives
         5. Maintain consistency with similar cases
-        
+
         Return your response as JSON with:
         {{
             "decision": <the actual decision>,

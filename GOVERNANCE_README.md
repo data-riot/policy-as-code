@@ -146,7 +146,7 @@ release_manager.sign_release(
 
 # Reviewer signature
 release_manager.sign_release(
-    function_id="loan_approval", 
+    function_id="loan_approval",
     version="1.0",
     signer_id="jane.smith@compliance.com",
     role=SignerRole.REVIEWER
@@ -162,9 +162,9 @@ def approval_decision(input_data, context):
     """Deterministic loan approval function"""
     amount = input_data.get("amount", 0)
     credit_score = input_data.get("credit_score", 0)
-    
+
     approved = amount <= 100000 and credit_score >= 650
-    
+
     return {
         "approved": approved,
         "confidence": 0.95,

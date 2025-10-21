@@ -32,4 +32,4 @@ Any additional information that reviewers should know about this pull request.
 
 ## Related Issues
 
-Closes #(issue number) 
+Closes #(issue number)

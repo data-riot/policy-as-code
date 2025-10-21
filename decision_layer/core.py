@@ -39,7 +39,8 @@ class DecisionFunction(Protocol):
 
     def __call__(
         self, input_data: Dict[str, Any], context: DecisionContext
-    ) -> Dict[str, Any]: ...
+    ) -> Dict[str, Any]:
+        ...
 
 
 class DecisionPlugin(ABC):

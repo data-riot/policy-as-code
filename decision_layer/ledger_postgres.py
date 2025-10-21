@@ -47,7 +47,7 @@ class PostgreSQLTraceWriter(TraceWriter):
             signer VARCHAR(255) NOT NULL,
             created_at TIMESTAMPTZ DEFAULT NOW()
         );
-        
+
         CREATE INDEX IF NOT EXISTS idx_{self.table_name}_df_id ON {self.table_name}(df_id);
         CREATE INDEX IF NOT EXISTS idx_{self.table_name}_version ON {self.table_name}(df_id, version);
         CREATE INDEX IF NOT EXISTS idx_{self.table_name}_timestamp ON {self.table_name}(timestamp);
@@ -66,7 +66,7 @@ class PostgreSQLTraceWriter(TraceWriter):
             async with self.pool.acquire() as conn:
                 insert_sql = f"""
                 INSERT INTO {self.table_name} (
-                    trace_id, df_id, version, df_hash, timestamp, caller, 
+                    trace_id, df_id, version, df_hash, timestamp, caller,
                     status, input_json, output_json, prev_hash, chain_hash, signer
                 ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
                 """
@@ -97,8 +97,8 @@ class PostgreSQLTraceWriter(TraceWriter):
         try:
             async with self.pool.acquire() as conn:
                 query_sql = f"""
-                SELECT chain_hash FROM {self.table_name} 
-                ORDER BY timestamp DESC, created_at DESC 
+                SELECT chain_hash FROM {self.table_name}
+                ORDER BY timestamp DESC, created_at DESC
                 LIMIT 1
                 """
 
@@ -116,8 +116,8 @@ class PostgreSQLTraceWriter(TraceWriter):
             async with self.pool.acquire() as conn:
                 # Get all records ordered by timestamp
                 query_sql = f"""
-                SELECT trace_id, prev_hash, chain_hash, timestamp 
-                FROM {self.table_name} 
+                SELECT trace_id, prev_hash, chain_hash, timestamp
+                FROM {self.table_name}
                 ORDER BY timestamp ASC, created_at ASC
                 """
 
@@ -210,17 +210,17 @@ class PostgreSQLTraceReader(TraceReader):
             async with self.pool.acquire() as conn:
                 if version:
                     query_sql = f"""
-                    SELECT * FROM {self.table_name} 
-                    WHERE df_id = $1 AND version = $2 
-                    ORDER BY timestamp DESC 
+                    SELECT * FROM {self.table_name}
+                    WHERE df_id = $1 AND version = $2
+                    ORDER BY timestamp DESC
                     LIMIT $3
                     """
                     results = await conn.fetch(query_sql, df_id, version, limit)
                 else:
                     query_sql = f"""
-                    SELECT * FROM {self.table_name} 
-                    WHERE df_id = $1 
-                    ORDER BY timestamp DESC 
+                    SELECT * FROM {self.table_name}
+                    WHERE df_id = $1
+                    ORDER BY timestamp DESC
                     LIMIT $2
                     """
                     results = await conn.fetch(query_sql, df_id, limit)
@@ -243,9 +243,9 @@ class PostgreSQLTraceReader(TraceReader):
         try:
             async with self.pool.acquire() as conn:
                 query_sql = f"""
-                SELECT * FROM {self.table_name} 
-                WHERE timestamp BETWEEN $1 AND $2 
-                ORDER BY timestamp DESC 
+                SELECT * FROM {self.table_name}
+                WHERE timestamp BETWEEN $1 AND $2
+                ORDER BY timestamp DESC
                 LIMIT $3
                 """
 

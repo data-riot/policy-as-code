@@ -139,38 +139,38 @@ from decision_layer import DecisionContext
 def decision_function(input_data: Dict[str, Any], context: DecisionContext) -> Dict[str, Any]:
     """
     Loan approval decision function
-    
+
     Approves loans for users with:
     - Credit score >= 700
     - Income >= $50,000
     - Age >= 18
     """
-    
+
     credit_score = input_data.get('credit_score', 0)
     income = input_data.get('income', 0)
     age = input_data.get('age', 0)
-    
+
     if age < 18:
         return {
             "approved": False,
             "reason": "Applicant must be 18 or older",
             "risk_level": "high"
         }
-    
+
     if credit_score < 700:
         return {
             "approved": False,
             "reason": "Credit score below minimum requirement (700)",
             "risk_level": "high"
         }
-    
+
     if income < 50000:
         return {
             "approved": False,
             "reason": "Income below minimum requirement ($50,000)",
             "risk_level": "medium"
         }
-    
+
     return {
         "approved": True,
         "reason": "All criteria met",
@@ -401,19 +401,19 @@ def decision_function(input_data, context):
     """
     amount = input_data.get('amount', 0)
     documentation = input_data.get('documentation', False)
-    
+
     if amount > 1000:
         return {
             "approved": False,
             "reason": "Amount exceeds $1000 limit"
         }
-    
+
     if not documentation:
         return {
             "approved": False,
             "reason": "Valid documentation required"
         }
-    
+
     return {
         "approved": True,
         "reason": "Claim approved",
@@ -490,19 +490,19 @@ web:
   theme: "light"  # light, dark, auto
   layout: "wide"  # wide, centered
   sidebar_state: "expanded"  # expanded, collapsed, auto
-  
+
   # Dashboard settings
   dashboard:
     auto_refresh: 30  # seconds
     default_widgets: ["status", "functions", "recent_traces"]
-    
+
   # Editor settings
   editor:
     theme: "monokai"  # editor theme
     font_size: 14
     line_numbers: true
     auto_complete: true
-    
+
   # Trace viewer settings
   traces:
     page_size: 50
@@ -524,7 +524,7 @@ security:
     min_length: 8
     require_special_chars: true
     require_numbers: true
-    
+
   # API security
   api:
     enable_rate_limiting: true
@@ -580,4 +580,4 @@ security:
 - **Read the [API Reference](api.md)** for programmatic access
 - **Check the [CLI Reference](cli.md)** for command-line usage
 - **Explore the [Examples](../examples/)** for working code samples
-- **Review the [Architecture Documentation](architecture.md)** for system design 
+- **Review the [Architecture Documentation](architecture.md)** for system design

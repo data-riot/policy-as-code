@@ -109,4 +109,4 @@ If you have questions or need help, please:
 2. Create a new issue with the "question" label
 3. Reach out to maintainers
 
-Thank you for contributing to Decision Layer! 
+Thank you for contributing to Decision Layer!

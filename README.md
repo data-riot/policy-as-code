@@ -103,7 +103,7 @@ from decision_layer.feature_store import feature_store
 async def loan_eligibility_df(input_data: Dict[str, Any], context: DecisionContext) -> Dict[str, Any]:
     # Use deterministic time
     current_time = DeterministicTime.get_current_time()
-    
+
     # Point-in-time feature lookup
     user_id = input_data.get("user_id", "user1")
     features = await feature_store.get_features_at_point_in_time(
@@ -111,11 +111,11 @@ async def loan_eligibility_df(input_data: Dict[str, Any], context: DecisionConte
         feature_names=["user_credit_score", "loan_amount_limit"],
         as_of_timestamp=current_time
     )
-    
+
     # Deterministic decision logic
     amount = input_data.get("amount", 0)
     credit_score = features.get("user_credit_score", {}).get("score", 0)
-    
+
     if amount > 10000 and credit_score >= 700:
         return {"eligible": True, "reason": "High score, low amount"}
     else:
@@ -194,7 +194,7 @@ release_manager.sign_release(
 
 # Reviewer signs
 release_manager.sign_release(
-    function_id="loan_eligibility", 
+    function_id="loan_eligibility",
     version="1.0.0",
     signer_id="bob",
     role=SignerRole.REVIEWER
@@ -305,7 +305,7 @@ OPTIONS (
 
 ```sql
 -- Daily decision summaries
-SELECT 
+SELECT
   function_id,
   version,
   DATE(timestamp) as date,
@@ -318,7 +318,7 @@ GROUP BY function_id, version, date
 ORDER BY date DESC, function_id;
 
 -- Error rate analysis
-SELECT 
+SELECT
   function_id,
   version,
   DATE(timestamp) as date,

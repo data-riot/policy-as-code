@@ -290,14 +290,14 @@ class PostgreSQLFeatureStore(FeatureStoreBackend):
             created_at TIMESTAMPTZ DEFAULT NOW(),
             PRIMARY KEY (feature_name, entity_id, feature_version, timestamp)
         );
-        
-        CREATE INDEX IF NOT EXISTS idx_{self.table_name}_entity_time 
+
+        CREATE INDEX IF NOT EXISTS idx_{self.table_name}_entity_time
         ON {self.table_name}(entity_id, timestamp DESC);
-        
-        CREATE INDEX IF NOT EXISTS idx_{self.table_name}_feature_time 
+
+        CREATE INDEX IF NOT EXISTS idx_{self.table_name}_feature_time
         ON {self.table_name}(feature_name, timestamp DESC);
-        
-        CREATE INDEX IF NOT EXISTS idx_{self.table_name}_lookup 
+
+        CREATE INDEX IF NOT EXISTS idx_{self.table_name}_lookup
         ON {self.table_name}(feature_name, entity_id, timestamp DESC);
         """
 
@@ -317,9 +317,9 @@ class PostgreSQLFeatureStore(FeatureStoreBackend):
         async with self.pool.acquire() as conn:
             if feature_version:
                 query_sql = f"""
-                SELECT * FROM {self.table_name} 
+                SELECT * FROM {self.table_name}
                 WHERE feature_name = $1 AND entity_id = $2 AND timestamp <= $3 AND feature_version = $4
-                ORDER BY timestamp DESC 
+                ORDER BY timestamp DESC
                 LIMIT 1
                 """
                 result = await conn.fetchrow(
@@ -327,9 +327,9 @@ class PostgreSQLFeatureStore(FeatureStoreBackend):
                 )
             else:
                 query_sql = f"""
-                SELECT * FROM {self.table_name} 
+                SELECT * FROM {self.table_name}
                 WHERE feature_name = $1 AND entity_id = $2 AND timestamp <= $3
-                ORDER BY timestamp DESC 
+                ORDER BY timestamp DESC
                 LIMIT 1
                 """
                 result = await conn.fetchrow(
@@ -359,11 +359,11 @@ class PostgreSQLFeatureStore(FeatureStoreBackend):
         async with self.pool.acquire() as conn:
             insert_sql = f"""
             INSERT INTO {self.table_name} (
-                feature_name, entity_id, value, feature_type, timestamp, 
+                feature_name, entity_id, value, feature_type, timestamp,
                 feature_version, source, ttl_seconds, metadata
             ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
-            ON CONFLICT (feature_name, entity_id, feature_version, timestamp) 
-            DO UPDATE SET 
+            ON CONFLICT (feature_name, entity_id, feature_version, timestamp)
+            DO UPDATE SET
                 value = EXCLUDED.value,
                 feature_type = EXCLUDED.feature_type,
                 source = EXCLUDED.source,
@@ -391,8 +391,8 @@ class PostgreSQLFeatureStore(FeatureStoreBackend):
 
         async with self.pool.acquire() as conn:
             query_sql = f"""
-            SELECT * FROM {self.table_name} 
-            WHERE entity_id = $1 
+            SELECT * FROM {self.table_name}
+            WHERE entity_id = $1
             ORDER BY timestamp DESC
             """
 
@@ -420,7 +420,7 @@ class PostgreSQLFeatureStore(FeatureStoreBackend):
 
         async with self.pool.acquire() as conn:
             delete_sql = f"""
-            DELETE FROM {self.table_name} 
+            DELETE FROM {self.table_name}
             WHERE feature_name = $1 AND entity_id = $2
             """
 

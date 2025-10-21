@@ -561,10 +561,10 @@ def execute_decision(function_id, input_data, version=None):
         "input_data": input_data,
         "version": version
     }
-    
+
     response = requests.post(url, json=payload, headers=headers)
     response.raise_for_status()
-    
+
     return response.json()
 
 # Example usage
@@ -605,7 +605,7 @@ async function executeDecision(functionId, inputData, version = null) {
             input_data: inputData,
             version: version
         });
-        
+
         return response.data;
     } catch (error) {
         console.error('API Error:', error.response?.data || error.message);
@@ -668,7 +668,7 @@ async def connect_websocket():
             "action": "subscribe",
             "channel": "function_updates"
         }))
-        
+
         # Listen for updates
         async for message in websocket:
             data = json.loads(message)
@@ -726,4 +726,4 @@ LOG_FILE=logs/api.log
 - **Explore the [CLI Reference](cli.md)** for command-line usage
 - **Check the [Web Interface Guide](web-interface.md)** for visual tools
 - **Review the [Architecture Documentation](architecture.md)** for system design
-- **See the [Examples](../examples/)** for working code samples 
+- **See the [Examples](../examples/)** for working code samples

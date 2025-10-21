@@ -251,9 +251,9 @@ class ReleaseManager:
     """Manager for release lifecycle"""
 
     def __init__(self):
-        self.releases: Dict[str, Dict[str, Release]] = (
-            {}
-        )  # function_id -> version -> Release
+        self.releases: Dict[
+            str, Dict[str, Release]
+        ] = {}  # function_id -> version -> Release
 
     def create_release(
         self,

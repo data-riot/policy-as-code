@@ -98,14 +98,14 @@ core:
     backend: file  # file, postgresql, s3
     path: ./registry
     database_url: null  # Only for postgresql backend
-    
+
   # Trace settings
   trace:
     directory: ./traces
     level: INFO
     retention_days: 90
     max_file_size: 10485760  # 10MB
-    
+
   # Performance settings
   performance:
     max_input_size: 1048576  # 1MB
@@ -119,19 +119,19 @@ security:
   api_key: null  # Set via environment variable
   secret_key: null  # Set via environment variable
   session_timeout: 3600  # 1 hour
-  
+
   # Rate limiting
   rate_limiting:
     enabled: true
     requests_per_minute: 100
     burst_size: 10
-    
+
   # Input validation
   input_validation:
     enabled: true
     sanitize_inputs: true
     max_nesting_depth: 10
-    
+
   # Output validation
   output_validation:
     enabled: true
@@ -149,7 +149,7 @@ plugins:
         enabled: false
         config:
           custom_rules: []
-  
+
   # Tracing plugins
   tracing:
     enabled: true
@@ -162,7 +162,7 @@ plugins:
         enabled: false
         config:
           table_name: traces
-  
+
   # Caching plugins
   caching:
     enabled: true
@@ -185,20 +185,20 @@ integrations:
         model: gpt-4
         max_tokens: 2000
         temperature: 0.1
-        
+
       # Anthropic configuration
       anthropic:
         api_key: null  # Set via environment variable
         model: claude-3-sonnet-20240229
         max_tokens: 2000
-        
+
       # Azure OpenAI configuration
       azure:
         endpoint: null  # Set via environment variable
         api_key: null  # Set via environment variable
         deployment_name: gpt-4
         api_version: 2024-02-15-preview
-  
+
   # Ontology Integration
   ontology:
     provider: mock  # mock, owl, neo4j
@@ -207,14 +207,14 @@ integrations:
       owl:
         file_path: ./ontologies/domain.owl
         reasoner: pellet  # pellet, hermit, jfact
-        
+
       # Neo4j configuration
       neo4j:
         uri: bolt://localhost:7687
         username: neo4j
         password: null  # Set via environment variable
         database: neo4j
-  
+
   # Knowledge Graph Integration
   knowledge_graph:
     provider: mock  # mock, neo4j, amazon_neptune
@@ -225,7 +225,7 @@ integrations:
         username: neo4j
         password: null  # Set via environment variable
         database: neo4j
-        
+
       # Amazon Neptune configuration
       neptune:
         endpoint: null  # Set via environment variable
@@ -239,7 +239,7 @@ web:
   title: "Decision Layer"
   theme: light  # light, dark, auto
   layout: wide  # wide, centered
-  
+
   # Dashboard settings
   dashboard:
     auto_refresh: 30  # seconds
@@ -248,7 +248,7 @@ web:
       - functions
       - recent_traces
       - performance_metrics
-    
+
   # Editor settings
   editor:
     theme: monokai  # editor theme
@@ -256,7 +256,7 @@ web:
     line_numbers: true
     auto_complete: true
     word_wrap: false
-    
+
   # Trace viewer settings
   traces:
     page_size: 50
@@ -270,7 +270,7 @@ api:
   host: 0.0.0.0
   port: 8000
   workers: 4
-  
+
   # CORS settings
   cors:
     enabled: true
@@ -286,7 +286,7 @@ api:
       - Content-Type
       - Authorization
       - X-API-Key
-  
+
   # Documentation settings
   docs:
     enabled: true
@@ -300,7 +300,7 @@ cli:
   default_format: table  # table, json, yaml
   enable_colors: true
   verbose_output: false
-  
+
   # Command settings
   commands:
     list:
@@ -320,7 +320,7 @@ monitoring:
     enabled: true
     endpoint: /metrics
     format: prometheus  # prometheus, json
-    
+
   # Health checks
   health:
     enabled: true
@@ -329,7 +329,7 @@ monitoring:
       - storage
       - registry
       - traces
-    
+
   # Alerting
   alerts:
     enabled: false
@@ -354,7 +354,7 @@ core:
   storage:
     backend: file
     path: ./dev_registry
-    
+
   trace:
     directory: ./dev_traces
     level: DEBUG
@@ -387,7 +387,7 @@ core:
   storage:
     backend: postgresql
     database_url: ${DATABASE_URL}
-    
+
   trace:
     directory: /var/log/decision_layer/traces
     level: INFO
@@ -531,7 +531,7 @@ decision-layer config check
    ```bash
    # Development
    cp config.dev.yaml config.yaml
-   
+
    # Production
    cp config.prod.yaml config.yaml
    ```
@@ -653,4 +653,4 @@ decision-layer config test
 - **Read the [Installation Guide](installation.md)** for setup instructions
 - **Check the [CLI Reference](cli.md)** for configuration commands
 - **Review the [Architecture Documentation](architecture.md)** for system design
-- **Explore the [Examples](../examples/)** for configuration examples 
+- **Explore the [Examples](../examples/)** for configuration examples

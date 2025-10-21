@@ -54,4 +54,4 @@ Our documentation follows these principles:
 
 ## 🤝 Contributing to Documentation
 
-We welcome contributions to improve our documentation! Please see our [Contributing Guidelines](../.github/CONTRIBUTING.md) for details on how to submit documentation improvements. 
+We welcome contributions to improve our documentation! Please see our [Contributing Guidelines](../.github/CONTRIBUTING.md) for details on how to submit documentation improvements.

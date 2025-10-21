@@ -474,30 +474,30 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
-    
+
     - name: Set up Python
       uses: actions/setup-python@v4
       with:
         python-version: 3.9
-    
+
     - name: Install dependencies
       run: |
         pip install -r requirements.txt
         pip install -e .
-    
+
     - name: Initialize system
       run: decision-layer init
-    
+
     - name: Deploy functions
       run: |
         decision-layer deploy loan_approval 1.0 examples/loan_approval.py
         decision-layer deploy insurance_claim 1.0 examples/insurance_claim.py
-    
+
     - name: Run tests
       run: |
         decision-layer test loan_approval tests/loan_approval_tests.json
         decision-layer test insurance_claim tests/insurance_claim_tests.json
-    
+
     - name: Check status
       run: decision-layer status
 ```
@@ -629,4 +629,4 @@ $ decision-layer list --format yaml
 - **Read the [API Reference](api.md)** for programmatic access
 - **Check the [Web Interface Guide](web-interface.md)** for visual tools
 - **Explore the [Examples](../examples/)** for working code samples
-- **Review the [Architecture Documentation](architecture.md)** for system design 
+- **Review the [Architecture Documentation](architecture.md)** for system design

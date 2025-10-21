@@ -257,15 +257,15 @@ class ConversationalInterface:
 
         prompt = f"""
         Analyze this citizen message and determine the intent and required actions.
-        
+
         Message: "{message}"
         Language: {context.language}
         Channel: {context.channel.value}
         Citizen ID: {context.citizen_id or "Not provided"}
-        
+
         Previous conversation context:
         {json.dumps(context.conversation_history[-3:], indent=2) if context.conversation_history else "No previous context"}
-        
+
         Determine:
         1. Primary intent (e.g., "apply_for_benefits", "check_status", "ask_question", "file_complaint")
         2. Required services or functions
@@ -273,7 +273,7 @@ class ConversationalInterface:
         4. Next steps
         5. Whether human assistance is needed
         6. Confidence level (0.0-1.0)
-        
+
         Return JSON response with:
         {{
             "intent": "<primary_intent>",
@@ -426,16 +426,16 @@ class ConversationalInterface:
         try:
             prompt = f"""
             Answer this citizen's question about government services in a helpful, accurate way.
-            
+
             Question: {context.conversation_history[-1]['message']}
             Language: {context.language}
-            
+
             Provide a clear, helpful answer that:
             1. Directly addresses the question
             2. Provides relevant information
             3. Suggests next steps if applicable
             4. Is written in a friendly, professional tone
-            
+
             If you're not sure about something, say so and suggest contacting a human representative.
             """
 

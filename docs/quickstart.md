@@ -62,18 +62,18 @@ from decision_layer import DecisionContext
 def decision_function(input_data: Dict[str, Any], context: DecisionContext) -> Dict[str, Any]:
     """
     Simple loan approval decision function
-    
+
     Approves loans for users with:
     - Credit score >= 700
     - Income >= $50,000
     - Age >= 18
     """
-    
+
     # Extract input data
     credit_score = input_data.get('credit_score', 0)
     income = input_data.get('income', 0)
     age = input_data.get('age', 0)
-    
+
     # Decision logic
     if age < 18:
         return {
@@ -81,21 +81,21 @@ def decision_function(input_data: Dict[str, Any], context: DecisionContext) -> D
             "reason": "Applicant must be 18 or older",
             "risk_level": "high"
         }
-    
+
     if credit_score < 700:
         return {
             "approved": False,
             "reason": "Credit score below minimum requirement (700)",
             "risk_level": "high"
         }
-    
+
     if income < 50000:
         return {
             "approved": False,
             "reason": "Income below minimum requirement ($50,000)",
             "risk_level": "medium"
         }
-    
+
     # All criteria met
     return {
         "approved": True,
@@ -193,13 +193,13 @@ async def deploy_function():
     # Load the schema
     with open('loan_approval_schema.json', 'r') as f:
         schema_dict = json.load(f)
-    
+
     schema = create_schema_from_dict(schema_dict)
-    
+
     # Load the function code
     with open('loan_approval.py', 'r') as f:
         function_code = f.read()
-    
+
     # Create engine and deploy
     engine = DecisionEngine()
     await engine.deploy_function(
@@ -207,7 +207,7 @@ async def deploy_function():
         version="1.0",
         function_code=function_code
     )
-    
+
     print("✅ Function deployed successfully!")
 
 # Run the deployment
@@ -257,7 +257,7 @@ async def execute_decision():
     # Load test data
     with open('test_input.json', 'r') as f:
         input_data = json.load(f)
-    
+
     # Create engine and execute
     engine = DecisionEngine()
     result = await engine.execute(
@@ -265,7 +265,7 @@ async def execute_decision():
         input_data=input_data,
         version="1.0"
     )
-    
+
     print("Decision Result:")
     print(json.dumps(result, indent=2))
 
@@ -351,13 +351,13 @@ from decision_layer import create_unified_interface
 async def test_natural_language():
     # Create unified interface
     interface = create_unified_interface()
-    
+
     # Ask a natural language question
     response = await interface.process_query(
         "What decision functions do we have for loan approval?",
         include_cross_domain=True
     )
-    
+
     print(f"Query: {response.query}")
     print(f"Response: {response.primary_response}")
     if response.llm_explanation:
@@ -377,14 +377,14 @@ async def generate_function_with_llm():
     llm_provider = create_llm_provider("mock", {})
     registry = FunctionRegistry("./registry")
     llm_integration = LLMIntegration(registry, llm_provider)
-    
+
     # Generate function from natural language
     artifact = await llm_integration.generate_decision_function(
         policy_description="Approve insurance claims for amounts under $1000 with valid documentation",
         function_id="insurance_claim_llm",
         version="1.0"
     )
-    
+
     print(f"✅ Generated function: {artifact.function_id} v{artifact.version}")
 
 # Run the generation
@@ -442,4 +442,4 @@ Congratulations! You've successfully:
 - **Issues**: Report bugs on [GitHub Issues](https://github.com/data-riot/decision-layer/issues)
 - **Discussions**: Join the [GitHub Discussions](https://github.com/data-riot/decision-layer/issues)
 
-You're now ready to build sophisticated decision management systems with Decision Layer! 🚀 
+You're now ready to build sophisticated decision management systems with Decision Layer! 🚀

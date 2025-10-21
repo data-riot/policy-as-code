@@ -3,14 +3,9 @@ Formal DSL Grammar with Conflict Detection
 Production-grade rule DSL with priorities, static analysis, and conflict detection
 """
 
-import json
-import re
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Any, Dict, List, Optional, Set, Union
-from abc import ABC, abstractmethod
-
-from .errors import DecisionLayerError
+from typing import Any, Dict, List, Optional
 
 
 class RuleType(str, Enum):

@@ -10,15 +10,13 @@ import asyncio
 import json
 import logging
 from datetime import datetime, timezone
-from typing import Any, Dict, List, Optional, Union
+from typing import Any, Dict, List, Optional
 from dataclasses import dataclass
 from enum import Enum
 
-from pydantic import BaseModel, Field
 
-from .core import DecisionContext, DecisionEngine
+from .core import DecisionEngine
 from .llm_integration import LLMIntegration, AgenticContext, ReasoningMode
-from .errors import DecisionLayerError, ValidationError
 
 logger = logging.getLogger(__name__)
 
@@ -368,11 +366,6 @@ class ConversationalInterface:
         # If we have enough information, process the application
         try:
             # Create agentic context
-            agentic_context = AgenticContext(
-                citizen_id=context.citizen_id,
-                service_type="benefits_application",
-                urgency_level="normal",
-            )
 
             # This would call your existing decision functions
             # For now, return a mock response

@@ -6,8 +6,6 @@ including LLM reasoning, conversational interfaces, workflow orchestration,
 and performance monitoring.
 """
 
-import asyncio
-import json
 import logging
 from datetime import datetime, timezone
 from typing import Dict, Any, Optional, List
@@ -31,15 +29,13 @@ from .workflow_orchestration import (
     create_workflow_orchestrator,
     WorkflowDefinition,
     WorkflowTask,
-    TaskStatus,
 )
 from .agent_performance_monitor import (
     AgentPerformanceMonitor,
     create_agent_performance_monitor,
     PerformanceMetric,
 )
-from .core import DecisionEngine
-from .config import DecisionLayerConfig, load_config
+from .config import DecisionLayerConfig
 
 logger = logging.getLogger(__name__)
 
@@ -536,10 +532,10 @@ async def health_check():
     """
     try:
         # Check if all services are initialized
-        llm_integration = get_llm_integration()
-        conversational_interface = get_conversational_interface()
-        workflow_orchestrator = get_workflow_orchestrator()
-        performance_monitor = get_performance_monitor()
+        get_llm_integration()
+        get_conversational_interface()
+        get_workflow_orchestrator()
+        get_performance_monitor()
 
         return {
             "status": "healthy",

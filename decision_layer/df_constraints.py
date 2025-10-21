@@ -5,8 +5,6 @@ Formal DSL constraints and banned side-effects for auditable functions
 
 import ast
 import inspect
-import random
-import time
 from dataclasses import dataclass
 from enum import Enum
 from typing import Any, Callable, Dict, List, Optional, Set, Union
@@ -435,7 +433,6 @@ class DSLTranspiler:
         threshold = rule.get("threshold", 0)
         operator = rule.get("operator", ">=")
         output_field = rule.get("output_field", "approved")
-        output_value = rule.get("output_value", True)
 
         return f"result['{output_field}'] = input_data.get('{field}', 0) {operator} {threshold}"
 

@@ -1,4 +1,4 @@
-name: CI
+name: Continuous Integration
 
 on:
   push:
@@ -45,8 +45,6 @@ jobs:
     - name: Check formatting with black
       run: |
         python -m black --check decision_layer tests
-
-
 
     - name: Type check with mypy
       run: |

@@ -1,6 +1,6 @@
 version: 2
 updates:
-  # Enable version updates for Python
+  # Python dependencies from requirements.txt
   - package-ecosystem: "pip"
     directory: "/"
     schedule:
@@ -8,12 +8,58 @@ updates:
       day: "monday"
       time: "09:00"
     open-pull-requests-limit: 10
+    reviewers:
+      - "eevamaija"
+    assignees:
+      - "eevamaija"
     commit-message:
       prefix: "deps"
-      prefix-development: "deps-dev"
       include: "scope"
+    labels:
+      - "dependencies"
+      - "python"
 
-  # Enable version updates for GitHub Actions
+  # Python dependencies from requirements-dev.txt
+  - package-ecosystem: "pip"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+    open-pull-requests-limit: 5
+    reviewers:
+      - "eevamaija"
+    assignees:
+      - "eevamaija"
+    commit-message:
+      prefix: "deps-dev"
+      include: "scope"
+    labels:
+      - "dependencies"
+      - "python"
+      - "dev-dependencies"
+
+  # Python dependencies from pyproject.toml
+  - package-ecosystem: "pip"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+    open-pull-requests-limit: 10
+    reviewers:
+      - "eevamaija"
+    assignees:
+      - "eevamaija"
+    commit-message:
+      prefix: "deps-pyproject"
+      include: "scope"
+    labels:
+      - "dependencies"
+      - "python"
+      - "pyproject"
+
+  # GitHub Actions dependencies
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
@@ -21,6 +67,33 @@ updates:
       day: "monday"
       time: "09:00"
     open-pull-requests-limit: 5
+    reviewers:
+      - "eevamaija"
+    assignees:
+      - "eevamaija"
     commit-message:
       prefix: "ci"
-      include: "scope" 
+      include: "scope"
+    labels:
+      - "dependencies"
+      - "github-actions"
+      - "ci"
+
+  # Docker dependencies
+  - package-ecosystem: "docker"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+    open-pull-requests-limit: 3
+    reviewers:
+      - "eevamaija"
+    assignees:
+      - "eevamaija"
+    commit-message:
+      prefix: "docker"
+      include: "scope"
+    labels:
+      - "dependencies"
+      - "docker"

@@ -5,8 +5,8 @@ from typing import Any, Dict
 
 import pytest
 
-from decision_layer import DecisionContext, DecisionEngine
-from decision_layer.errors import ExecutionError, FunctionNotFoundError
+from policy_as_code import DecisionContext, DecisionEngine
+from policy_as_code.errors import ExecutionError, FunctionNotFoundError
 
 
 @pytest.fixture
@@ -63,7 +63,7 @@ class TestDecisionEngine:
         """Test deploying a function"""
         function_code = """
 from typing import Dict, Any
-from decision_layer import DecisionContext
+from policy_as_code import DecisionContext
 
 def decision_function(input_data: Dict[str, Any], context: DecisionContext) -> Dict[str, Any]:
     amount = input_data.get('amount', 0)
@@ -88,7 +88,7 @@ def decision_function(input_data: Dict[str, Any], context: DecisionContext) -> D
         # Deploy function first
         function_code = """
 from typing import Dict, Any
-from decision_layer import DecisionContext
+from policy_as_code import DecisionContext
 
 def decision_function(input_data: Dict[str, Any], context: DecisionContext) -> Dict[str, Any]:
     amount = input_data.get('amount', 0)
@@ -115,7 +115,7 @@ def decision_function(input_data: Dict[str, Any], context: DecisionContext) -> D
         # Deploy multiple versions
         v1_code = """
 from typing import Dict, Any
-from decision_layer import DecisionContext
+from policy_as_code import DecisionContext
 
 def decision_function(input_data: Dict[str, Any], context: DecisionContext) -> Dict[str, Any]:
     return {"version": "v1.0", "result": "old"}
@@ -123,7 +123,7 @@ def decision_function(input_data: Dict[str, Any], context: DecisionContext) -> D
 
         v2_code = """
 from typing import Dict, Any
-from decision_layer import DecisionContext
+from policy_as_code import DecisionContext
 
 def decision_function(input_data: Dict[str, Any], context: DecisionContext) -> Dict[str, Any]:
     return {"version": "v2.0", "result": "new"}
@@ -155,7 +155,7 @@ def decision_function(input_data: Dict[str, Any], context: DecisionContext) -> D
         # Deploy function with error
         error_code = """
 from typing import Dict, Any
-from decision_layer import DecisionContext
+from policy_as_code import DecisionContext
 
 def decision_function(input_data: Dict[str, Any], context: DecisionContext) -> Dict[str, Any]:
     raise ValueError("Test error")
@@ -195,7 +195,7 @@ class TestPlugins:
         # Deploy and execute function
         function_code = """
 from typing import Dict, Any
-from decision_layer import DecisionContext
+from policy_as_code import DecisionContext
 
 def decision_function(input_data: Dict[str, Any], context: DecisionContext) -> Dict[str, Any]:
     return {"result": "success"}
@@ -223,7 +223,7 @@ def decision_function(input_data: Dict[str, Any], context: DecisionContext) -> D
         # Deploy function
         function_code = """
 from typing import Dict, Any
-from decision_layer import DecisionContext
+from policy_as_code import DecisionContext
 
 def decision_function(input_data: Dict[str, Any], context: DecisionContext) -> Dict[str, Any]:
     return {"result": "success", "timestamp": "now"}

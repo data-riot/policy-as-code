@@ -2,60 +2,60 @@ name: Continuous Integration
 
 on:
   push:
-    branches: [ main, develop ]
+    branches: [main, develop]
   pull_request:
-    branches: [ main ]
+    branches: [main]
 
 jobs:
   test:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: ['3.9', '3.11']
+        python-version: ["3.9", "3.11"]
 
     steps:
-    - uses: actions/checkout@v3
+      - uses: actions/checkout@v3
 
-    - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v4
-      with:
-        python-version: ${{ matrix.python-version }}
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
 
-    - name: Debug Python version
-      run: |
-        echo "Matrix Python version: ${{ matrix.python-version }}"
-        echo "Python version: $(python --version)"
-        echo "Python location: $(which python)"
-        echo "Python executable: $(python -c 'import sys; print(sys.executable)')"
-        echo "Python version info: $(python -c 'import sys; print(f"{sys.version_info.major}.{sys.version_info.minor}")')"
+      - name: Debug Python version
+        run: |
+          echo "Matrix Python version: ${{ matrix.python-version }}"
+          echo "Python version: $(python --version)"
+          echo "Python location: $(which python)"
+          echo "Python executable: $(python -c 'import sys; print(sys.executable)')"
+          echo "Python version info: $(python -c 'import sys; print(f"{sys.version_info.major}.{sys.version_info.minor}")')"
 
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install -r requirements.txt
-        pip install -r requirements-dev.txt
-        echo "Python packages installed:"
-        pip list | grep -E "(flake8|black|mypy|pytest)"
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install -r requirements-dev.txt
+          echo "Python packages installed:"
+          pip list | grep -E "(flake8|black|mypy|pytest)"
 
-    - name: Lint with flake8
-      run: |
-        python -m flake8 decision_layer tests --extend-ignore=F401,F402,F841,E501,E203,E722,F824
+      - name: Lint with flake8
+        run: |
+          python -m flake8 policy_as_code tests --extend-ignore=F401,F402,F841,E501,E203,E722,F824
 
-    - name: Check formatting with black
-      run: |
-        python -m black --check decision_layer tests
+      - name: Check formatting with black
+        run: |
+          python -m black --check policy_as_code tests
 
-    - name: Type check with mypy
-      run: |
-        python -m mypy decision_layer
+      - name: Type check with mypy
+        run: |
+          python -m mypy policy_as_code
 
-    - name: Test with pytest
-      run: |
-        python -m pytest tests/ -v --cov=decision_layer --cov-report=xml
+      - name: Test with pytest
+        run: |
+          python -m pytest tests/ -v --cov=policy_as_code --cov-report=xml
 
-    - name: Upload coverage to Codecov
-      uses: codecov/codecov-action@v3
-      with:
-        file: ./coverage.xml
-        flags: unittests
-        name: codecov-umbrella
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v3
+        with:
+          file: ./coverage.xml
+          flags: unittests
+          name: codecov-umbrella

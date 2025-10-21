@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://policy-as-code.fi/schemas/TraceRecord/v1.0.json",
+  "$id": "",
   "title": "Trace Record",
   "description": "Immutable trace record for Policy as Code decision execution with cryptographic integrity",
   "version": "1.0.0",

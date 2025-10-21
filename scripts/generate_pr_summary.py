@@ -72,38 +72,38 @@ class PRSummaryGenerator:
         return {
             "categories": {
                 "decision_functions": {
-                    "patterns": [r"decision_layer/.*\.py$", r"examples/.*\.py$"],
+                    "patterns": [r"policy_as_code/.*\.py$", r"examples/.*\.py$"],
                     "description": "Decision Functions & Logic",
                     "icon": "⚖️",
                 },
                 "governance": {
                     "patterns": [
-                        r"decision_layer/(trace_ledger|legal_refs|release|audit_service)\.py$"
+                        r"policy_as_code/(trace_ledger|legal_refs|release|audit_service)\.py$"
                     ],
                     "description": "Governance & Compliance",
                     "icon": "🔒",
                 },
                 "agentic_ai": {
                     "patterns": [
-                        r"decision_layer/(llm_integration|conversational_interface|workflow_orchestration|agent_performance_monitor)\.py$"
+                        r"policy_as_code/(llm_integration|conversational_interface|workflow_orchestration|agent_performance_monitor)\.py$"
                     ],
                     "description": "Agentic AI Features",
                     "icon": "🤖",
                 },
                 "api": {
-                    "patterns": [r"decision_layer/(api|agentic_api)\.py$"],
+                    "patterns": [r"policy_as_code/(api|agentic_api)\.py$"],
                     "description": "API Endpoints",
                     "icon": "🌐",
                 },
                 "security": {
                     "patterns": [
-                        r"decision_layer/(security|auth|caller_auth|kms_integration|replay_protection)\.py$"
+                        r"policy_as_code/(security|auth|caller_auth|kms_integration|replay_protection)\.py$"
                     ],
                     "description": "Security & Authentication",
                     "icon": "🛡️",
                 },
                 "testing": {
-                    "patterns": [r"tests/.*", r"decision_layer/testing_slos\.py$"],
+                    "patterns": [r"tests/.*", r"policy_as_code/testing_slos\.py$"],
                     "description": "Testing & Quality Assurance",
                     "icon": "🧪",
                 },

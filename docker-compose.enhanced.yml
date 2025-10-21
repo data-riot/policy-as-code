@@ -1,0 +1,62 @@
+# Docker Compose for Policy as Code Platform
+version: "3.8"
+
+services:
+  policy-as-code-api:
+    build:
+      context: .
+      dockerfile: Dockerfile.enhanced
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=postgresql://policy_user:policy_password@postgres:5432/policy_db
+      - REDIS_URL=redis://redis:6379
+      - LOG_LEVEL=INFO
+    depends_on:
+      - postgres
+      - redis
+    volumes:
+      - ./logs:/app/logs
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  postgres:
+    image: postgres:13
+    environment:
+      - POSTGRES_DB=policy_db
+      - POSTGRES_USER=policy_user
+      - POSTGRES_PASSWORD=policy_password
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./scripts/init-db.sql:/docker-entrypoint-initdb.d/init-db.sql
+    ports:
+      - "5432:5432"
+    restart: unless-stopped
+
+  redis:
+    image: redis:6-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    restart: unless-stopped
+
+  nginx:
+    image: nginx:alpine
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf
+      - ./ssl:/etc/nginx/ssl
+    depends_on:
+      - policy-as-code-api
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+  redis_data:

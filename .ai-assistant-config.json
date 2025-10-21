@@ -1,0 +1,26 @@
+{
+  "name": "AI Development Assistant",
+  "version": "1.0.0",
+  "description": "Configuration to maximize AI assistant effectiveness",
+  "ai_assistant": {
+    "codebase_understanding": {
+      "architecture_docs": "docs/architecture/",
+      "api_specs": "docs/reference/openapi.json",
+      "decision_patterns": "examples/policies/",
+      "test_examples": "tests/",
+      "deployment_configs": "docker-compose.yml, Dockerfile"
+    },
+    "development_patterns": {
+      "decision_function_template": "policy_as_code/core/engine.py",
+      "api_endpoint_template": "policy_as_code/api/rest.py",
+      "test_template": "tests/test_core.py",
+      "policy_template": "examples/policies/approval_decision.yaml"
+    },
+    "quality_gates": {
+      "pre_commit_hooks": ".pre-commit-config.yaml",
+      "test_coverage": "coverage.xml",
+      "type_checking": "mypy",
+      "linting": "flake8"
+    }
+  }
+}

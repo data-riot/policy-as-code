@@ -4,7 +4,7 @@
 categories:
   decision_functions:
     patterns:
-      - "decision_layer/.*\\.py$"
+      - "policy_as_code/.*\\.py$"
       - "examples/.*\\.py$"
     description: "Decision Functions & Logic"
     icon: "⚖️"
@@ -12,28 +12,28 @@ categories:
 
   governance:
     patterns:
-      - "decision_layer/(trace_ledger|legal_refs|release|audit_service)\\.py$"
+      - "policy_as_code/(trace_ledger|legal_refs|release|audit_service)\\.py$"
     description: "Governance & Compliance"
     icon: "🔒"
     priority: 2
 
   agentic_ai:
     patterns:
-      - "decision_layer/(llm_integration|conversational_interface|workflow_orchestration|agent_performance_monitor)\\.py$"
+      - "policy_as_code/(llm_integration|conversational_interface|workflow_orchestration|agent_performance_monitor)\\.py$"
     description: "Agentic AI Features"
     icon: "🤖"
     priority: 3
 
   api:
     patterns:
-      - "decision_layer/(api|agentic_api)\\.py$"
+      - "policy_as_code/(api|agentic_api)\\.py$"
     description: "API Endpoints"
     icon: "🌐"
     priority: 4
 
   security:
     patterns:
-      - "decision_layer/(security|auth|caller_auth|kms_integration|replay_protection)\\.py$"
+      - "policy_as_code/(security|auth|caller_auth|kms_integration|replay_protection)\\.py$"
     description: "Security & Authentication"
     icon: "🛡️"
     priority: 5
@@ -41,7 +41,7 @@ categories:
   testing:
     patterns:
       - "tests/.*"
-      - "decision_layer/testing_slos\\.py$"
+      - "policy_as_code/testing_slos\\.py$"
     description: "Testing & Quality Assurance"
     icon: "🧪"
     priority: 6

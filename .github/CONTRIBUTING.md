@@ -24,7 +24,7 @@ Thank you for your interest in contributing to Decision Layer! This document pro
 pytest
 
 # Run tests with coverage
-pytest --cov=decision_layer
+pytest --cov=policy_as_code
 
 # Run specific test file
 pytest tests/test_executor.py
@@ -33,13 +33,13 @@ pytest tests/test_executor.py
 ### Code Quality
 ```bash
 # Format code
-black decision_layer tests
+black policy_as_code tests
 
 # Check code style
-flake8 decision_layer tests
+flake8 policy_as_code tests
 
 # Type checking (if mypy is configured)
-mypy decision_layer
+mypy policy_as_code
 ```
 
 ## Making Changes

@@ -9,9 +9,9 @@ updates:
       time: "09:00"
     open-pull-requests-limit: 10
     reviewers:
-      - "eevamaija"
+      - "data-riot"
     assignees:
-      - "eevamaija"
+      - "data-riot"
     commit-message:
       prefix: "deps"
       include: "scope"
@@ -28,9 +28,9 @@ updates:
       time: "09:00"
     open-pull-requests-limit: 5
     reviewers:
-      - "eevamaija"
+      - "data-riot"
     assignees:
-      - "eevamaija"
+      - "data-riot"
     commit-message:
       prefix: "deps-dev"
       include: "scope"
@@ -48,9 +48,9 @@ updates:
       time: "09:00"
     open-pull-requests-limit: 10
     reviewers:
-      - "eevamaija"
+      - "data-riot"
     assignees:
-      - "eevamaija"
+      - "data-riot"
     commit-message:
       prefix: "deps-pyproject"
       include: "scope"
@@ -68,9 +68,9 @@ updates:
       time: "09:00"
     open-pull-requests-limit: 5
     reviewers:
-      - "eevamaija"
+      - "data-riot"
     assignees:
-      - "eevamaija"
+      - "data-riot"
     commit-message:
       prefix: "ci"
       include: "scope"
@@ -88,9 +88,9 @@ updates:
       time: "09:00"
     open-pull-requests-limit: 3
     reviewers:
-      - "eevamaija"
+      - "data-riot"
     assignees:
-      - "eevamaija"
+      - "data-riot"
     commit-message:
       prefix: "docker"
       include: "scope"

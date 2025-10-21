@@ -9,7 +9,7 @@ PIP := pip3
 VENV := .venv
 PROJECT_NAME := policy_as_code
 API_PORT := 8000
-DB_NAME := decision_layer
+DB_NAME := policy_as_code
 DB_USER := postgres
 DB_PASSWORD := ${DB_PASSWORD:-password}
 DB_HOST := localhost
@@ -66,7 +66,7 @@ setup-db: ## Setup PostgreSQL database
 
 test: ## Run comprehensive test suite with SLOs
 	@echo "$(BLUE)Running comprehensive test suite...$(NC)"
-	$(VENV)/bin/python -m pytest tests/ -v --cov=decision_layer --cov-report=html --cov-report=term
+	$(VENV)/bin/python -m pytest tests/ -v --cov=policy_as_code --cov-report=html --cov-report=term
 	$(VENV)/bin/python -m pytest tests/test_mutation.py -v
 	$(VENV)/bin/python -m pytest tests/test_contract.py -v
 	$(VENV)/bin/python -m pytest tests/test_performance.py -v
@@ -76,15 +76,15 @@ test: ## Run comprehensive test suite with SLOs
 
 lint: ## Run linting and type checking
 	@echo "$(BLUE)Running linting...$(NC)"
-	$(VENV)/bin/flake8 decision_layer/ tests/
-	$(VENV)/bin/mypy decision_layer/
-	$(VENV)/bin/bandit -r decision_layer/
+	$(VENV)/bin/flake8 policy_as_code/ tests/
+	$(VENV)/bin/mypy policy_as_code/
+	$(VENV)/bin/bandit -r policy_as_code/
 	@echo "$(GREEN)✓ Linting complete$(NC)"
 
 format: ## Format code
 	@echo "$(BLUE)Formatting code...$(NC)"
-	$(VENV)/bin/black decision_layer/ tests/
-	$(VENV)/bin/isort decision_layer/ tests/
+	$(VENV)/bin/black policy_as_code/ tests/
+	$(VENV)/bin/isort policy_as_code/ tests/
 	@echo "$(GREEN)✓ Code formatted$(NC)"
 
 demo: ## Run governance features demo
@@ -150,7 +150,7 @@ clean: ## Clean up environment
 	rm -rf htmlcov
 	rm -rf .coverage
 	rm -rf __pycache__
-	rm -rf decision_layer/__pycache__
+	rm -rf policy_as_code/__pycache__
 	rm -rf tests/__pycache__
 	find . -name "*.pyc" -delete
 	@echo "$(GREEN)✓ Cleanup complete$(NC)"
@@ -184,7 +184,7 @@ db-seed: ## Seed database with test data
 # Security and compliance
 security-scan: ## Run security scan
 	@echo "$(BLUE)Running security scan...$(NC)"
-	$(VENV)/bin/bandit -r decision_layer/
+	$(VENV)/bin/bandit -r policy_as_code/
 	$(VENV)/bin/safety check
 
 compliance-check: ## Run compliance check

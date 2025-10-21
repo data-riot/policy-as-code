@@ -1,7 +1,7 @@
-version: '3.8'
+version: "3.8"
 
 services:
-  decision-layer:
+  policy-as-code:
     build: .
     ports:
       - "8000:8000"
@@ -24,7 +24,7 @@ services:
   postgres:
     image: postgres:15-alpine
     environment:
-      - POSTGRES_DB=decision_layer
+      - POSTGRES_DB=policy_as_code
       - POSTGRES_USER=decision_user
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-decision_password}
     volumes:
@@ -33,7 +33,7 @@ services:
       - "5432:5432"
     restart: unless-stopped
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U decision_user -d decision_layer"]
+      test: ["CMD-SHELL", "pg_isready -U decision_user -d policy_as_code"]
       interval: 10s
       timeout: 5s
       retries: 5

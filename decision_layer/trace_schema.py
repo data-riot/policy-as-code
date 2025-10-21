@@ -3,14 +3,11 @@ Formal Trace Schema with Versioning
 Production-grade trace schema with required fields, types, and versioning
 """
 
-import json
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from enum import Enum
-from typing import Any, Dict, List, Optional, Union
+from typing import Any, Dict, List, Optional
 from uuid import UUID
-
-from .errors import DecisionLayerError
 
 
 class TraceSchemaVersion(str, Enum):
@@ -440,26 +437,26 @@ CREATE TABLE IF NOT EXISTS `project.dataset.decision_logs` (
   execution_id STRING NOT NULL,
   parent_trace_id STRING,
   correlation_id STRING,
-  
+
   -- Execution timing
   started_at TIMESTAMP NOT NULL,
   completed_at TIMESTAMP NOT NULL,
   execution_time_ms FLOAT64 NOT NULL,
-  
+
   -- Status and results
   status STRING NOT NULL,
   confidence_score FLOAT64,
   memory_usage_mb FLOAT64,
-  
+
   -- Input/Output hashes for integrity
   input_hash STRING NOT NULL,
   output_hash STRING NOT NULL,
-  
+
   -- Deterministic time tracking
   deterministic_timestamp TIMESTAMP NOT NULL,
   time_source STRING NOT NULL,
   clock_skew_ms INT64,
-  
+
   -- Feature lookups (repeated)
   feature_lookups ARRAY<STRUCT<
     feature_name STRING,
@@ -468,18 +465,18 @@ CREATE TABLE IF NOT EXISTS `project.dataset.decision_logs` (
     feature_version STRING,
     ttl_seconds INT64
   >>,
-  
+
   -- Legal and governance
   legal_references ARRAY<STRING>,
   audit_hash STRING,
   chain_hash STRING,
   signer STRING,
-  
+
   -- Raw data (JSON)
   input_data JSON,
   output_data JSON,
   context_data JSON,
-  
+
   -- Partitioning and clustering
   _partition_date DATE GENERATED ALWAYS AS (DATE(started_at)),
   _inserted_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP()
@@ -496,7 +493,7 @@ OPTIONS (
 # Canonical queries for operational monitoring
 CANONICAL_QUERIES = {
     "daily_decision_summary": """
-SELECT 
+SELECT
   function_id,
   function_version,
   status,
@@ -510,7 +507,7 @@ GROUP BY function_id, function_version, status, decision_date
 ORDER BY decision_date DESC, decision_count DESC
 """,
     "error_rate_by_function": """
-SELECT 
+SELECT
   function_id,
   function_version,
   COUNT(*) as total_decisions,
@@ -523,7 +520,7 @@ HAVING total_decisions > 100  -- Only functions with significant volume
 ORDER BY error_rate DESC
 """,
     "feature_lookup_performance": """
-SELECT 
+SELECT
   feature_name,
   COUNT(*) as lookup_count,
   AVG(TIMESTAMP_DIFF(lookup_time, deterministic_timestamp, MILLISECOND)) as avg_lookup_latency_ms,

@@ -10,15 +10,13 @@ import asyncio
 import json
 import logging
 from datetime import datetime, timezone, timedelta
-from typing import Any, Dict, List, Optional, Union, Callable
+from typing import Any, Dict, List, Optional
 from dataclasses import dataclass, field
 from enum import Enum
 
-from pydantic import BaseModel, Field
-
 from .core import DecisionContext, DecisionEngine
-from .llm_integration import LLMIntegration, AgenticContext, ReasoningMode
-from .errors import DecisionLayerError, ValidationError
+from .llm_integration import LLMIntegration, ReasoningMode
+from .errors import DecisionLayerError
 
 logger = logging.getLogger(__name__)
 
@@ -221,18 +219,18 @@ class WorkflowOrchestrator:
             # Use LLM to optimize workflow
             prompt = f"""
             Optimize this government workflow based on current performance data.
-            
+
             Workflow: {execution.workflow_definition.name}
             Performance Data: {json.dumps(performance_data, indent=2)}
-            
+
             Current Tasks: {[task.name for task in execution.workflow_definition.tasks if task.status == TaskStatus.PENDING]}
-            
+
             Suggest optimizations for:
             1. Task sequencing and parallelization
             2. Resource allocation
             3. Priority adjustments
             4. Risk mitigation
-            
+
             Return JSON with optimization recommendations.
             """
 
@@ -463,18 +461,18 @@ class WorkflowOrchestrator:
             # Use LLM to analyze exception and suggest resolution
             prompt = f"""
             Analyze this workflow exception and suggest resolution strategies.
-            
+
             Workflow: {execution.workflow_definition.name}
             Exception: {str(exception)}
             Current Status: {execution.status.value}
             Failed Tasks: {execution.failed_tasks}
-            
+
             Suggest:
             1. Immediate actions to resolve the issue
             2. Alternative approaches
             3. Whether to retry, skip, or abort
             4. Resource reallocation if needed
-            
+
             Return JSON with resolution plan.
             """
 

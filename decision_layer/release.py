@@ -8,7 +8,7 @@ import json
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from enum import Enum
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, Union
 
 from .errors import DecisionLayerError
 from .legal_refs import LawReference, LegalReferenceValidator
@@ -259,7 +259,7 @@ class ReleaseManager:
         self,
         function_id: str,
         version: str,
-        legal_references: List[LawReference],
+        legal_references: List[Union[LawReference, Dict[str, Any]]],
         change_summary: Optional[str] = None,
         risk_assessment: Optional[str] = None,
         compliance_checklist: Optional[List[str]] = None,
@@ -301,7 +301,7 @@ class ReleaseManager:
 
     def list_releases(self, function_id: Optional[str] = None) -> List[Release]:
         """List releases"""
-        releases = []
+        releases: List[Release] = []
         for fid, versions in self.releases.items():
             if function_id and fid != function_id:
                 continue

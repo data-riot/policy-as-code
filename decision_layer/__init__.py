@@ -5,6 +5,9 @@ This module provides the core functionality for the Decision Layer framework,
 including decision functions, validation, tracing, and cross-domain integration.
 """
 
+import hashlib
+import json
+import uuid
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Dict, List, Optional
@@ -120,7 +123,7 @@ def create_decision_engine(
     if storage_backend is None:
         storage_backend = FileStorage()
 
-    return DecisionEngine(storage_backend=storage_backend, trace_sink=trace_sink)
+    return DecisionEngine(storage_backend="file", config={"trace_sink": trace_sink})
 
 
 def create_function_registry(
@@ -171,13 +174,15 @@ async def execute_decision(
 
     decision_context = DecisionContext(
         function_id=function_id,
-        version=version,
+        version=version or "latest",
+        input_hash=hashlib.sha256(
+            json.dumps(input_data, sort_keys=True).encode()
+        ).hexdigest(),
         timestamp=datetime.now(timezone.utc),
-        caller="api",
-        metadata=context or {},
+        trace_id=str(uuid.uuid4()),
     )
 
-    return await engine.execute(input_data, decision_context)
+    return await engine.execute(function_id, input_data, version)
 
 
 def deploy_function(

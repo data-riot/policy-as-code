@@ -257,14 +257,14 @@ class FunctionRegistry:
         """Update function status"""
         try:
             metadata = self.get_function(function_id, version)
-            metadata.status = status
-            metadata.updated_at = datetime.now(timezone.utc)
+            metadata.metadata.status = status
+            metadata.metadata.updated_at = datetime.now(timezone.utc)
 
             # Add to approval history
-            metadata.approval_history.append(
+            metadata.metadata.approval_history.append(
                 {
                     "status": status.value,
-                    "timestamp": metadata.updated_at.isoformat(),
+                    "timestamp": metadata.metadata.updated_at.isoformat(),
                     "updated_by": "system",  # Would be user in real implementation
                 }
             )

@@ -28,7 +28,7 @@ class DecisionExplanation:
     input_summary: Dict[str, Any]
     output_summary: Dict[str, Any]
     confidence_score: Optional[float] = None
-    redacted_fields: List[str] = None
+    redacted_fields: Optional[List[str]] = None
 
     def __post_init__(self):
         if self.redacted_fields is None:
@@ -188,7 +188,7 @@ class ExplanationRenderer:
             if redact_sensitive and key.lower() in sensitive_fields:
                 summary[key] = "[REDACTED]"
             elif isinstance(value, (str, int, float, bool)):
-                summary[key] = value
+                summary[key] = str(value)
             elif isinstance(value, dict):
                 summary[key] = f"Object with {len(value)} fields"
             elif isinstance(value, list):
@@ -212,7 +212,7 @@ class ExplanationRenderer:
             }:
                 summary[key] = "[REDACTED]"
             elif isinstance(value, (str, int, float, bool)):
-                summary[key] = value
+                summary[key] = str(value)
             elif isinstance(value, dict):
                 summary[key] = f"Object with {len(value)} fields"
             elif isinstance(value, list):

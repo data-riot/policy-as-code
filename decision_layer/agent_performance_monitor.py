@@ -106,8 +106,8 @@ class AgentPerformanceMonitor:
         agent_id: str,
         metric_type: PerformanceMetric,
         value: float,
-        context: Dict[str, Any] = None,
-        metadata: Dict[str, Any] = None,
+        context: Optional[Dict[str, Any]] = None,
+        metadata: Optional[Dict[str, Any]] = None,
     ):
         """
         Record a performance metric for an agent
@@ -561,7 +561,7 @@ class AgentPerformanceMonitor:
 
     async def _generate_overall_insights(self, agents: List[str]) -> List[str]:
         """Generate overall insights across all agents"""
-        insights = []
+        insights: List[str] = []
 
         if not agents:
             return insights

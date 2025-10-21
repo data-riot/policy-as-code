@@ -5,7 +5,7 @@ Production-grade rule DSL with priorities, static analysis, and conflict detecti
 
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, Union
 
 
 class RuleType(str, Enum):
@@ -51,7 +51,7 @@ class ConflictType(str, Enum):
 class RuleCondition:
     """A condition in a rule"""
 
-    field: str
+    field_name: str
     operator: Operator
     value: Any
     negated: bool = False
@@ -59,7 +59,7 @@ class RuleCondition:
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary"""
         return {
-            "field": self.field,
+            "field": self.field_name,
             "operator": self.operator.value,
             "value": self.value,
             "negated": self.negated,
@@ -69,7 +69,7 @@ class RuleCondition:
     def from_dict(cls, data: Dict[str, Any]) -> "RuleCondition":
         """Create from dictionary"""
         return cls(
-            field=data["field"],
+            field_name=data["field"],
             operator=Operator(data["operator"]),
             value=data["value"],
             negated=data.get("negated", False),
@@ -81,7 +81,7 @@ class RuleAction:
     """An action to take when a rule matches"""
 
     action_type: str
-    field: str
+    field_name: str
     value: Any
     metadata: Dict[str, Any] = field(default_factory=dict)
 
@@ -89,7 +89,7 @@ class RuleAction:
         """Convert to dictionary"""
         return {
             "action_type": self.action_type,
-            "field": self.field,
+            "field": self.field_name,
             "value": self.value,
             "metadata": self.metadata,
         }
@@ -99,7 +99,7 @@ class RuleAction:
         """Create from dictionary"""
         return cls(
             action_type=data["action_type"],
-            field=data["field"],
+            field_name=data["field"],
             value=data["value"],
             metadata=data.get("metadata", {}),
         )
@@ -379,7 +379,7 @@ class RuleConflictDetector:
 
     def _detect_ambiguous_priorities(self, rules: List[DSLRule]) -> None:
         """Detect rules with ambiguous priorities"""
-        priority_groups = {}
+        priority_groups: Dict[int, List[DSLRule]] = {}
         for rule in rules:
             if rule.priority not in priority_groups:
                 priority_groups[rule.priority] = []
@@ -421,16 +421,16 @@ class RuleConflictDetector:
         # This is a simplified check - in practice, you'd need more sophisticated analysis
         for rule in rules:
             for action in rule.actions:
-                if action.action_type == "set" and action.field in [
-                    c.field for c in rule.conditions
+                if action.action_type == "set" and action.field_name in [
+                    c.field_name for c in rule.conditions
                 ]:
                     # Rule sets a field it also conditions on
                     conflict = RuleConflict(
                         conflict_type=ConflictType.CIRCULAR_DEPENDENCY,
                         rule_ids=[rule.rule_id],
-                        message=f"Rule {rule.rule_id} has circular dependency on field {action.field}",
+                        message=f"Rule {rule.rule_id} has circular dependency on field {action.field_name}",
                         severity="error",
-                        details={"field": action.field},
+                        details={"field": action.field_name},
                     )
                     self.conflicts.append(conflict)
 
@@ -440,17 +440,17 @@ class RuleConflictDetector:
         """Detect type mismatches between rules and schema"""
         for rule in rules:
             for condition in rule.conditions:
-                field_type = self._get_field_type(condition.field, input_schema)
+                field_type = self._get_field_type(condition.field_name, input_schema)
                 if field_type and not self._is_type_compatible(
                     condition.value, field_type, condition.operator
                 ):
                     conflict = RuleConflict(
                         conflict_type=ConflictType.TYPE_MISMATCH,
                         rule_ids=[rule.rule_id],
-                        message=f"Type mismatch in rule {rule.rule_id}: field {condition.field} expects {field_type}",
+                        message=f"Type mismatch in rule {rule.rule_id}: field {condition.field_name} expects {field_type}",
                         severity="error",
                         details={
-                            "field": condition.field,
+                            "field": condition.field_name,
                             "expected_type": field_type,
                             "actual_value": condition.value,
                         },
@@ -465,13 +465,13 @@ class RuleConflictDetector:
 
         for rule in rules:
             for condition in rule.conditions:
-                if condition.field not in schema_fields:
+                if condition.field_name not in schema_fields:
                     conflict = RuleConflict(
                         conflict_type=ConflictType.MISSING_FIELD,
                         rule_ids=[rule.rule_id],
-                        message=f"Rule {rule.rule_id} references missing field: {condition.field}",
+                        message=f"Rule {rule.rule_id} references missing field: {condition.field_name}",
                         severity="error",
-                        details={"field": condition.field},
+                        details={"field": condition.field_name},
                     )
                     self.conflicts.append(conflict)
 
@@ -480,8 +480,8 @@ class RuleConflictDetector:
     ) -> bool:
         """Check if two sets of conditions overlap"""
         # Simplified overlap detection - in practice, this would be more sophisticated
-        fields1 = {c.field for c in conditions1}
-        fields2 = {c.field for c in conditions2}
+        fields1 = {c.field_name for c in conditions1}
+        fields2 = {c.field_name for c in conditions2}
         return bool(fields1.intersection(fields2))
 
     def _rule_is_shadowed(
@@ -489,9 +489,9 @@ class RuleConflictDetector:
     ) -> bool:
         """Check if a rule is shadowed by higher priority rules"""
         # Simplified shadowing detection
-        rule_fields = {c.field for c in rule.conditions}
+        rule_fields = {c.field_name for c in rule.conditions}
         for higher_rule in higher_priority_rules:
-            higher_fields = {c.field for c in higher_rule.conditions}
+            higher_fields = {c.field_name for c in higher_rule.conditions}
             if rule_fields.issubset(higher_fields):
                 return True
         return False
@@ -525,7 +525,7 @@ class DSLStaticAnalyzer:
 
     def analyze(self, schema_data: Dict[str, Any]) -> Dict[str, Any]:
         """Perform comprehensive static analysis"""
-        analysis_result = {
+        analysis_result: Dict[str, Any] = {
             "syntax_errors": [],
             "conflicts": [],
             "warnings": [],

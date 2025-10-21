@@ -36,7 +36,7 @@ class TestType(str, Enum):
     COMPLIANCE = "compliance"
 
 
-class TestResult(str, Enum):
+class TestResultStatus(str, Enum):
     """Test result status"""
 
     PASSED = "passed"
@@ -74,7 +74,7 @@ class TestResult:
 
     test_name: str
     test_type: TestType
-    result: TestResult
+    result: TestResultStatus
     execution_time_ms: float
     coverage_percentage: Optional[float] = None
     mutation_score: Optional[float] = None
@@ -790,9 +790,9 @@ class TestSuiteRunner:
                 test_name="branch_coverage",
                 test_type=TestType.UNIT,
                 result=(
-                    TestResult.PASSED
+                    TestResultStatus.PASSED
                     if coverage_result["coverage_percentage"] >= 100
-                    else TestResult.FAILED
+                    else TestResultStatus.FAILED
                 ),
                 execution_time_ms=0.0,
                 coverage_percentage=coverage_result["coverage_percentage"],
@@ -807,9 +807,9 @@ class TestSuiteRunner:
                 test_name="mutation_testing",
                 test_type=TestType.MUTATION,
                 result=(
-                    TestResult.PASSED
+                    TestResultStatus.PASSED
                     if mutation_result["mutation_score"] >= 90
-                    else TestResult.FAILED
+                    else TestResultStatus.FAILED
                 ),
                 execution_time_ms=0.0,
                 mutation_score=mutation_result["mutation_score"],
@@ -826,9 +826,9 @@ class TestSuiteRunner:
                 test_name="performance_latency",
                 test_type=TestType.PERFORMANCE,
                 result=(
-                    TestResult.PASSED
+                    TestResultStatus.PASSED
                     if performance_result["p95_latency_ms"] <= 100
-                    else TestResult.FAILED
+                    else TestResultStatus.FAILED
                 ),
                 execution_time_ms=performance_result["avg_latency_ms"],
                 metadata=performance_result,
@@ -849,9 +849,9 @@ class TestSuiteRunner:
                 test_name="security_validation",
                 test_type=TestType.SECURITY,
                 result=(
-                    TestResult.PASSED
+                    TestResultStatus.PASSED
                     if security_result["vulnerabilities_found"] == 0
-                    else TestResult.FAILED
+                    else TestResultStatus.FAILED
                 ),
                 execution_time_ms=0.0,
                 metadata=security_result,
@@ -861,8 +861,10 @@ class TestSuiteRunner:
         total_execution_time = (time.time() - total_start_time) * 1000
 
         # Determine overall result
-        failed_tests = [t for t in test_results if t.result == TestResult.FAILED]
-        overall_result = TestResult.PASSED if not failed_tests else TestResult.FAILED
+        failed_tests = [t for t in test_results if t.result == TestResultStatus.FAILED]
+        overall_result = (
+            TestResultStatus.PASSED if not failed_tests else TestResultStatus.FAILED
+        )
 
         return TestSuite(
             name="comprehensive_test_suite",

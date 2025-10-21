@@ -12,7 +12,7 @@ from typing import Any, Callable, Dict, List, Optional, Set, Union
 from .errors import DecisionLayerError
 
 
-class ConstraintViolation(str, Enum):
+class ConstraintViolationType(str, Enum):
     """Types of constraint violations"""
 
     NETWORK_ACCESS = "network_access"
@@ -28,7 +28,7 @@ class ConstraintViolation(str, Enum):
 class ConstraintViolation:
     """Constraint violation details"""
 
-    violation_type: ConstraintViolation
+    violation_type: ConstraintViolationType
     line_number: int
     code_snippet: str
     message: str
@@ -52,7 +52,7 @@ class DeterminismError(DecisionLayerError):
         self,
         error_type: str,
         message: str,
-        violations: List[ConstraintViolation] = None,
+        violations: Optional[List[ConstraintViolation]] = None,
     ):
         super().__init__(f"Determinism error ({error_type}): {message}")
         self.error_type = error_type
@@ -148,7 +148,7 @@ class DFConstraintChecker:
         except SyntaxError as e:
             self.violations.append(
                 ConstraintViolation(
-                    violation_type=ConstraintViolation.SIDE_EFFECTS,
+                    violation_type=ConstraintViolationType.SIDE_EFFECTS,
                     line_number=e.lineno or 0,
                     code_snippet="",
                     message=f"Syntax error: {str(e)}",
@@ -166,7 +166,7 @@ class DFConstraintChecker:
                     if alias.name in self.BANNED_IMPORTS:
                         self.violations.append(
                             ConstraintViolation(
-                                violation_type=ConstraintViolation.BANNED_IMPORT,
+                                violation_type=ConstraintViolationType.BANNED_IMPORT,
                                 line_number=node.lineno,
                                 code_snippet=f"import {alias.name}",
                                 message=f"Banned import: {alias.name}",
@@ -178,7 +178,7 @@ class DFConstraintChecker:
                 if node.module and node.module in self.BANNED_IMPORTS:
                     self.violations.append(
                         ConstraintViolation(
-                            violation_type=ConstraintViolation.BANNED_IMPORT,
+                            violation_type=ConstraintViolationType.BANNED_IMPORT,
                             line_number=node.lineno,
                             code_snippet=f"from {node.module} import ...",
                             message=f"Banned import from: {node.module}",
@@ -194,7 +194,7 @@ class DFConstraintChecker:
                 if func_name in self.BANNED_FUNCTIONS:
                     self.violations.append(
                         ConstraintViolation(
-                            violation_type=ConstraintViolation.EXTERNAL_CALL,
+                            violation_type=ConstraintViolationType.EXTERNAL_CALL,
                             line_number=node.lineno,
                             code_snippet=ast.unparse(node),
                             message=f"Banned function call: {func_name}",
@@ -211,7 +211,7 @@ class DFConstraintChecker:
                 if func_name in {"open", "file"}:
                     self.violations.append(
                         ConstraintViolation(
-                            violation_type=ConstraintViolation.FILE_IO,
+                            violation_type=ConstraintViolationType.FILE_IO,
                             line_number=node.lineno,
                             code_snippet=ast.unparse(node),
                             message="File I/O operations not allowed",
@@ -225,7 +225,7 @@ class DFConstraintChecker:
                     if isinstance(target, ast.Attribute):
                         self.violations.append(
                             ConstraintViolation(
-                                violation_type=ConstraintViolation.SIDE_EFFECTS,
+                                violation_type=ConstraintViolationType.SIDE_EFFECTS,
                                 line_number=node.lineno,
                                 code_snippet=ast.unparse(node),
                                 message="Attribute assignment may cause side effects",
@@ -241,7 +241,7 @@ class DFConstraintChecker:
                 if func_name in {"time.time", "datetime.now", "datetime.utcnow"}:
                     self.violations.append(
                         ConstraintViolation(
-                            violation_type=ConstraintViolation.TIME_DEPENDENT,
+                            violation_type=ConstraintViolationType.TIME_DEPENDENT,
                             line_number=node.lineno,
                             code_snippet=ast.unparse(node),
                             message="Time-dependent operations not allowed",
@@ -291,7 +291,7 @@ class DeterministicFunction:
         self.function_name = function_name
         self.checker = DFConstraintChecker()
         self.compiled_function = None
-        self.violations = []
+        self.violations: List[ConstraintViolation] = []
 
     def validate(self) -> List[ConstraintViolation]:
         """Validate the function for determinism constraints"""

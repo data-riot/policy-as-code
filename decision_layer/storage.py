@@ -80,6 +80,10 @@ class FileStorage(StorageBackend):
 
         # Create module and execute
         spec = importlib.util.spec_from_loader("temp_module", loader=None)
+        if spec is None:
+            raise StorageError(
+                "read", f"Failed to create module spec for {function_id} v{version}"
+            )
         module = importlib.util.module_from_spec(spec)
         exec(code, module.__dict__)
 
@@ -139,6 +143,8 @@ class PostgreSQLStorage(StorageBackend):
 
     async def _create_tables(self):
         """Create necessary tables if they don't exist"""
+        if self.pool is None:
+            raise StorageError("connect", "Database pool not initialized")
         async with self.pool.acquire() as conn:
             await conn.execute(
                 """
@@ -166,7 +172,12 @@ class PostgreSQLStorage(StorageBackend):
         if not self.pool:
             await self.connect()
 
+        if self.pool is None:
+            raise StorageError("save", "Database pool not initialized")
+
         try:
+            if self.pool is None:
+                raise StorageError("operation", "Database pool not initialized")
             async with self.pool.acquire() as conn:
                 await conn.execute(
                     """
@@ -188,6 +199,8 @@ class PostgreSQLStorage(StorageBackend):
             await self.connect()
 
         try:
+            if self.pool is None:
+                raise StorageError("operation", "Database pool not initialized")
             async with self.pool.acquire() as conn:
                 row = await conn.fetchrow(
                     """
@@ -217,6 +230,10 @@ class PostgreSQLStorage(StorageBackend):
         import importlib.util
 
         spec = importlib.util.spec_from_loader("temp_module", loader=None)
+        if spec is None:
+            raise StorageError(
+                "read", f"Failed to create module spec for {function_id} v{version}"
+            )
         module = importlib.util.module_from_spec(spec)
         exec(code, module.__dict__)
 
@@ -233,6 +250,8 @@ class PostgreSQLStorage(StorageBackend):
             await self.connect()
 
         try:
+            if self.pool is None:
+                raise StorageError("operation", "Database pool not initialized")
             async with self.pool.acquire() as conn:
                 rows = await conn.fetch(
                     """
@@ -250,6 +269,8 @@ class PostgreSQLStorage(StorageBackend):
             await self.connect()
 
         try:
+            if self.pool is None:
+                raise StorageError("operation", "Database pool not initialized")
             async with self.pool.acquire() as conn:
                 rows = await conn.fetch(
                     """

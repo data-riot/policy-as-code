@@ -76,6 +76,7 @@ class LLMIntegration:
 
     async def reason_about_decision(
         self,
+        function_id: str,
         decision_function: DecisionFunction,
         input_data: Dict[str, Any],
         context: AgenticContext,
@@ -96,7 +97,7 @@ class LLMIntegration:
         try:
             # Build reasoning prompt
             prompt = await self._build_reasoning_prompt(
-                decision_function, input_data, context, reasoning_mode
+                function_id, decision_function, input_data, context, reasoning_mode
             )
 
             # Get LLM response
@@ -157,6 +158,7 @@ class LLMIntegration:
 
     async def adapt_decision_strategy(
         self,
+        function_id: str,
         decision_function: DecisionFunction,
         feedback: Dict[str, Any],
         performance_metrics: Dict[str, Any],
@@ -176,7 +178,7 @@ class LLMIntegration:
             prompt = f"""
             Analyze the performance of this decision function and suggest improvements.
 
-            Function: {decision_function.function_id}
+            Function: {function_id}
             Current Performance: {json.dumps(performance_metrics)}
             Feedback: {json.dumps(feedback)}
 
@@ -243,6 +245,7 @@ class LLMIntegration:
 
     async def _build_reasoning_prompt(
         self,
+        function_id: str,
         decision_function: DecisionFunction,
         input_data: Dict[str, Any],
         context: AgenticContext,
@@ -259,7 +262,7 @@ class LLMIntegration:
         prompt = f"""
         You are an AI agent making government decisions. {mode_instructions[reasoning_mode]}
 
-        Decision Function: {decision_function.function_id}
+        Decision Function: {function_id}
         Function Description: {getattr(decision_function, 'description', 'No description available')}
 
         Input Data: {json.dumps(input_data, indent=2)}
@@ -420,7 +423,7 @@ class LLMIntegration:
             ]
             for field in required_fields:
                 if field not in data:
-                    raise ValidationError(f"Missing required field: {field}")
+                    raise ValidationError(field, f"Missing required field: {field}")
 
             # Generate trace ID if not provided
             trace_id = data.get(
@@ -438,9 +441,11 @@ class LLMIntegration:
             )
 
         except json.JSONDecodeError as e:
-            raise ValidationError(f"Invalid JSON response from LLM: {e}")
+            raise ValidationError(
+                "llm_response", f"Invalid JSON response from LLM: {e}"
+            )
         except Exception as e:
-            raise ValidationError(f"Error parsing agentic response: {e}")
+            raise ValidationError("parsing", f"Error parsing agentic response: {e}")
 
 
 def create_llm_integration(

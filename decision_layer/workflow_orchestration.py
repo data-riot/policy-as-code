@@ -7,8 +7,10 @@ and exception handling.
 """
 
 import asyncio
+import hashlib
 import json
 import logging
+import uuid
 from datetime import datetime, timezone, timedelta
 from typing import Any, Dict, List, Optional
 from dataclasses import dataclass, field
@@ -131,7 +133,7 @@ class WorkflowOrchestrator:
     async def start_workflow(
         self,
         workflow_definition: WorkflowDefinition,
-        initial_context: Dict[str, Any] = None,
+        initial_context: Optional[Dict[str, Any]] = None,
     ) -> str:
         """
         Start a new workflow execution
@@ -394,22 +396,27 @@ class WorkflowOrchestrator:
             # Create decision context
             context = DecisionContext(
                 function_id=function_id,
-                version=task.input_data.get("version"),
+                version=task.input_data.get("version", "latest"),
+                input_hash=hashlib.sha256(
+                    json.dumps(task.input_data, sort_keys=True).encode()
+                ).hexdigest(),
                 timestamp=datetime.now(timezone.utc),
-                caller="workflow_orchestrator",
-                metadata=execution.context,
+                trace_id=str(uuid.uuid4()),
             )
 
             # Execute decision function
             result = await self.decision_engine.execute(
-                task.input_data.get("input_data", {}), context
+                function_id,
+                task.input_data.get("input_data", {}),
+                task.input_data.get("version", "latest"),
             )
 
             # Store result
             task.output_data = {
                 "decision_result": result,
                 "execution_time": (
-                    datetime.now(timezone.utc) - task.started_at
+                    datetime.now(timezone.utc)
+                    - (task.started_at or datetime.now(timezone.utc))
                 ).total_seconds(),
             }
 

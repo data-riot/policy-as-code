@@ -259,7 +259,7 @@ def validate_legal_references_in_metadata(
         )
 
     # Convert string references to LawReference objects
-    legal_refs = []
+    legal_refs: List[Union[LawReference, Dict[str, Any]]] = []
     for ref in policy_refs:
         if isinstance(ref, str):
             # Try to parse as URI

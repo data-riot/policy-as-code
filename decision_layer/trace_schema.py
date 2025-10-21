@@ -15,7 +15,7 @@ from .errors import DecisionLayerError
 
 class TraceSchemaVersion(str, Enum):
     """Trace schema versions"""
-    
+
     V1_0 = "1.0"  # Initial production schema
     V1_1 = "1.1"  # Added feature store lookups
     V1_2 = "1.2"  # Added PII handling
@@ -24,7 +24,7 @@ class TraceSchemaVersion(str, Enum):
 
 class TraceStatus(str, Enum):
     """Trace execution status"""
-    
+
     SUCCESS = "success"
     FAILURE = "failure"
     TIMEOUT = "timeout"
@@ -35,7 +35,7 @@ class TraceStatus(str, Enum):
 
 class DeterministicTimeSource(str, Enum):
     """Sources of deterministic time"""
-    
+
     FIXED = "fixed"  # Fixed timestamp for testing
     UTC_NORMALIZED = "utc_normalized"  # UTC with clock skew handling
     FEATURE_STORE = "feature_store"  # Time from feature store
@@ -45,13 +45,13 @@ class DeterministicTimeSource(str, Enum):
 @dataclass(frozen=True)
 class DeterministicTime:
     """Deterministic time with source tracking"""
-    
+
     timestamp: datetime
     source: DeterministicTimeSource
     timezone: str = "UTC"
     clock_skew_ms: Optional[int] = None
     normalized_timestamp: Optional[datetime] = None
-    
+
     def __post_init__(self):
         """Normalize timestamp to UTC"""
         if self.normalized_timestamp is None:
@@ -60,20 +60,20 @@ class DeterministicTime:
                 normalized = self.timestamp.replace(tzinfo=timezone.utc)
             else:
                 normalized = self.timestamp.astimezone(timezone.utc)
-            object.__setattr__(self, 'normalized_timestamp', normalized)
+            object.__setattr__(self, "normalized_timestamp", normalized)
 
 
 @dataclass(frozen=True)
 class FeatureLookup:
     """Point-in-time feature lookup"""
-    
+
     feature_name: str
     entity_id: str
     lookup_time: datetime
     value: Any
     feature_version: str
     ttl_seconds: Optional[int] = None
-    
+
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary"""
         return {
@@ -89,7 +89,7 @@ class FeatureLookup:
 @dataclass(frozen=True)
 class TraceMetadata:
     """Immutable trace metadata"""
-    
+
     trace_id: UUID
     schema_version: TraceSchemaVersion
     function_id: str
@@ -97,7 +97,7 @@ class TraceMetadata:
     execution_id: str
     parent_trace_id: Optional[UUID] = None
     correlation_id: Optional[str] = None
-    
+
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary"""
         return {
@@ -106,7 +106,9 @@ class TraceMetadata:
             "function_id": self.function_id,
             "function_version": self.function_version,
             "execution_id": self.execution_id,
-            "parent_trace_id": str(self.parent_trace_id) if self.parent_trace_id else None,
+            "parent_trace_id": (
+                str(self.parent_trace_id) if self.parent_trace_id else None
+            ),
             "correlation_id": self.correlation_id,
         }
 
@@ -114,14 +116,14 @@ class TraceMetadata:
 @dataclass(frozen=True)
 class TraceInput:
     """Structured trace input"""
-    
+
     raw_input: Dict[str, Any]
     validated_input: Dict[str, Any]
     input_hash: str
     validation_errors: List[str] = field(default_factory=list)
     pii_fields: List[str] = field(default_factory=list)
     redacted_fields: List[str] = field(default_factory=list)
-    
+
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary"""
         return {
@@ -137,14 +139,14 @@ class TraceInput:
 @dataclass(frozen=True)
 class TraceOutput:
     """Structured trace output"""
-    
+
     result: Dict[str, Any]
     output_hash: str
     confidence_score: Optional[float] = None
     decision_path: List[str] = field(default_factory=list)
     execution_time_ms: float = 0.0
     memory_usage_mb: Optional[float] = None
-    
+
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary"""
         return {
@@ -160,13 +162,13 @@ class TraceOutput:
 @dataclass(frozen=True)
 class TraceContext:
     """Execution context for trace"""
-    
+
     deterministic_time: DeterministicTime
     feature_lookups: List[FeatureLookup] = field(default_factory=list)
     external_calls: List[Dict[str, Any]] = field(default_factory=list)
     environment_variables: Dict[str, str] = field(default_factory=dict)
     client_info: Optional[Dict[str, Any]] = None
-    
+
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary"""
         return {
@@ -187,29 +189,29 @@ class TraceContext:
 @dataclass(frozen=True)
 class ProductionTrace:
     """Production-grade trace with formal schema"""
-    
+
     # Core metadata
     metadata: TraceMetadata
-    
+
     # Execution data
     input_data: TraceInput
     output_data: TraceOutput
     context: TraceContext
-    
+
     # Status and timing
     status: TraceStatus
     started_at: datetime
     completed_at: datetime
-    
+
     # Governance
     legal_references: List[str] = field(default_factory=list)
     audit_hash: str = ""
     chain_hash: str = ""
     signer: str = "system"
-    
+
     # Versioning
     trace_schema_version: TraceSchemaVersion = TraceSchemaVersion.CURRENT
-    
+
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary for serialization"""
         return {
@@ -226,7 +228,7 @@ class ProductionTrace:
             "signer": self.signer,
             "trace_schema_version": self.trace_schema_version.value,
         }
-    
+
     @classmethod
     def from_dict(cls, data: Dict[str, Any]) -> "ProductionTrace":
         """Create from dictionary"""
@@ -237,10 +239,14 @@ class ProductionTrace:
             function_id=data["metadata"]["function_id"],
             function_version=data["metadata"]["function_version"],
             execution_id=data["metadata"]["execution_id"],
-            parent_trace_id=UUID(data["metadata"]["parent_trace_id"]) if data["metadata"].get("parent_trace_id") else None,
+            parent_trace_id=(
+                UUID(data["metadata"]["parent_trace_id"])
+                if data["metadata"].get("parent_trace_id")
+                else None
+            ),
             correlation_id=data["metadata"].get("correlation_id"),
         )
-        
+
         # Parse input data
         input_data = TraceInput(
             raw_input=data["input_data"]["raw_input"],
@@ -250,7 +256,7 @@ class ProductionTrace:
             pii_fields=data["input_data"].get("pii_fields", []),
             redacted_fields=data["input_data"].get("redacted_fields", []),
         )
-        
+
         # Parse output data
         output_data = TraceOutput(
             result=data["output_data"]["result"],
@@ -260,16 +266,22 @@ class ProductionTrace:
             execution_time_ms=data["output_data"].get("execution_time_ms", 0.0),
             memory_usage_mb=data["output_data"].get("memory_usage_mb"),
         )
-        
+
         # Parse context
         deterministic_time = DeterministicTime(
-            timestamp=datetime.fromisoformat(data["context"]["deterministic_time"]["timestamp"]),
-            source=DeterministicTimeSource(data["context"]["deterministic_time"]["source"]),
+            timestamp=datetime.fromisoformat(
+                data["context"]["deterministic_time"]["timestamp"]
+            ),
+            source=DeterministicTimeSource(
+                data["context"]["deterministic_time"]["source"]
+            ),
             timezone=data["context"]["deterministic_time"]["timezone"],
             clock_skew_ms=data["context"]["deterministic_time"].get("clock_skew_ms"),
-            normalized_timestamp=datetime.fromisoformat(data["context"]["deterministic_time"]["normalized_timestamp"]),
+            normalized_timestamp=datetime.fromisoformat(
+                data["context"]["deterministic_time"]["normalized_timestamp"]
+            ),
         )
-        
+
         feature_lookups = [
             FeatureLookup(
                 feature_name=lookup["feature_name"],
@@ -281,7 +293,7 @@ class ProductionTrace:
             )
             for lookup in data["context"].get("feature_lookups", [])
         ]
-        
+
         context = TraceContext(
             deterministic_time=deterministic_time,
             feature_lookups=feature_lookups,
@@ -289,7 +301,7 @@ class ProductionTrace:
             environment_variables=data["context"].get("environment_variables", {}),
             client_info=data["context"].get("client_info"),
         )
-        
+
         return cls(
             metadata=metadata,
             input_data=input_data,
@@ -302,79 +314,97 @@ class ProductionTrace:
             audit_hash=data.get("audit_hash", ""),
             chain_hash=data.get("chain_hash", ""),
             signer=data.get("signer", "system"),
-            trace_schema_version=TraceSchemaVersion(data.get("trace_schema_version", TraceSchemaVersion.CURRENT.value)),
+            trace_schema_version=TraceSchemaVersion(
+                data.get("trace_schema_version", TraceSchemaVersion.CURRENT.value)
+            ),
         )
 
 
 class TraceSchemaValidator:
     """Validator for trace schema compliance"""
-    
-    def __init__(self, required_version: TraceSchemaVersion = TraceSchemaVersion.CURRENT):
+
+    def __init__(
+        self, required_version: TraceSchemaVersion = TraceSchemaVersion.CURRENT
+    ):
         self.required_version = required_version
-    
+
     def validate_trace(self, trace: ProductionTrace) -> List[str]:
         """Validate trace against schema"""
         errors = []
-        
+
         # Check schema version compatibility
         if trace.trace_schema_version != self.required_version:
-            errors.append(f"Schema version mismatch: {trace.trace_schema_version} != {self.required_version}")
-        
+            errors.append(
+                f"Schema version mismatch: {trace.trace_schema_version} != {self.required_version}"
+            )
+
         # Check required fields
         if not trace.metadata.trace_id:
             errors.append("Missing trace_id")
-        
+
         if not trace.metadata.function_id:
             errors.append("Missing function_id")
-        
+
         if not trace.metadata.function_version:
             errors.append("Missing function_version")
-        
+
         if not trace.input_data.input_hash:
             errors.append("Missing input_hash")
-        
+
         if not trace.output_data.output_hash:
             errors.append("Missing output_hash")
-        
+
         # Check deterministic time
         if not trace.context.deterministic_time.normalized_timestamp:
             errors.append("Missing normalized timestamp")
-        
+
         # Check execution timing
         if trace.completed_at <= trace.started_at:
             errors.append("Invalid execution timing: completed_at <= started_at")
-        
+
         return errors
-    
-    def validate_schema_evolution(self, old_trace: ProductionTrace, new_trace: ProductionTrace) -> List[str]:
+
+    def validate_schema_evolution(
+        self, old_trace: ProductionTrace, new_trace: ProductionTrace
+    ) -> List[str]:
         """Validate schema evolution compatibility"""
         errors = []
-        
+
         # Check if schema evolution is backward compatible
-        if old_trace.trace_schema_version == TraceSchemaVersion.V1_0 and new_trace.trace_schema_version == TraceSchemaVersion.V1_2:
+        if (
+            old_trace.trace_schema_version == TraceSchemaVersion.V1_0
+            and new_trace.trace_schema_version == TraceSchemaVersion.V1_2
+        ):
             # V1.2 should be backward compatible with V1.0
             pass
-        elif old_trace.trace_schema_version == TraceSchemaVersion.V1_1 and new_trace.trace_schema_version == TraceSchemaVersion.V1_2:
+        elif (
+            old_trace.trace_schema_version == TraceSchemaVersion.V1_1
+            and new_trace.trace_schema_version == TraceSchemaVersion.V1_2
+        ):
             # V1.2 should be backward compatible with V1.1
             pass
         else:
-            errors.append(f"Incompatible schema evolution: {old_trace.trace_schema_version} -> {new_trace.trace_schema_version}")
-        
+            errors.append(
+                f"Incompatible schema evolution: {old_trace.trace_schema_version} -> {new_trace.trace_schema_version}"
+            )
+
         return errors
 
 
 # Schema evolution utilities
 def migrate_trace_to_current_version(trace_data: Dict[str, Any]) -> Dict[str, Any]:
     """Migrate trace data to current schema version"""
-    current_version = trace_data.get("trace_schema_version", TraceSchemaVersion.V1_0.value)
-    
+    current_version = trace_data.get(
+        "trace_schema_version", TraceSchemaVersion.V1_0.value
+    )
+
     if current_version == TraceSchemaVersion.V1_0.value:
         # Add feature lookups field
         if "context" not in trace_data:
             trace_data["context"] = {}
         if "feature_lookups" not in trace_data["context"]:
             trace_data["context"]["feature_lookups"] = []
-        
+
         # Add PII handling fields
         if "input_data" not in trace_data:
             trace_data["input_data"] = {}
@@ -382,9 +412,9 @@ def migrate_trace_to_current_version(trace_data: Dict[str, Any]) -> Dict[str, An
             trace_data["input_data"]["pii_fields"] = []
         if "redacted_fields" not in trace_data["input_data"]:
             trace_data["input_data"]["redacted_fields"] = []
-        
+
         trace_data["trace_schema_version"] = TraceSchemaVersion.V1_2.value
-    
+
     elif current_version == TraceSchemaVersion.V1_1.value:
         # Add PII handling fields
         if "input_data" not in trace_data:
@@ -393,9 +423,9 @@ def migrate_trace_to_current_version(trace_data: Dict[str, Any]) -> Dict[str, An
             trace_data["input_data"]["pii_fields"] = []
         if "redacted_fields" not in trace_data["input_data"]:
             trace_data["input_data"]["redacted_fields"] = []
-        
+
         trace_data["trace_schema_version"] = TraceSchemaVersion.V1_2.value
-    
+
     return trace_data
 
 
@@ -479,7 +509,6 @@ WHERE _partition_date = CURRENT_DATE()
 GROUP BY function_id, function_version, status, decision_date
 ORDER BY decision_date DESC, decision_count DESC
 """,
-    
     "error_rate_by_function": """
 SELECT 
   function_id,
@@ -493,7 +522,6 @@ GROUP BY function_id, function_version
 HAVING total_decisions > 100  -- Only functions with significant volume
 ORDER BY error_rate DESC
 """,
-    
     "feature_lookup_performance": """
 SELECT 
   feature_name,
@@ -505,5 +533,5 @@ UNNEST(feature_lookups) as lookup
 WHERE _partition_date >= DATE_SUB(CURRENT_DATE(), INTERVAL 1 DAY)
 GROUP BY feature_name
 ORDER BY lookup_count DESC
-"""
+""",
 }

@@ -19,7 +19,14 @@ from .release import ReleaseManager, SignerRole, create_release_manager
 from .explain import create_explanation_api
 from .audit_service import create_audit_service
 from .df_constraints import DeterministicFunction, create_deterministic_function
-from typing import Dict, Any, Optional
+from .llm_integration import LLMIntegration, create_llm_integration, AgenticContext, ReasoningMode
+from .conversational_interface import ConversationalInterface, create_conversational_interface, ConversationChannel
+from .workflow_orchestration import WorkflowOrchestrator, create_workflow_orchestrator, WorkflowDefinition, WorkflowTask, TaskStatus
+from .agent_performance_monitor import AgentPerformanceMonitor, create_agent_performance_monitor, PerformanceMetric
+from .config import DecisionLayerConfig, load_config
+from typing import Dict, Any, Optional, List
+import datetime
+import json
 
 
 class DecisionRequest(BaseModel):
@@ -33,7 +40,7 @@ class DecisionRequest(BaseModel):
 
 class LegalReferenceRequest(BaseModel):
     """Request model for legal reference validation"""
-    
+
     system: str = Field(..., description="Legal system (finlex, eurlex, custom)")
     act_id: str = Field(..., description="Act/regulation identifier")
     section: Optional[str] = Field(None, description="Section number")
@@ -44,7 +51,7 @@ class LegalReferenceRequest(BaseModel):
 
 class SignatureRequest(BaseModel):
     """Request model for digital signatures"""
-    
+
     signer_id: str = Field(..., description="Signer identifier")
     role: str = Field(..., description="Signer role (owner, reviewer)")
     comment: Optional[str] = Field(None, description="Signature comment")
@@ -52,11 +59,13 @@ class SignatureRequest(BaseModel):
 
 class ReleaseRequest(BaseModel):
     """Request model for release creation"""
-    
+
     legal_references: List[Dict[str, Any]] = Field(..., description="Legal references")
     change_summary: Optional[str] = Field(None, description="Summary of changes")
     risk_assessment: Optional[str] = Field(None, description="Risk assessment")
-    compliance_checklist: Optional[List[str]] = Field(None, description="Compliance checklist")
+    compliance_checklist: Optional[List[str]] = Field(
+        None, description="Compliance checklist"
+    )
     release_notes: Optional[str] = Field(None, description="Release notes")
 
 
@@ -68,23 +77,27 @@ class DecisionResponse(BaseModel):
     version: str = Field(..., description="Version used")
     execution_time_ms: float = Field(..., description="Execution time in milliseconds")
     trace_id: str = Field(..., description="Trace ID for audit")
-    legal_basis: List[Dict[str, Any]] = Field(default_factory=list, description="Legal references")
+    legal_basis: List[Dict[str, Any]] = Field(
+        default_factory=list, description="Legal references"
+    )
 
 
 class ExplanationResponse(BaseModel):
     """Response model for decision explanations"""
-    
+
     trace_id: str = Field(..., description="Trace ID")
     decision: str = Field(..., description="Human-readable decision")
     legal_basis: List[Dict[str, Any]] = Field(..., description="Legal references")
     decision_path: List[str] = Field(..., description="Decision reasoning path")
     confidence_score: Optional[float] = Field(None, description="Confidence score")
-    redacted_fields: List[str] = Field(default_factory=list, description="Redacted fields")
+    redacted_fields: List[str] = Field(
+        default_factory=list, description="Redacted fields"
+    )
 
 
 class AuditReportResponse(BaseModel):
     """Response model for audit reports"""
-    
+
     report_id: str = Field(..., description="Report ID")
     generated_at: str = Field(..., description="Generation timestamp")
     audit_status: str = Field(..., description="Audit status")
@@ -92,6 +105,90 @@ class AuditReportResponse(BaseModel):
     failed_checks: int = Field(..., description="Number of failed checks")
     drift_count: int = Field(..., description="Number of drift detections")
     summary: str = Field(..., description="Audit summary")
+
+
+# Agentic AI Request/Response Models
+
+class AgenticDecisionRequest(BaseModel):
+    """Request model for agentic decision making"""
+    
+    function_id: str = Field(..., description="Decision function ID")
+    input_data: Dict[str, Any] = Field(..., description="Input data for the decision")
+    citizen_id: Optional[str] = Field(None, description="Citizen identifier")
+    service_type: Optional[str] = Field(None, description="Type of service")
+    urgency_level: str = Field("normal", description="Urgency level (low, normal, high, critical)")
+    reasoning_mode: str = Field("autonomous", description="Reasoning mode (autonomous, assisted, explanatory)")
+    legal_framework: Optional[str] = Field(None, description="Legal framework to apply")
+
+
+class ConversationRequest(BaseModel):
+    """Request model for conversational interface"""
+    
+    message: str = Field(..., description="Citizen message")
+    session_id: str = Field(..., description="Session identifier")
+    citizen_id: Optional[str] = Field(None, description="Citizen identifier")
+    channel: str = Field("web_chat", description="Communication channel")
+    language: str = Field("en", description="Language preference")
+
+
+class WorkflowRequest(BaseModel):
+    """Request model for workflow orchestration"""
+    
+    workflow_definition: Dict[str, Any] = Field(..., description="Workflow definition")
+    initial_context: Optional[Dict[str, Any]] = Field(None, description="Initial context data")
+
+
+class PerformanceMetricsRequest(BaseModel):
+    """Request model for performance metrics"""
+    
+    agent_id: str = Field(..., description="Agent identifier")
+    metric_type: str = Field(..., description="Type of metric")
+    value: float = Field(..., description="Metric value")
+    context: Optional[Dict[str, Any]] = Field(None, description="Context data")
+    metadata: Optional[Dict[str, Any]] = Field(None, description="Additional metadata")
+
+
+class AgenticDecisionResponse(BaseModel):
+    """Response model for agentic decisions"""
+    
+    decision: Dict[str, Any] = Field(..., description="Decision result")
+    confidence: float = Field(..., description="Confidence score")
+    reasoning_steps: List[str] = Field(..., description="Reasoning steps")
+    legal_basis: List[str] = Field(..., description="Legal basis")
+    alternatives_considered: List[str] = Field(..., description="Alternatives considered")
+    risk_assessment: Dict[str, Any] = Field(..., description="Risk assessment")
+    trace_id: str = Field(..., description="Trace identifier")
+
+
+class ConversationResponse(BaseModel):
+    """Response model for conversational interface"""
+    
+    message: str = Field(..., description="Agent response message")
+    actions: List[Dict[str, Any]] = Field(..., description="Actions to take")
+    next_steps: List[str] = Field(..., description="Next steps")
+    requires_human: bool = Field(..., description="Whether human assistance is needed")
+    confidence: float = Field(..., description="Confidence score")
+    trace_id: str = Field(..., description="Trace identifier")
+
+
+class WorkflowResponse(BaseModel):
+    """Response model for workflow orchestration"""
+    
+    execution_id: str = Field(..., description="Workflow execution ID")
+    status: str = Field(..., description="Execution status")
+    started_at: str = Field(..., description="Start timestamp")
+    progress: Dict[str, Any] = Field(..., description="Progress information")
+
+
+class PerformanceReportResponse(BaseModel):
+    """Response model for performance reports"""
+    
+    agent_id: str = Field(..., description="Agent identifier")
+    performance_score: float = Field(..., description="Overall performance score")
+    effectiveness_metrics: Dict[str, Any] = Field(..., description="Effectiveness metrics")
+    trend_analysis: Dict[str, str] = Field(..., description="Trend analysis")
+    recommendations: List[str] = Field(..., description="Recommendations")
+    data_points: int = Field(..., description="Number of data points")
 
 
 class DeployRequest(BaseModel):
@@ -120,27 +217,31 @@ class DecisionLayerAPI:
     """Production-grade REST API for Decision Layer with governance features"""
 
     def __init__(
-        self, 
-        engine: DecisionEngine, 
+        self,
+        engine: DecisionEngine,
         trace_ledger: Optional[TraceLedger] = None,
         release_manager: Optional[ReleaseManager] = None,
-        host: str = "localhost", 
-        port: int = 8000
+        host: str = "localhost",
+        port: int = 8000,
     ):
         self.engine = engine
         self.trace_ledger = trace_ledger
         self.release_manager = release_manager or create_release_manager()
         self.host = host
         self.port = port
-        
+
         # Initialize governance services
         if self.trace_ledger:
-            self.explanation_api = create_explanation_api(self.release_manager, self.trace_ledger)
-            self.audit_service = create_audit_service(self.trace_ledger, self.release_manager)
+            self.explanation_api = create_explanation_api(
+                self.release_manager, self.trace_ledger
+            )
+            self.audit_service = create_audit_service(
+                self.trace_ledger, self.release_manager
+            )
         else:
             self.explanation_api = None
             self.audit_service = None
-        
+
         self.app = self._create_app()
 
     def _create_app(self) -> FastAPI:
@@ -311,10 +412,12 @@ class DecisionLayerAPI:
                 # Check if function can be executed (is active)
                 if self.release_manager:
                     version = request.version or "latest"
-                    if not self.release_manager.can_execute_function(function_id, version):
+                    if not self.release_manager.can_execute_function(
+                        function_id, version
+                    ):
                         raise HTTPException(
-                            status_code=403, 
-                            detail=f"Function {function_id} v{version} is not active"
+                            status_code=403,
+                            detail=f"Function {function_id} v{version} is not active",
                         )
 
                 result = await self.engine.execute(
@@ -326,9 +429,13 @@ class DecisionLayerAPI:
                 # Get legal basis if available
                 legal_basis = []
                 if self.release_manager:
-                    release = self.release_manager.get_release(function_id, request.version or "latest")
+                    release = self.release_manager.get_release(
+                        function_id, request.version or "latest"
+                    )
                     if release:
-                        legal_basis = [ref.to_dict() for ref in release.legal_references]
+                        legal_basis = [
+                            ref.to_dict() for ref in release.legal_references
+                        ]
 
                 # Write to trace ledger if available
                 trace_id = "unknown"
@@ -345,7 +452,7 @@ class DecisionLayerAPI:
                         input_data=request.input_data,
                         output_data=result,
                         signer="system",
-                        prev_hash=await self.trace_ledger.get_latest_hash()
+                        prev_hash=await self.trace_ledger.get_latest_hash(),
                     )
                     await self.trace_ledger.write_trace(trace_record)
                     trace_id = trace_record.trace_id
@@ -431,12 +538,13 @@ class DecisionLayerAPI:
             """Get human-readable explanation for a decision trace"""
             if not self.explanation_api:
                 raise HTTPException(
-                    status_code=503, 
-                    detail="Explanation service not available"
+                    status_code=503, detail="Explanation service not available"
                 )
-            
+
             try:
-                explanation = await self.explanation_api.get_explanation(trace_id, redact_sensitive)
+                explanation = await self.explanation_api.get_explanation(
+                    trace_id, redact_sensitive
+                )
                 return ExplanationResponse(
                     trace_id=explanation.trace_id,
                     decision=explanation.decision,
@@ -455,17 +563,15 @@ class DecisionLayerAPI:
             """Get the latest audit report"""
             if not self.audit_service:
                 raise HTTPException(
-                    status_code=503, 
-                    detail="Audit service not available"
+                    status_code=503, detail="Audit service not available"
                 )
-            
+
             report = self.audit_service.get_latest_report()
             if not report:
                 raise HTTPException(
-                    status_code=404, 
-                    detail="No audit reports available"
+                    status_code=404, detail="No audit reports available"
                 )
-            
+
             return AuditReportResponse(
                 report_id=report.report_id,
                 generated_at=report.generated_at.isoformat(),
@@ -481,17 +587,14 @@ class DecisionLayerAPI:
             """Run a new audit"""
             if not self.audit_service:
                 raise HTTPException(
-                    status_code=503, 
-                    detail="Audit service not available"
+                    status_code=503, detail="Audit service not available"
                 )
-            
+
             try:
                 report = await self.audit_service.run_audit()
                 return {"message": "Audit completed", "report_id": report.report_id}
             except Exception as e:
-                raise HTTPException(
-                    status_code=500, detail=f"Audit failed: {str(e)}"
-                )
+                raise HTTPException(status_code=500, detail=f"Audit failed: {str(e)}")
 
         # Legal reference endpoints
         @app.post("/legal/validate")
@@ -499,13 +602,14 @@ class DecisionLayerAPI:
             """Validate a legal reference"""
             try:
                 from .legal_refs import create_legal_reference
+
                 ref = create_legal_reference(
                     system=request.system,
                     act_id=request.act_id,
                     section=request.section,
                     subsection=request.subsection,
                     title=request.title,
-                    description=request.description
+                    description=request.description,
                 )
                 return {"valid": True, "reference": ref.to_dict()}
             except Exception as e:
@@ -513,15 +617,18 @@ class DecisionLayerAPI:
 
         # Release management endpoints
         @app.post("/registry/{function_id}/{version}/release")
-        async def create_release(function_id: str, version: str, request: ReleaseRequest):
+        async def create_release(
+            function_id: str, version: str, request: ReleaseRequest
+        ):
             """Create a new release"""
             try:
                 # Validate legal references
                 legal_refs = []
                 for ref_data in request.legal_references:
                     from .legal_refs import LawReference
+
                     legal_refs.append(LawReference.from_dict(ref_data))
-                
+
                 release = self.release_manager.create_release(
                     function_id=function_id,
                     version=version,
@@ -529,9 +636,9 @@ class DecisionLayerAPI:
                     change_summary=request.change_summary,
                     risk_assessment=request.risk_assessment,
                     compliance_checklist=request.compliance_checklist,
-                    release_notes=request.release_notes
+                    release_notes=request.release_notes,
                 )
-                
+
                 return {"message": "Release created", "release": release.to_dict()}
             except Exception as e:
                 raise HTTPException(
@@ -539,7 +646,9 @@ class DecisionLayerAPI:
                 )
 
         @app.post("/registry/{function_id}/{version}/sign")
-        async def sign_release(function_id: str, version: str, request: SignatureRequest):
+        async def sign_release(
+            function_id: str, version: str, request: SignatureRequest
+        ):
             """Sign a release"""
             try:
                 role = SignerRole(request.role)
@@ -548,14 +657,12 @@ class DecisionLayerAPI:
                     version=version,
                     signer_id=request.signer_id,
                     role=role,
-                    comment=request.comment
+                    comment=request.comment,
                 )
-                
+
                 return {"message": "Release signed", "release": release.to_dict()}
             except Exception as e:
-                raise HTTPException(
-                    status_code=400, detail=f"Signing failed: {str(e)}"
-                )
+                raise HTTPException(status_code=400, detail=f"Signing failed: {str(e)}")
 
         @app.post("/registry/{function_id}/{version}/activate")
         async def activate_release(function_id: str, version: str):
@@ -574,10 +681,10 @@ class DecisionLayerAPI:
             release = self.release_manager.get_release(function_id, version)
             if not release:
                 raise HTTPException(
-                    status_code=404, 
-                    detail=f"Release {function_id} v{version} not found"
+                    status_code=404,
+                    detail=f"Release {function_id} v{version} not found",
                 )
-            
+
             return release.to_dict()
 
         @app.exception_handler(Exception)
@@ -599,11 +706,11 @@ class DecisionLayerAPI:
 
 
 def create_api(
-    engine: DecisionEngine, 
+    engine: DecisionEngine,
     trace_ledger: Optional[TraceLedger] = None,
     release_manager: Optional[ReleaseManager] = None,
-    host: str = "localhost", 
-    port: int = 8000
+    host: str = "localhost",
+    port: int = 8000,
 ) -> DecisionLayerAPI:
     """Create a Decision Layer API instance with governance features"""
     return DecisionLayerAPI(engine, trace_ledger, release_manager, host, port)

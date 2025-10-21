@@ -40,7 +40,7 @@ line-length = 88
 target-version = [ "py38", "py39", "py310", "py311",]
 
 [tool.mypy]
-python_version = "3.8"
+python_version = "3.9"
 ignore_missing_imports = true
 
 [tool.setuptools.package-data]

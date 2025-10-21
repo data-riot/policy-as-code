@@ -10,7 +10,6 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional
 
 from .core import DecisionContext, DecisionEngine, DecisionFunction, DecisionPlugin
-from .config import DecisionLayerConfig, load_config
 from .errors import (
     DecisionLayerError,
     DeploymentError,
@@ -21,28 +20,13 @@ from .errors import (
     StorageError,
     ValidationError,
 )
-from .knowledge_graph_integration import (
-    KnowledgeGraphIntegration,
-    create_knowledge_graph_integration,
-)
-from .llm_integration import LLMIntegration, create_llm_integration
-from .natural_language_interface import (
-    CrossDomainResponse,
-    QueryIntent,
-    UnifiedNaturalLanguageInterface,
-    create_unified_interface,
-)
-from .ontology_integration import OntologyIntegration, create_ontology_integration
+from .llm_integration import LLMIntegration, create_llm_integration, AgenticDecision, AgenticContext, ReasoningMode
+from .conversational_interface import ConversationalInterface, create_conversational_interface, ConversationContext, ConversationResponse
+from .workflow_orchestration import WorkflowOrchestrator, create_workflow_orchestrator, WorkflowDefinition, WorkflowExecution
+from .agent_performance_monitor import AgentPerformanceMonitor, create_agent_performance_monitor, PerformanceMetric, DriftDetectionResult
 from .registry import FunctionRegistry, FunctionStatus
 from .schemas import DecisionSchema, FieldType, SchemaField, create_schema_from_dict
-from .shadow_runner import ShadowRunner
 from .storage import FileStorage, PostgreSQLStorage, StorageBackend
-from .yaml_interface import (
-    YAMLDecisionParser,
-    load_decision_from_yaml,
-    create_yaml_template,
-    validate_yaml_decision,
-)
 
 __version__ = "1.0.0"
 __author__ = "Decision Layer Team"
@@ -55,9 +39,6 @@ __all__ = [
     "DecisionEngine",
     "DecisionFunction",
     "DecisionPlugin",
-    # Configuration
-    "DecisionLayerConfig",
-    "load_config",
     # Registry and storage
     "FunctionRegistry",
     "FunctionStatus",
@@ -69,25 +50,26 @@ __all__ = [
     "SchemaField",
     "FieldType",
     "create_schema_from_dict",
-    # Shadow testing
-    "ShadowRunner",
-    # YAML interface
-    "YAMLDecisionParser",
-    "load_decision_from_yaml",
-    "create_yaml_template",
-    "validate_yaml_decision",
     # Cross-domain integration
     "LLMIntegration",
-    "OntologyIntegration",
-    "KnowledgeGraphIntegration",
-    "UnifiedNaturalLanguageInterface",
-    "QueryIntent",
-    "CrossDomainResponse",
+    # Agentic AI capabilities
+    "AgenticDecision",
+    "AgenticContext",
+    "ReasoningMode",
+    "ConversationalInterface",
+    "ConversationContext",
+    "ConversationResponse",
+    "WorkflowOrchestrator",
+    "WorkflowDefinition",
+    "WorkflowExecution",
+    "AgentPerformanceMonitor",
+    "PerformanceMetric",
+    "DriftDetectionResult",
     # Factory functions
     "create_llm_integration",
-    "create_ontology_integration",
-    "create_knowledge_graph_integration",
-    "create_unified_interface",
+    "create_conversational_interface",
+    "create_workflow_orchestrator",
+    "create_agent_performance_monitor",
     # Error classes
     "DecisionLayerError",
     "ValidationError",

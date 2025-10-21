@@ -58,10 +58,14 @@ docker-compose up -d
 
 ## 📚 Documentation
 
-- **[GOVERNANCE_README.md](GOVERNANCE_README.md)** - Complete governance features documentation
+- **[Agentic AI Capabilities](docs/agentic-ai.md)** - LLM integration and autonomous workflows
+- **[Governance Features](docs/governance.md)** - Legal compliance and audit capabilities
+- **[Development Guide](docs/development.md)** - Setup and contribution guidelines
+- **[Release Notes](docs/release-notes.md)** - Version history and changes
+- **[Complete Documentation](docs/)** - Comprehensive guides and references
 - **[Makefile](Makefile)** - Build automation and deployment targets
 - **[examples/golden_path_demo.py](examples/golden_path_demo.py)** - 30-minute production demo
-- **[examples/governance_demo.py](examples/examples/governance_demo.py)** - Governance features demo
+- **[examples/governance_demo.py](examples/governance_demo.py)** - Governance features demo
 
 ## 🏗️ Architecture
 

@@ -11,6 +11,8 @@ Welcome to the Decision Layer documentation. This directory contains comprehensi
 
 ### **Core Concepts**
 - **[Architecture Overview](architecture.md)** - System architecture and design principles
+- **[Agentic AI Capabilities](agentic-ai.md)** - LLM integration and autonomous workflows
+- **[Governance Features](governance.md)** - Legal compliance and audit capabilities
 - **[Core Features](features.md)** - Detailed feature documentation
 - **[Cross-Domain Communication](cross-domain.md)** - LLM, Ontology, and Knowledge Graph integration
 
@@ -21,6 +23,7 @@ Welcome to the Decision Layer documentation. This directory contains comprehensi
 
 ### **Developer Guides**
 - **[Development Setup](development.md)** - Setting up development environment
+- **[Release Notes](release-notes.md)** - Version history and changes
 - **[Contributing Guidelines](../.github/CONTRIBUTING.md)** - How to contribute to the project
 - **[Testing Guide](testing.md)** - Running tests and writing new tests
 

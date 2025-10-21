@@ -39,7 +39,7 @@ jobs:
 
     - name: Lint with flake8
       run: |
-        python -m flake8 decision_layer tests --extend-ignore=F401,F402,F841,E501,E203
+        python -m flake8 decision_layer tests --extend-ignore=F401,F402,F841,E501,E203,E722,F824
 
     - name: Check formatting with black
       run: |

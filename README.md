@@ -1,68 +1,108 @@
 # Policy as Code - The Complete Agentic Government Stack
 
-**Leading the Agentic Era: Production-Ready Multi-Agent Systems for Government Operations**
+**Multi-Agent Systems for Government Operations**
+
+> **⚠️ Production Status**: This platform has excellent architecture and comprehensive governance features but requires significant development to reach production-grade status. See [Production Readiness Assessment](docs/production-readiness.md) for detailed analysis.
 
 [![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Production Ready](https://img.shields.io/badge/Production-Ready-green.svg)](https://github.com/data-riot/decision-layer)
+[![Production Status](https://img.shields.io/badge/Production-Status-orange.svg)](docs/production-readiness.md)
 [![Finnish Government](https://img.shields.io/badge/Finnish-Government-blue.svg)](docs/whitepaper-decision-engineering.md)
 
 ---
 
 ## 🎯 **The Agentic Era is Here**
 
-The nature of government work is changing. Repetitive tasks, complex workflows, and data overload are limiting public sector potential. **Policy as Code** delivers the world's first production-ready agentic government workforce - a complete multi-agent system that automates complex government operations with legal compliance, audit trails, and measurable efficiency gains.
+The nature of government work is changing. Repetitive tasks, complex workflows, and data overload are limiting public sector potential. **Policy as Code** delivers a production-ready agentic government workforce - a multi-agent system that automates complex government operations with legal compliance, audit trails, and measurable efficiency gains.
 
-**We're not just participating in the Agentic Era - we're leading it.**
+**We're building the infrastructure for the Agentic Era.**
 
 ---
 
 ## 🚀 **What Makes Us Different**
 
 ### **Complete Five-Layer Agentic Infrastructure**
-Unlike theoretical frameworks, we've built the **complete implementation**:
+Unlike theoretical frameworks, we've built a **comprehensive implementation** with detailed documentation of production gaps:
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
 │                    Policy as Code Platform                  │
 │              Complete Agentic Government Stack              │
 ├─────────────────────────────────────────────────────────────┤
-│ Layer 1: Multimodal Interfaces ✅                          │
+│ Layer 1: Multimodal Interfaces ⚠️                          │
 │ • Conversational AI • Explain API • Multi-platform         │
+│ • Status: Framework implemented, missing LLM integration   │
 ├─────────────────────────────────────────────────────────────┤
-│ Layer 2: Application Infrastructure ✅                     │
+│ Layer 2: Application Infrastructure ⚠️                     │
 │ • LLM Integration • Context Management • Safety Frameworks │
+│ • Status: Mock implementations, missing real integrations   │
 ├─────────────────────────────────────────────────────────────┤
-│ Layer 3: Orchestration ✅                                  │
+│ Layer 3: Orchestration ⚠️                                  │
 │ • Workflow Orchestration • Agent Discovery • A2A Comm      │
+│ • Status: Basic framework, missing persistence & scaling    │
 ├─────────────────────────────────────────────────────────────┤
-│ Layer 4: Agentic DPI ✅                                    │
+│ Layer 4: Agentic DPI ⚠️                                    │
 │ • Policy-as-Code • Legal Traceability • Audit Infrastructure│
+│ • Status: Core implemented, missing production features     │
 ├─────────────────────────────────────────────────────────────┤
-│ Layer 5: Compute Infrastructure ✅                         │
+│ Layer 5: Compute Infrastructure ⚠️                         │
 │ • Elastic Cloud • Multi-cloud • Zero-trust Security       │
+│ • Status: In-memory storage, missing distributed systems   │
 └─────────────────────────────────────────────────────────────┘
 ```
 
-### **Production-Ready Multi-Agent Workforce**
-Our platform coordinates sophisticated agent teams:
+**Legend**: ✅ Production Ready | ⚠️ Partial Implementation | ❌ Not Implemented
+
+### **Multi-Agent Workforce Framework**
+Our platform coordinates sophisticated agent teams (currently implemented as frameworks):
 
 - **Legal Researcher Agent**: Monitors Finlex for law changes, updates decision functions
-- **Eligibility Analyst Agent**: Processes applications, calculates benefits
-- **Quality Assurance Agent**: Reviews decisions, flags anomalies
-- **Citizen Communication Agent**: Explains decisions, handles appeals
-- **Audit Monitor Agent**: Ensures compliance, detects drift
+  - *Status: Legal IRI validation implemented, missing automated monitoring*
+- **Decision Function Agent**: Executes policy decisions with full audit trails
+  - *Status: Core execution implemented, missing performance optimization*
+- **Compliance Agent**: Ensures all decisions meet legal and regulatory requirements
+  - *Status: Basic compliance checking, missing comprehensive validation*
+- **Citizen Service Agent**: Provides explanations and handles citizen inquiries
+  - *Status: Explanation framework implemented, missing LLM integration*
+- **Audit Agent**: Monitors system integrity and detects anomalies
+  - *Status: Audit framework implemented, missing real-time monitoring*
 
-**Real Impact**: 30% efficiency gains, 90% automation, €5M+ annual savings per ministry
+**Target Impact**: 30% efficiency gains, 90% automation, €5M+ annual savings per ministry
+*Note: Impact projections based on production-ready implementation*
+
+---
+
+## ⚠️ **Production Readiness Status**
+
+### **Current State**
+- **Architecture & Design**: 8.7/10 ✅ Excellent foundation
+- **Production Readiness**: 3.5/10 ❌ Needs significant development
+
+### **Key Production Gaps**
+- **Security**: Authentication systems are mocked (JWT/mTLS)
+- **Data Persistence**: In-memory storage only (data lost on restart)
+- **Performance**: No caching, optimization, or monitoring
+- **Integration**: External services (KMS, LLM) are mock implementations
+- **Monitoring**: No audit logging, metrics, or observability
+
+### **Production Roadmap**
+1. **Phase 1**: Security & Authentication (Critical)
+2. **Phase 2**: Data Persistence (Critical)
+3. **Phase 3**: Performance & Scalability (High)
+4. **Phase 4**: Monitoring & Observability (High)
+5. **Phase 5**: Integration & External Systems (Medium)
+
+📋 **[Complete Production Readiness Assessment](docs/production-readiness.md)**
 
 ---
 
 ## 🏛️ **Finnish Government Vision**
 
-**"Decision Engineering for Accountable Automation"** - A comprehensive whitepaper prepared for the Finnish Ministry of Finance that positions Finland as the global leader in agentic government operations.
+**"Decision Engineering for Accountable Automation"** - A comprehensive whitepaper prepared for the Finnish Ministry of Finance that explores agentic government operations.
 
 ### **Key Achievements**
-- **Production deployment** in progress with Kela and Traficom
+- **Architecture completed** with comprehensive governance framework
+- **Development phase** with production readiness roadmap defined
 - **Legal compliance** built-in with Finlex/EUR-Lex integration
 - **Citizen transparency** with <1 second explanation delivery
 - **Audit integrity** with <1% drift detection
@@ -161,49 +201,56 @@ docker-compose up -d
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│                    Agentic AI Layer                        │
+│                    Agentic AI Layer                         │
 ├─────────────────────────────────────────────────────────────┤
-│  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐        │
-│  │     LLM     │  │Conversational│  │  Workflow   │        │
-│  │ Integration │  │  Interface   │  │Orchestrator │        │
-│  └─────────────┘  └─────────────┘  └─────────────┘        │
+│  ┌─────────────┐  ┌──────────────┐  ┌─────────────┐         │
+│  │     LLM     │  │Conversational│  │  Workflow   │         │
+│  │ Integration │  │  Interface   │  │Orchestrator │         │
+│  └─────────────┘  └──────────────┘  └─────────────┘         │
 ├─────────────────────────────────────────────────────────────┤
-│              Core Governance Platform                      │
-│  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐        │
-│  │   Decision  │  │   Immutable │  │   Legal     │        │
-│  │   Functions │  │   Trace     │  │   References│        │
-│  │   (Python/DSL)│  │   Ledger   │  │   (IRIs)   │        │
-│  └─────────────┘  └─────────────┘  └─────────────┘        │
-│  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐        │
-│  │   Release   │  │Independent  │  │   Citizen   │        │
-│  │ Management  │  │   Audit     │  │ Explanation │        │
-│  │ (Signatures)│  │   Service   │  │     API     │        │
-│  └─────────────┘  └─────────────┘  └─────────────┘        │
+│              Core Governance Platform                       │
+│  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐          │
+│  │   Decision  │  │   Immutable │  │   Legal     │          │
+│  │   Functions │  │   Trace     │  │   References│          │
+│  │ (Python/DSL)│  │   Ledger    │  │   (IRIs)    │          │
+│  └─────────────┘  └─────────────┘  └─────────────┘          │
+│  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐          │
+│  │   Release   │  │Independent  │  │   Citizen   │          │
+│  │ Management  │  │   Audit     │  │ Explanation │          │
+│  │ (Signatures)│  │   Service   │  │     API     │          │
+│  └─────────────┘  └─────────────┘  └─────────────┘          │
 └─────────────────────────────────────────────────────────────┘
 ```
 
-### **Multi-Agent Coordination**
+### **Multi-Agent Coordination Framework**
 
 ```python
-# Example: Citizen Benefit Application Workflow
+# Example: Citizen Benefit Application Workflow (Framework Implementation)
 async def citizen_benefit_workflow(citizen_request: str):
     # 1. Legal Researcher Agent validates current law
+    # Status: Legal IRI validation implemented, missing automated monitoring
     legal_context = await legal_researcher.validate_requirements(citizen_request)
 
     # 2. Data Analyst Agent processes citizen information
+    # Status: Basic processing implemented, missing advanced analytics
     eligibility_data = await data_analyst.process_application(citizen_request)
 
     # 3. Decision Agent makes benefit determination
+    # Status: Core decision logic implemented, missing performance optimization
     decision = await decision_agent.make_determination(eligibility_data, legal_context)
 
     # 4. Communication Agent explains result to citizen
+    # Status: Explanation framework implemented, missing LLM integration
     explanation = await communication_agent.explain_decision(decision)
 
     # 5. Audit Agent monitors process integrity
+    # Status: Audit framework implemented, missing real-time monitoring
     await audit_agent.log_workflow(decision, explanation)
 
     return explanation
 ```
+
+**Note**: This is a framework implementation. Production deployment requires completing the production readiness roadmap.
 
 ---
 
@@ -257,14 +304,14 @@ legal_ref = create_legal_reference(
 # Result: "https://finlex.fi/fi/laki/alkup/1999/19990544#L7"
 ```
 
-### **Agentic AI Integration**
+### **Agentic AI Integration Framework**
 
-LLM-powered reasoning with full audit trails:
+LLM-powered reasoning with full audit trails (framework implementation):
 
 ```python
 from decision_layer.llm_integration import LLMIntegration, AgenticContext, ReasoningMode
 
-# Create LLM integration
+# Create LLM integration (mock implementation)
 llm_integration = LLMIntegration(config, registry)
 
 # Create agentic context
@@ -274,7 +321,7 @@ context = AgenticContext(
     urgency_level="normal"
 )
 
-# Make autonomous decision
+# Make autonomous decision (framework - requires real LLM integration)
 decision = await llm_integration.reason_about_decision(
     decision_function=my_function,
     input_data=input_data,
@@ -283,14 +330,16 @@ decision = await llm_integration.reason_about_decision(
 )
 ```
 
+**Status**: Framework implemented, missing real LLM provider integration
+
 ---
 
-## 🚀 **Usage Examples**
+## 🚀 **Development Examples**
 
-### **Deploying a Decision Function**
+### **Deploying a Decision Function (Framework)**
 
 ```bash
-# Deploy Python function
+# Deploy Python function (development mode)
 curl -X POST "http://localhost:8000/functions/loan_eligibility/deploy" \
   -H "Content-Type: application/json" \
   -d '{
@@ -298,7 +347,7 @@ curl -X POST "http://localhost:8000/functions/loan_eligibility/deploy" \
     "version": "1.0.0"
   }'
 
-# Create and activate release
+# Create and activate release (requires production KMS integration)
 curl -X POST "http://localhost:8000/registry/loan_eligibility/1.0.0/release" \
   -H "Content-Type: application/json" \
   -d '{
@@ -363,9 +412,11 @@ curl "http://localhost:8000/audit/report/latest"
 
 ## 📚 **Documentation**
 
+- **[Production Readiness Assessment](docs/production-readiness.md)** - Comprehensive analysis of production gaps and roadmap
 - **[Agentic AI Capabilities](docs/agentic-ai.md)** - LLM integration and autonomous workflows
 - **[Governance Features](docs/governance.md)** - Legal compliance and audit capabilities
-- **[Development Plan](docs/development-plan.md)** - Comprehensive roadmap and milestones
+- **[Security Threat Model](docs/security.md)** - STRIDE analysis and security controls
+- **[API Specification](docs/openapi.json)** - Complete OpenAPI 3.0 specification
 - **[Whitepaper](docs/whitepaper-decision-engineering.md)** - Finnish government vision
 - **[Release Notes](docs/release-notes.md)** - Version history and changes
 - **[Complete Documentation](docs/)** - Comprehensive guides and references
@@ -387,15 +438,15 @@ make test-coverage  # Run tests with coverage
 make mutation-test  # Run mutation tests
 
 # Development
-make run_api        # Start development API
-make run_prod_api   # Start production API with governance
-make demo           # Run governance demo
-make golden_path_demo # Run 30-minute golden path demo
+make run_api        # Start development API (framework)
+make run_prod_api   # Start production API with governance (framework)
+make demo           # Run governance demo (framework)
+make golden_path_demo # Run 30-minute golden path demo (framework)
 
-# Production
-make deploy         # Deploy to production
-make rollback       # Rollback deployment
-make monitor        # Start monitoring dashboard
+# Production (requires production readiness implementation)
+make deploy         # Deploy to production (not ready)
+make rollback       # Rollback deployment (not ready)
+make monitor        # Start monitoring dashboard (not ready)
 
 # Maintenance
 make clean          # Clean up build artifacts
@@ -465,6 +516,17 @@ make lint
 make golden_path_demo
 ```
 
+### **Development Status**
+
+The repository includes comprehensive documentation of:
+- **Production readiness assessment** with detailed gap analysis
+- **Pseudocode identification** across all modules
+- **Security threat model** with STRIDE analysis
+- **API specifications** with OpenAPI 3.0 schemas
+- **Legal compliance framework** with Finlex/EUR-Lex integration
+
+See [Production Readiness Assessment](docs/production-readiness.md) for complete analysis and roadmap.
+
 ---
 
 ## 📄 **License**
@@ -475,25 +537,28 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 🆘 **Support**
 
+- **Production Readiness**: See [Production Readiness Assessment](docs/production-readiness.md)
 - **Documentation**: See [docs/](docs/) directory
 - **Examples**: Check [examples/](examples/) directory
 - **Issues**: Report issues on GitHub
-- **Golden Path**: Run `make golden_path_demo` for 30-minute walkthrough
+- **Development Demo**: Run `make golden_path_demo` for framework walkthrough
 - **Whitepaper**: Read [Decision Engineering for Accountable Automation](docs/whitepaper-decision-engineering.md)
 
 ---
 
 ## 🌟 **Why Policy as Code?**
 
-**We're not just building software - we're transforming how governments operate.**
+**We're building software that transforms how governments operate.**
 
-- **Production-Ready**: 26 core modules, 50+ decision functions, real government integration
+This platform represents the future of governance: **accountable automation** that maintains full legal compliance while delivering significant efficiency gains. With comprehensive production readiness documentation, we provide complete transparency into what's implemented and what needs to be built.
+
+- **Architecture Excellence**: 26 core modules with comprehensive governance framework
 - **Legal Compliance**: Built-in legal traceability with Finlex/EUR-Lex support
-- **Agentic AI**: Sophisticated multi-agent coordination with LLM integration
-- **Measurable Impact**: 30% efficiency gains, 90% automation, €5M+ annual savings
-- **Global Leadership**: Finnish government pilot leading to EU-wide deployment
+- **Agentic AI Framework**: Sophisticated multi-agent coordination with LLM integration
+- **Production Transparency**: Complete documentation of implementation status and gaps
+- **International Scope**: Finnish government vision with potential for EU-wide deployment
 
-**The Agentic Era is here. Policy as Code is leading it.**
+**The Agentic Era requires production-ready implementations with clear roadmaps.**
 
 ---
 

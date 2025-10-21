@@ -3,10 +3,9 @@ PostgreSQL implementation of the trace ledger
 Production-grade immutable ledger with hash chaining
 """
 
-import asyncio
 import json
 from datetime import datetime
-from typing import Any, Dict, List, Optional
+from typing import List, Optional
 
 import asyncpg
 from asyncpg import Connection, Pool

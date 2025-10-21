@@ -327,11 +327,11 @@ if [ -f ".env" ]; then
     export $(cat .env | grep -v '^#' | xargs)
 fi
 
-# Start the web interface
-echo "Starting web interface on http://localhost:8501"
+# Start the API server instead (web interface not implemented)
+echo "Starting API server on http://localhost:8000"
 echo "Press Ctrl+C to stop"
 
-streamlit run streamlit_app.py --server.port 8501 --server.address localhost
+python run_api.py
 EOF
 
     # Create test-all.sh

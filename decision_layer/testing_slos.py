@@ -112,7 +112,7 @@ class TestSuite:
             "tests": [test.to_dict() for test in self.tests],
             "slos": [slo.to_dict() for slo in self.slos],
             "total_execution_time_ms": self.total_execution_time_ms,
-            "overall_result": self.overall_result.value,
+            "overall_result": self.overall_result.result.value,
         }
 
 
@@ -862,8 +862,16 @@ class TestSuiteRunner:
 
         # Determine overall result
         failed_tests = [t for t in test_results if t.result == TestResultStatus.FAILED]
-        overall_result = (
+        overall_result_status = (
             TestResultStatus.PASSED if not failed_tests else TestResultStatus.FAILED
+        )
+
+        # Create overall result object
+        overall_result = TestResult(
+            test_name="overall_suite",
+            test_type=TestType.INTEGRATION,
+            result=overall_result_status,
+            execution_time_ms=total_execution_time,
         )
 
         return TestSuite(

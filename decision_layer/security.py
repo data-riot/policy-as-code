@@ -24,7 +24,7 @@ class SecurityConfig:
     max_input_size: int = 1024 * 1024  # 1MB
     rate_limit_requests: int = 100  # requests per minute
     rate_limit_window: int = 60  # seconds
-    sanitize_fields: List[str] = None
+    sanitize_fields: Optional[List[str]] = None
 
     def __post_init__(self):
         if self.sanitize_fields is None:
@@ -47,7 +47,7 @@ class RateLimiter:
     def __init__(self, max_requests: int, window_seconds: int):
         self.max_requests = max_requests
         self.window_seconds = window_seconds
-        self.requests = {}  # client_id -> list of timestamps
+        self.requests: Dict[str, List[float]] = {}  # client_id -> list of timestamps
 
     def is_allowed(self, client_id: str) -> bool:
         """Check if request is allowed"""
@@ -134,7 +134,7 @@ class SecurityManager:
             else None
         )
         self.input_sanitizer = (
-            InputSanitizer(config.sanitize_fields)
+            InputSanitizer(config.sanitize_fields or [])
             if config.enable_input_sanitization
             else None
         )
@@ -146,13 +146,13 @@ class SecurityManager:
 
     def check_rate_limit(self, client_id: str) -> bool:
         """Check rate limit for client"""
-        if not self.config.enable_rate_limiting:
+        if not self.config.enable_rate_limiting or self.rate_limiter is None:
             return True
         return self.rate_limiter.is_allowed(client_id)
 
     def get_rate_limit_info(self, client_id: str) -> Dict[str, Any]:
         """Get rate limit information for client"""
-        if not self.config.enable_rate_limiting:
+        if not self.config.enable_rate_limiting or self.rate_limiter is None:
             return {"enabled": False}
 
         return {
@@ -164,13 +164,13 @@ class SecurityManager:
 
     def sanitize_input(self, data: Dict[str, Any]) -> Dict[str, Any]:
         """Sanitize input data"""
-        if not self.config.enable_input_sanitization:
+        if not self.config.enable_input_sanitization or self.input_sanitizer is None:
             return data
         return self.input_sanitizer.sanitize_data(data)
 
     def sanitize_trace(self, trace_data: Dict[str, Any]) -> Dict[str, Any]:
         """Sanitize trace data"""
-        if not self.config.enable_trace_sanitization:
+        if not self.config.enable_trace_sanitization or self.input_sanitizer is None:
             return trace_data
         return self.input_sanitizer.sanitize_trace(trace_data)
 

@@ -1,0 +1,159 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://policy-as-code.fi/schemas/TraceRecord/v1.0.json",
+  "title": "Trace Record",
+  "description": "Immutable trace record for Policy as Code decision execution with cryptographic integrity",
+  "version": "1.0.0",
+  "type": "object",
+  "required": [
+    "trace_id",
+    "schema_version",
+    "function_id",
+    "version",
+    "df_hash",
+    "timestamp",
+    "caller",
+    "status",
+    "input_json",
+    "output_json",
+    "prev_hash",
+    "chain_hash",
+    "signer"
+  ],
+  "properties": {
+    "trace_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Unique identifier for this trace record"
+    },
+    "schema_version": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$",
+      "description": "Schema version for trace record format",
+      "examples": ["1.0.0"]
+    },
+    "function_id": {
+      "type": "string",
+      "description": "Decision function identifier"
+    },
+    "version": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$",
+      "description": "Decision function version"
+    },
+    "df_hash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$",
+      "description": "SHA256 hash of the decision function code"
+    },
+    "timestamp": {
+      "type": "string",
+      "format": "date-time",
+      "description": "UTC timestamp of execution"
+    },
+    "caller": {
+      "type": "string",
+      "description": "Caller identifier (JWT subject or certificate CN)"
+    },
+    "caller_cert_hash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$",
+      "description": "SHA256 hash of caller certificate (for mTLS)"
+    },
+    "status": {
+      "type": "string",
+      "enum": ["success", "error", "timeout", "rejected"],
+      "description": "Execution status"
+    },
+    "input_json": {
+      "type": "object",
+      "description": "Input data to the decision function"
+    },
+    "output_json": {
+      "type": "object",
+      "description": "Output data from the decision function"
+    },
+    "error_message": {
+      "type": "string",
+      "description": "Error message if status is error"
+    },
+    "execution_time_ms": {
+      "type": "number",
+      "minimum": 0,
+      "description": "Execution time in milliseconds"
+    },
+    "prev_hash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$",
+      "description": "SHA256 hash of previous trace record"
+    },
+    "chain_hash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$",
+      "description": "SHA256 hash of this record for chain integrity"
+    },
+    "signer": {
+      "type": "string",
+      "description": "System component that created this trace"
+    },
+    "legal_references": {
+      "type": "array",
+      "description": "Legal references used in this decision",
+      "items": {
+        "$ref": "#/definitions/LegalReference"
+      }
+    },
+    "feature_snapshot": {
+      "type": "object",
+      "description": "Point-in-time feature store snapshot"
+    },
+    "context_data": {
+      "type": "object",
+      "description": "Additional context data"
+    },
+    "nonce": {
+      "type": "string",
+      "description": "Request nonce for replay protection"
+    },
+    "request_id": {
+      "type": "string",
+      "description": "External request identifier"
+    },
+    "correlation_id": {
+      "type": "string",
+      "description": "Correlation ID for distributed tracing"
+    },
+    "audit_flags": {
+      "type": "array",
+      "items": {"type": "string"},
+      "description": "Audit flags for special handling"
+    },
+    "retention_until": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Data retention expiration timestamp"
+    }
+  },
+  "definitions": {
+    "LegalReference": {
+      "type": "object",
+      "required": ["iri", "title"],
+      "properties": {
+        "iri": {
+          "type": "string",
+          "format": "uri"
+        },
+        "title": {
+          "type": "string"
+        },
+        "section": {
+          "type": "string"
+        },
+        "subsection": {
+          "type": "string"
+        }
+      }
+    }
+  },
+  "additionalProperties": false
+}

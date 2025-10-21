@@ -16,7 +16,7 @@ class APIKeyAuth:
         self.api_key = api_key or os.getenv("DECISION_LAYER_API_KEY")
         self.security = HTTPBearer(auto_error=False)
 
-    def require_auth(self, request: Request):
+    async def require_auth(self, request: Request):
         """Require API key authentication"""
         if not self.api_key:
             # No API key configured, allow all requests
@@ -28,7 +28,9 @@ class APIKeyAuth:
             return
 
         # Check for Bearer token
-        credentials: Optional[HTTPAuthorizationCredentials] = self.security(request)
+        credentials: Optional[HTTPAuthorizationCredentials] = await self.security(
+            request
+        )
         if credentials and credentials.credentials == self.api_key:
             return
 
@@ -50,7 +52,7 @@ def require_auth(func):
 
     async def wrapper(request: Request, *args, **kwargs):
         auth = APIKeyAuth()
-        auth.require_auth(request)
+        await auth.require_auth(request)
         return await func(request, *args, **kwargs)
 
     return wrapper

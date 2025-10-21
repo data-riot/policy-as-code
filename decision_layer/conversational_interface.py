@@ -50,9 +50,9 @@ class ConversationContext:
     channel: ConversationChannel
     language: str = "en"
     state: ConversationState = ConversationState.ACTIVE
-    conversation_history: List[Dict[str, Any]] = None
+    conversation_history: Optional[List[Dict[str, Any]]] = None
     current_intent: Optional[str] = None
-    pending_actions: List[Dict[str, Any]] = None
+    pending_actions: Optional[List[Dict[str, Any]]] = None
 
     def __post_init__(self):
         if self.conversation_history is None:
@@ -111,14 +111,15 @@ class ConversationalInterface:
             )
 
             # Add message to history
-            context.conversation_history.append(
-                {
-                    "timestamp": datetime.now(timezone.utc).isoformat(),
-                    "role": "citizen",
-                    "message": message,
-                    "channel": channel.value,
-                }
-            )
+            if context.conversation_history is not None:
+                context.conversation_history.append(
+                    {
+                        "timestamp": datetime.now(timezone.utc).isoformat(),
+                        "role": "citizen",
+                        "message": message,
+                        "channel": channel.value,
+                    }
+                )
 
             # Determine intent and required actions
             intent_analysis = await self._analyze_citizen_intent(message, context)
@@ -128,15 +129,16 @@ class ConversationalInterface:
             response = await self._process_intent(intent_analysis, context)
 
             # Add response to history
-            context.conversation_history.append(
-                {
-                    "timestamp": datetime.now(timezone.utc).isoformat(),
-                    "role": "assistant",
-                    "message": response.message,
-                    "actions": response.actions,
-                    "confidence": response.confidence,
-                }
-            )
+            if context.conversation_history is not None:
+                context.conversation_history.append(
+                    {
+                        "timestamp": datetime.now(timezone.utc).isoformat(),
+                        "role": "assistant",
+                        "message": response.message,
+                        "actions": response.actions,
+                        "confidence": response.confidence,
+                    }
+                )
 
             # Update conversation state
             context.state = (
@@ -215,17 +217,27 @@ class ConversationalInterface:
             "channel": context.channel.value,
             "language": context.language,
             "state": context.state.value,
-            "message_count": len(context.conversation_history),
+            "message_count": (
+                len(context.conversation_history)
+                if context.conversation_history is not None
+                else 0
+            ),
             "current_intent": context.current_intent,
-            "pending_actions": len(context.pending_actions),
+            "pending_actions": (
+                len(context.pending_actions)
+                if context.pending_actions is not None
+                else 0
+            ),
             "started_at": (
                 context.conversation_history[0]["timestamp"]
-                if context.conversation_history
+                if context.conversation_history is not None
+                and len(context.conversation_history) > 0
                 else None
             ),
             "last_activity": (
                 context.conversation_history[-1]["timestamp"]
-                if context.conversation_history
+                if context.conversation_history is not None
+                and len(context.conversation_history) > 0
                 else None
             ),
         }
@@ -420,7 +432,7 @@ class ConversationalInterface:
             prompt = f"""
             Answer this citizen's question about government services in a helpful, accurate way.
 
-            Question: {context.conversation_history[-1]['message']}
+            Question: {context.conversation_history[-1]['message'] if context.conversation_history is not None and len(context.conversation_history) > 0 else 'No message'}
             Language: {context.language}
 
             Provide a clear, helpful answer that:

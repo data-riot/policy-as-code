@@ -1,6 +1,29 @@
 """
 Production-grade REST API for Decision Layer
 Integrated with governance features: ledger, legal refs, signatures, explanations, audit
+
+PRODUCTION STATUS: ⚠️ PARTIAL IMPLEMENTATION
+- Core API endpoints implemented
+- Basic governance features integrated
+- Error handling implemented
+
+MISSING PRODUCTION FEATURES:
+- Authentication and authorization
+- Rate limiting and DDoS protection
+- Input validation and sanitization
+- Performance monitoring and metrics
+- Audit logging for all operations
+- Multi-tenant support
+- API versioning and backward compatibility
+- Request/response compression
+- Caching and optimization
+- Health checks and monitoring
+- Circuit breakers and resilience
+- API documentation and OpenAPI
+- Integration with external systems
+- Compliance reporting
+- Security headers and CORS
+- Request tracing and correlation IDs
 """
 
 import uuid
@@ -217,7 +240,35 @@ class APIError(BaseModel):
 
 
 class DecisionLayerAPI:
-    """Production-grade REST API for Decision Layer with governance features"""
+    """Production-grade REST API for Decision Layer with governance features
+
+    PRODUCTION STATUS: ⚠️ PARTIAL IMPLEMENTATION
+    - Core API endpoints implemented
+    - Basic governance features integrated
+    - Error handling implemented
+
+    MISSING PRODUCTION FEATURES:
+    - Authentication and authorization middleware
+    - Rate limiting and DDoS protection
+    - Input validation and sanitization
+    - Performance monitoring and metrics
+    - Audit logging for all operations
+    - Multi-tenant support
+    - API versioning and backward compatibility
+    - Request/response compression
+    - Caching and optimization
+    - Health checks and monitoring
+    - Circuit breakers and resilience
+    - API documentation and OpenAPI
+    - Integration with external systems
+    - Compliance reporting
+    - Security headers and CORS
+    - Request tracing and correlation IDs
+    """
+
+    # Type annotations for class attributes
+    explanation_api: Optional[Any]
+    audit_service: Optional[Any]
 
     def __init__(
         self,
@@ -449,7 +500,7 @@ class DecisionLayerAPI:
                         df_id=function_id,
                         version=request.version or "latest",
                         df_hash="mock_hash",  # Would be actual function hash
-                        timestamp=datetime.now(),
+                        timestamp=datetime.datetime.now(),
                         caller=request.client_id or "anonymous",
                         status="success",
                         input_data=request.input_data,
@@ -551,10 +602,17 @@ class DecisionLayerAPI:
                 return ExplanationResponse(
                     trace_id=explanation.trace_id,
                     decision=explanation.decision,
-                    legal_basis=explanation.legal_basis,
+                    legal_basis=[
+                        (
+                            ref.to_dict()
+                            if hasattr(ref, "to_dict")
+                            else {"reference": str(ref)}
+                        )
+                        for ref in explanation.legal_basis
+                    ],
                     decision_path=explanation.decision_path,
                     confidence_score=explanation.confidence_score,
-                    redacted_fields=explanation.redacted_fields,
+                    redacted_fields=explanation.redacted_fields or [],
                 )
             except Exception as e:
                 raise HTTPException(
@@ -635,7 +693,9 @@ class DecisionLayerAPI:
                 release = self.release_manager.create_release(
                     function_id=function_id,
                     version=version,
-                    legal_references=legal_refs,
+                    legal_references=[
+                        ref for ref in legal_refs
+                    ],  # Convert to Union type
                     change_summary=request.change_summary,
                     risk_assessment=request.risk_assessment,
                     compliance_checklist=request.compliance_checklist,

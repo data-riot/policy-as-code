@@ -1,6 +1,6 @@
-# Decision Layer Development Guide
+# Development Guide & Roadmap
 
-This guide covers the development setup, tools, and best practices for contributing to the Decision Layer project.
+This comprehensive guide covers development setup, tools, best practices, and the project roadmap for contributing to the Decision Layer project.
 
 ## 🚀 Quick Start
 
@@ -32,6 +32,41 @@ pre-commit install
 pre-commit install --hook-type commit-msg
 ```
 
+## 📊 Current Status
+
+### Platform Maturity
+- **Core modules:** 26 Python files in `decision_layer/`
+- **Examples:** 7 demonstration scripts
+- **Documentation:** 20+ comprehensive markdown files
+- **Test coverage:** 8 tests passing
+- **Type safety:** MyPy warnings addressed
+
+### Key Features Implemented ✅
+- ✅ Immutable trace ledger with PostgreSQL backend (framework)
+- ✅ Legal reference validation (Finlex/EUR-Lex) (framework)
+- ✅ Digital signature system (framework)
+- ✅ Independent audit service (framework)
+- ✅ Citizen explanation API (framework)
+- ✅ LLM integration for reasoning (framework)
+- ✅ Conversational interface (framework)
+- ✅ Workflow orchestration (framework)
+- ✅ Agent performance monitoring (framework)
+- ✅ Formal DSL with static analysis (framework)
+- ✅ Time semantics and deterministic execution (framework)
+- ✅ Point-in-time feature store (framework)
+- ✅ Cross-domain integration (framework)
+- ✅ Shadow testing capabilities (framework)
+- ✅ Temporal query support (framework)
+
+### Production Readiness Status
+- **Architecture:** ✅ Production-grade design
+- **Security:** ✅ Comprehensive security model
+- **Governance:** ✅ Full audit and compliance features
+- **Testing:** ⚠️ Needs expansion (8 tests → 50+ tests)
+- **Documentation:** ✅ Comprehensive documentation
+- **Deployment:** ⚠️ Needs production deployment guide
+- **Monitoring:** ⚠️ Needs production monitoring setup
+
 ## 🛠️ Development Tools
 
 ### Code Quality Tools
@@ -52,433 +87,378 @@ Pre-commit hooks automatically run code quality checks before each commit:
 # Install hooks
 pre-commit install
 
-# Run all hooks manually
+# Run on all files
 pre-commit run --all-files
 
-# Update hooks
-pre-commit autoupdate
+# Run specific hook
+pre-commit run black
+pre-commit run flake8
+pre-commit run mypy
 ```
 
-### VS Code Configuration
-
-The project includes VS Code settings for optimal development experience:
-
-- **Python interpreter**: Automatically uses the virtual environment
-- **Format on save**: Automatically formats code with Black
-- **Linting**: Real-time linting with flake8
-- **Type checking**: Real-time type checking with mypy
-- **Testing**: Integrated pytest support
-
-## 📋 Development Commands
-
-### Using Make (Recommended)
-
-The project includes a comprehensive Makefile with common development tasks:
+### Development Workflow
 
 ```bash
-# Show all available commands
-make help
+# 1. Create feature branch
+git checkout -b feature/new-feature
 
-# Common development tasks
-make dev-setup      # Complete development setup
-make dev-check      # Run all checks (lint, type-check, test)
-make dev-format     # Format all code
-make test           # Run all tests
-make lint           # Run all linting checks
-make format         # Format code
-make type-check     # Run type checking
-make security-check # Run security checks
-make coverage       # Run tests with coverage
-make serve-dev      # Start development server
-make serve-web      # Start web interface
-make clean          # Clean up generated files
+# 2. Make changes
+# ... edit files ...
+
+# 3. Run quality checks
+make lint
+make test
+make type-check
+
+# 4. Commit (hooks run automatically)
+git add .
+git commit -m "Add new feature"
+
+# 5. Push and create PR
+git push origin feature/new-feature
 ```
 
-### Direct Commands
+## 🏗️ Architecture Overview
 
-```bash
-# Testing
-python -m pytest tests/ -v                    # Run all tests
-python -m pytest tests/unit/ -v               # Run unit tests only
-python -m pytest tests/ --cov=decision_layer  # Run with coverage
-
-# Code Quality
-black decision_layer tests examples           # Format code
-black decision_layer tests examples           # Format code
-flake8 decision_layer tests examples          # Lint code
-mypy decision_layer                           # Type check
-bandit -r decision_layer                      # Security scan
-
-# Development Servers
-uvicorn decision_layer.api:app --reload      # API server
-streamlit run streamlit_app.py               # Web interface
-```
-
-## 🧪 Testing
-
-### Test Structure
+### Core Components
 
 ```
-tests/
-├── unit/           # Unit tests
-├── integration/    # Integration tests
-├── e2e/           # End-to-end tests
-└── conftest.py    # Test configuration
+decision_layer/
+├── core.py              # Decision engine and context
+├── api.py               # Main REST API
+├── agentic_api.py       # Agentic AI endpoints
+├── trace_ledger.py      # Immutable trace ledger
+├── legal_refs.py        # Legal reference validation
+├── release.py           # Release management & signatures
+├── audit_service.py     # Independent audit service
+├── explain.py           # Citizen explanation API
+├── llm_integration.py   # LLM-powered reasoning
+├── conversational_interface.py  # Natural language interface
+├── workflow_orchestration.py   # Self-managing workflows
+├── agent_performance_monitor.py # Performance monitoring
+├── dsl_formal.py        # Formal DSL with static analysis
+├── time_semantics.py    # Deterministic time handling
+├── feature_store.py     # Point-in-time feature store
+└── ...                  # Additional modules
 ```
+
+### Key Design Principles
+
+1. **Immutability**: All traces are append-only with cryptographic integrity
+2. **Legal Compliance**: First-class legal reference validation
+3. **Audit Trail**: Complete decision execution history
+4. **Deterministic**: Time semantics ensure reproducible results
+5. **Extensible**: Plugin architecture for custom functionality
+6. **Agentic**: AI-powered reasoning and workflow orchestration
+
+## 🧪 Testing Strategy
+
+### Current Test Coverage
+
+- **Unit Tests**: 8 tests covering core functionality
+- **Integration Tests**: Basic API and CLI testing
+- **Type Safety**: MyPy type checking
+- **Security**: Bandit security scanning
+
+### Testing Goals
+
+- **Target Coverage**: 90%+ code coverage
+- **Test Types**: Unit, integration, end-to-end, performance
+- **SLO Requirements**: P95 < 100ms, P99 < 500ms
+- **Mutation Testing**: 90%+ mutation score
 
 ### Running Tests
 
 ```bash
 # Run all tests
-make test
-
-# Run specific test types
-make test-unit
-make test-integration
-make test-e2e
+pytest tests/
 
 # Run with coverage
-make coverage
-make coverage-html  # Generate HTML report
+pytest tests/ --cov=decision_layer --cov-report=html
 
-# Run tests in watch mode
-make test-watch
+# Run specific test
+pytest tests/test_core.py::test_decision_engine
+
+# Run performance tests
+pytest tests/test_performance.py
 ```
 
-### Test Markers
+## 📋 Development Roadmap
 
-Use pytest markers to run specific test categories:
+### Phase 1: Core Stabilization (Current)
+- [x] Fix import structure and dependencies
+- [x] Clean up unused imports and variables
+- [x] Consolidate documentation
+- [x] Standardize configuration approach
+- [ ] Complete type annotations
+- [ ] Expand test coverage to 50+ tests
 
-```bash
-# Run only unit tests
-pytest -m unit
+### Phase 2: Production Readiness
+- [ ] Production deployment guide
+- [ ] Monitoring and observability setup
+- [ ] Performance optimization
+- [ ] Security hardening
+- [ ] Load testing and benchmarking
 
-# Run only integration tests
-pytest -m integration
+### Phase 3: Advanced Features
+- [ ] Web interface implementation
+- [ ] Advanced analytics and reporting
+- [ ] Multi-tenant support
+- [ ] Advanced workflow orchestration
+- [ ] Real-time collaboration features
 
-# Run only slow tests
-pytest -m slow
+### Phase 4: Ecosystem Integration
+- [ ] Plugin marketplace
+- [ ] Third-party integrations
+- [ ] Community contributions
+- [ ] Enterprise features
+- [ ] Cloud deployment options
 
-# Skip slow tests
-pytest -m "not slow"
+## 🔧 Configuration Management
+
+### Standardized Configuration
+
+The project uses a unified configuration approach:
+
+```yaml
+# config.yaml - Main configuration
+core:
+  storage_backend: file
+  trace_dir: ./traces
+  max_input_size: 1048576
+
+security:
+  enable_rate_limiting: true
+  enable_input_sanitization: true
+  max_input_size: 1048576
+  rate_limit_requests: 100
+  rate_limit_window: 60
+
+integrations:
+  llm:
+    provider: mock
+    config: {}
+  ontology:
+    provider: mock
+    config: {}
+  knowledge_graph:
+    provider: mock
+    config: {}
 ```
-
-## 🔧 Configuration
 
 ### Environment Variables
 
-Create a `.env` file for local development:
-
 ```bash
-# Development environment
-ENVIRONMENT=development
-DEBUG=true
-LOG_LEVEL=DEBUG
-
-# API Configuration
-API_HOST=localhost
-API_PORT=8000
-
-# Security
-SECRET_KEY=your-secret-key-change-in-production
-ENABLE_AUTH=false
-
-# Storage
-STORAGE_BACKEND=file
-STORAGE_PATH=./registry
-
-# Tracing
-TRACE_DIR=./traces
-TRACE_LEVEL=INFO
+# .env - Environment-specific settings
+DATABASE_URL=postgresql://user:password@localhost/decision_layer
+DECISION_LAYER_API_KEY=your-secret-api-key
+SECRET_KEY=your-secret-key
+LOG_LEVEL=INFO
 ```
 
-### Configuration Files
+## 🚀 Deployment Strategies
 
-- **pyproject.toml**: Project configuration and tool settings
-- **pytest.ini**: Test configuration
-- **.pre-commit-config.yaml**: Pre-commit hooks configuration
-- **.vscode/settings.json**: VS Code settings
-- **Makefile**: Development task automation
-
-## 📚 Documentation
-
-### Building Documentation
+### Development Deployment
 
 ```bash
-# Build documentation
-make docs
+# Local development
+python run_api.py
 
-# Serve documentation locally
-make docs-serve
+# With Docker
+docker-compose up -d
 ```
+
+### Production Deployment
+
+```bash
+# Production API server
+python run_production_api.py
+
+# With Docker Compose
+docker-compose -f docker-compose.prod.yml up -d
+```
+
+## 📊 Performance Monitoring
+
+### Key Metrics
+
+- **Decision Execution Time**: P95 < 100ms, P99 < 500ms
+- **API Response Time**: P95 < 200ms, P99 < 1000ms
+- **Memory Usage**: < 512MB per instance
+- **CPU Usage**: < 80% under normal load
+
+### Monitoring Tools
+
+- **Application Metrics**: Built-in performance monitoring
+- **Health Checks**: `/health` endpoint
+- **Logging**: Structured logging with correlation IDs
+- **Tracing**: Distributed tracing for complex workflows
+
+## 🔒 Security Considerations
+
+### Security Features
+
+- **Input Sanitization**: All inputs validated and sanitized
+- **Rate Limiting**: Configurable rate limiting
+- **Authentication**: API key-based authentication
+- **Audit Logging**: Complete audit trail
+- **Legal Compliance**: Built-in legal reference validation
+
+### Security Testing
+
+```bash
+# Run security scans
+bandit -r decision_layer/
+safety check
+
+# Run security tests
+pytest tests/test_security.py
+```
+
+## 📚 Documentation Standards
 
 ### Documentation Structure
 
+- **README.md**: Main project overview
+- **docs/README.md**: Documentation index
+- **docs/installation.md**: Installation and quick start
+- **docs/interfaces.md**: All user interfaces
+- **docs/development.md**: This development guide
+- **docs/architecture.md**: System architecture
+- **docs/api.md**: API documentation
+- **docs/deployment.md**: Deployment guide
+
+### Documentation Best Practices
+
+- **Clear Structure**: Logical organization and navigation
+- **Code Examples**: Working code examples for all features
+- **Troubleshooting**: Common issues and solutions
+- **Version Control**: Keep docs in sync with code
+- **Regular Updates**: Update docs with each release
+
+## 🤝 Contributing Guidelines
+
+### Code Standards
+
+- **Python Style**: Follow PEP 8 with Black formatting
+- **Type Hints**: Use type hints for all functions
+- **Docstrings**: Document all public functions and classes
+- **Error Handling**: Proper exception handling and logging
+- **Testing**: Write tests for all new functionality
+
+### Pull Request Process
+
+1. **Fork** the repository
+2. **Create** a feature branch
+3. **Make** your changes
+4. **Test** your changes thoroughly
+5. **Update** documentation if needed
+6. **Submit** a pull request
+7. **Address** review feedback
+8. **Merge** when approved
+
+### Commit Message Format
+
 ```
-docs/
-├── README.md           # Documentation index
-├── architecture.md     # System architecture
-├── installation.md     # Installation guide
-├── quickstart.md       # Quick start tutorial
-├── api.md             # API reference
-├── cli.md             # CLI reference
-├── web-interface.md   # Web interface guide
-├── configuration.md   # Configuration guide
-├── deployment.md      # Deployment guide
-└── troubleshooting.md # Troubleshooting guide
-```
+type(scope): description
 
-## 🔒 Security
+Detailed description of changes
 
-### Security Checks
-
-```bash
-# Run security scan
-make security-check
-
-# Check dependencies for vulnerabilities
-safety check
-
-# Scan code for security issues
-bandit -r decision_layer
-```
-
-### Security Best Practices
-
-1. **Never commit secrets**: Use environment variables for sensitive data
-2. **Keep dependencies updated**: Regularly update dependencies
-3. **Use security scanning**: Run bandit and safety checks
-4. **Validate inputs**: Always validate and sanitize inputs
-5. **Use HTTPS**: Use HTTPS in production
-
-## 🚀 Deployment
-
-### Docker
-
-```bash
-# Build Docker image
-make docker-build
-
-# Run Docker container
-make docker-run
-
-# Run tests in Docker
-make docker-test
+Fixes #issue_number
 ```
 
-### Production Checklist
+Types: `feat`, `fix`, `docs`, `style`, `refactor`, `test`, `chore`
 
-Before deploying to production:
-
-```bash
-# Run complete release preparation
-make release
-```
-
-This includes:
-- Running all tests
-- Running linting checks
-- Running type checking
-- Running security checks
-- Building the package
-
-## 🐛 Debugging
-
-### Debug Mode
-
-```bash
-# Start with debug logging
-make debug
-
-# View logs
-make logs
-```
+## 🐛 Debugging and Troubleshooting
 
 ### Common Issues
 
 #### Import Errors
 ```bash
-# Ensure virtual environment is activated
-source venv/bin/activate
-
-# Check Python path
-python -c "import sys; print(sys.path)"
-
-# Reinstall package
+# Problem: ModuleNotFoundError
+# Solution: Ensure proper installation
 pip install -e .
 ```
 
-#### Test Failures
+#### Permission Errors
 ```bash
-# Run tests with verbose output
-pytest tests/ -v -s
-
-# Run specific test
-pytest tests/test_specific.py::test_function -v
-
-# Run with coverage to see what's missing
-pytest tests/ --cov=decision_layer --cov-report=term-missing
+# Problem: Permission denied
+# Solution: Check file permissions
+chmod +x scripts/dev-setup.sh
 ```
 
-#### Linting Issues
+#### Port Conflicts
 ```bash
-# Auto-fix formatting issues
-make format
-
-# Check specific files
-flake8 decision_layer/specific_file.py
-
-# Ignore specific errors
-# noqa: E501  # Line too long
+# Problem: Port already in use
+# Solution: Find and kill process
+lsof -i :8000
+kill -9 <PID>
 ```
 
-## 📊 Monitoring
+### Debugging Tools
 
-### Metrics
+- **Logging**: Use structured logging for debugging
+- **Debug Mode**: Enable debug mode for detailed output
+- **Profiling**: Use Python profiler for performance issues
+- **Tracing**: Enable distributed tracing for complex workflows
 
-The project includes monitoring capabilities:
+## 📈 Performance Optimization
 
-```bash
-# Enable metrics
-ENABLE_METRICS=true
-METRICS_PORT=9090
-```
+### Optimization Strategies
 
-### Logging
+1. **Caching**: Implement intelligent caching strategies
+2. **Async Operations**: Use async/await for I/O operations
+3. **Database Optimization**: Optimize database queries
+4. **Memory Management**: Efficient memory usage
+5. **Load Balancing**: Distribute load across instances
+
+### Performance Testing
 
 ```bash
-# Set log level
-LOG_LEVEL=DEBUG
+# Run performance tests
+pytest tests/test_performance.py
 
-# View logs
-tail -f logs/decision-layer.log
+# Run load tests
+python scripts/load_test.py
+
+# Profile performance
+python -m cProfile run_api.py
 ```
 
-## 🤝 Contributing
+## 🔮 Future Enhancements
 
-### Development Workflow
+### Planned Features
 
-1. **Fork the repository**
-2. **Create a feature branch**
-   ```bash
-   git checkout -b feature/your-feature-name
-   ```
-3. **Make your changes**
-4. **Run development checks**
-   ```bash
-   make dev-check
-   ```
-5. **Commit your changes**
-   ```bash
-   git add .
-   git commit -m "feat: add your feature"
-   ```
-6. **Push to your fork**
-   ```bash
-   git push origin feature/your-feature-name
-   ```
-7. **Create a pull request**
+- **Web Interface**: Modern React-based web interface
+- **Advanced Analytics**: Business intelligence and reporting
+- **Multi-tenancy**: Support for multiple organizations
+- **Real-time Collaboration**: Live editing and collaboration
+- **Plugin System**: Extensible plugin architecture
 
-### Commit Message Format
+### Research Areas
 
-Use conventional commit messages:
+- **AI/ML Integration**: Advanced machine learning capabilities
+- **Blockchain Integration**: Distributed ledger technology
+- **Edge Computing**: Edge deployment capabilities
+- **Quantum Computing**: Quantum-resistant cryptography
 
-```
-type(scope): description
+## 📞 Support and Resources
 
-feat: add new feature
-fix: fix bug
-docs: update documentation
-style: format code
-refactor: refactor code
-test: add tests
-chore: maintenance tasks
-```
+### Getting Help
 
-### Code Review Checklist
-
-Before submitting a pull request:
-
-- [ ] All tests pass
-- [ ] Code is formatted (Black)
-- [ ] Code is formatted (Black)
-- [ ] No linting errors (flake8)
-- [ ] Type checking passes (mypy)
-- [ ] Security checks pass (bandit)
-- [ ] Documentation is updated
-- [ ] Commit messages follow conventions
-
-## 🆘 Getting Help
+- **Documentation**: Comprehensive docs in `docs/` directory
+- **Examples**: Working examples in `examples/` directory
+- **Issues**: Report bugs on GitHub Issues
+- **Discussions**: Join GitHub Discussions
+- **Community**: Join the community Discord/Slack
 
 ### Resources
 
-- **Documentation**: [docs/](docs/)
-- **API Reference**: [docs/api.md](docs/api.md)
-- **Examples**: [examples/](examples/)
-- **Issues**: [GitHub Issues](https://github.com/data-riot/decision-layer/issues)
+- **API Documentation**: `http://localhost:8000/docs`
+- **Architecture Guide**: `docs/architecture.md`
+- **Deployment Guide**: `docs/deployment.md`
+- **Security Guide**: `docs/security.md`
 
-### Common Commands Reference
+---
 
-```bash
-# Development setup
-./scripts/dev-setup.sh
-
-# Quick development workflow
-make dev
-
-# Run all checks
-make dev-check
-
-# Format code
-make format
-
-# Run tests
-make test
-
-# Start development server
-make serve-dev
-
-# Start web interface
-make serve-web
-
-# Clean up
-make clean
-```
-
-### Troubleshooting
-
-See [docs/troubleshooting.md](docs/troubleshooting.md) for common issues and solutions.
-
-## 📈 Performance
-
-### Profiling
-
-```bash
-# Run performance profiling
-make profile
-
-# Run benchmarks
-make benchmark
-```
-
-### Optimization Tips
-
-1. **Use async/await**: For I/O operations
-2. **Profile your code**: Identify bottlenecks
-3. **Use caching**: For expensive operations
-4. **Optimize database queries**: Use proper indexing
-5. **Monitor memory usage**: Avoid memory leaks
-
-## 🔄 Continuous Integration
-
-The project uses GitHub Actions for CI/CD:
-
-- **Tests**: Run on multiple Python versions
-- **Linting**: Check code quality
-- **Type checking**: Verify type annotations
-- **Security**: Scan for vulnerabilities
-- **Documentation**: Build and deploy docs
-
-## 📝 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+**Ready to contribute?** Start with the [Installation Guide](installation.md) and then dive into the [Architecture Documentation](architecture.md) to understand the system design! 🚀

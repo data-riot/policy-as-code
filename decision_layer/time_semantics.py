@@ -38,7 +38,7 @@ class TimeConfiguration:
 
     # Time source configuration
     primary_source: TimeSource = TimeSource.NORMALIZED_UTC
-    fallback_sources: List[TimeSource] = None
+    fallback_sources: Optional[List[TimeSource]] = None
 
     # Clock skew handling
     max_skew_ms: int = 5000  # 5 seconds max skew
@@ -47,7 +47,7 @@ class TimeConfiguration:
 
     # Timezone handling
     default_timezone: str = "UTC"
-    allowed_timezones: List[str] = None
+    allowed_timezones: Optional[List[str]] = None
 
     # Replay configuration
     enable_replay_mode: bool = False
@@ -87,7 +87,7 @@ class DeterministicTimestamp:
 
     # Validation
     is_valid: bool = True
-    validation_errors: List[str] = None
+    validation_errors: Optional[List[str]] = None
 
     def __post_init__(self):
         if self.validation_errors is None:
@@ -293,7 +293,10 @@ class DeterministicTimeManager:
         """Validate timezone string"""
         try:
             pytz.timezone(timezone_str)
-            return timezone_str in self.config.allowed_timezones
+            return (
+                self.config.allowed_timezones is None
+                or timezone_str in self.config.allowed_timezones
+            )
         except pytz.exceptions.UnknownTimeZoneError:
             return False
 
@@ -335,6 +338,9 @@ class TimeNormalizer:
                 raise DecisionLayerError(
                     "invalid_timestamp_format", f"Cannot parse timestamp: {timestamp}"
                 )
+
+        # At this point, timestamp is guaranteed to be datetime
+        assert isinstance(timestamp, datetime)
 
         if timestamp.tzinfo is None:
             if source_timezone:

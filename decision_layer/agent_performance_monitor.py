@@ -324,7 +324,7 @@ class AgentPerformanceMonitor:
             else:
                 agents = list(set(dp.agent_id for dp in self.performance_data))
 
-            report = {
+            report: Dict[str, Any] = {
                 "generated_at": datetime.now(timezone.utc).isoformat(),
                 "agents_analyzed": len(agents),
                 "total_data_points": len(self.performance_data),

@@ -11,7 +11,7 @@ PROJECT_NAME := policy_as_code
 API_PORT := 8000
 DB_NAME := decision_layer
 DB_USER := postgres
-DB_PASSWORD := password
+DB_PASSWORD := ${DB_PASSWORD:-password}
 DB_HOST := localhost
 DB_PORT := 5432
 

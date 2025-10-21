@@ -1,9 +1,16 @@
 # Decision Layer Configuration
 
+# Core system configuration
+core:
+  storage_backend: "postgresql"  # or "file"
+  trace_dir: "./traces"
+  max_input_size: 1048576  # 1MB
+  log_level: "INFO"
+
 # Storage configuration
 storage:
   backend: "postgresql"  # or "file"
-  connection_string: "postgresql://decision_user:decision_password@postgres:5432/decision_layer"
+  connection_string: "postgresql://decision_user:${DB_PASSWORD:-decision_password}@postgres:5432/decision_layer"
   # For file storage:
   # backend: "file"
   # path: "./functions"
@@ -35,3 +42,31 @@ api:
   port: 8000
   enable_docs: true
   enable_cors: true
+
+# Cross-Domain Integration
+integrations:
+  llm:
+    provider: mock  # or openai, anthropic
+    config: {}
+  ontology:
+    provider: mock  # or owl, neo4j
+    config: {}
+  knowledge_graph:
+    provider: mock  # or neo4j, amazon_neptune
+    config: {}
+
+# Development configuration
+development:
+  debug: false
+  hot_reload: false
+  profiling: false
+
+# Production configuration
+production:
+  debug: false
+  hot_reload: false
+  profiling: false
+  monitoring:
+    enabled: true
+    metrics_endpoint: "/metrics"
+    health_endpoint: "/health"

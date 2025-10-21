@@ -4,6 +4,33 @@ Agentic AI API Endpoints
 This module provides REST API endpoints for the new agentic AI capabilities
 including LLM reasoning, conversational interfaces, workflow orchestration,
 and performance monitoring.
+
+PRODUCTION STATUS: ⚠️ PARTIAL IMPLEMENTATION
+- Agentic AI endpoints implemented
+- Basic LLM integration implemented
+- Conversational interface implemented
+
+MISSING PRODUCTION FEATURES:
+- Authentication and authorization
+- Rate limiting and DDoS protection
+- Input validation and sanitization
+- Performance monitoring and metrics
+- Audit logging for all operations
+- Multi-tenant support
+- API versioning and backward compatibility
+- Request/response compression
+- Caching and optimization
+- Health checks and monitoring
+- Circuit breakers and resilience
+- API documentation and OpenAPI
+- Integration with external systems
+- Compliance reporting
+- Security headers and CORS
+- Request tracing and correlation IDs
+- LLM provider integration
+- Workflow persistence and state management
+- Performance monitoring and alerting
+- Agent lifecycle management
 """
 
 import logging
@@ -157,9 +184,9 @@ def get_conversational_interface() -> ConversationalInterface:
     global _conversational_interface
     if _conversational_interface is None:
         # This would need a decision engine in production
-        from .core import create_decision_engine
+        from .core import DecisionEngine
 
-        engine = create_decision_engine()
+        engine = DecisionEngine()
         llm_integration = get_llm_integration()
         _conversational_interface = create_conversational_interface(
             engine, llm_integration
@@ -171,9 +198,9 @@ def get_workflow_orchestrator() -> WorkflowOrchestrator:
     """Get workflow orchestrator instance"""
     global _workflow_orchestrator
     if _workflow_orchestrator is None:
-        from .core import create_decision_engine
+        from .core import DecisionEngine
 
-        engine = create_decision_engine()
+        engine = DecisionEngine()
         llm_integration = get_llm_integration()
         _workflow_orchestrator = create_workflow_orchestrator(engine, llm_integration)
     return _workflow_orchestrator
@@ -222,6 +249,7 @@ async def make_agentic_decision(
 
         # Use LLM reasoning
         decision = await llm_integration.reason_about_decision(
+            function_id="mock_decision_function",
             decision_function=mock_decision_function,
             input_data=request.input_data,
             context=agentic_context,

@@ -34,7 +34,7 @@ The Decision Layer provides a structured approach to managing business decision 
 │  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐        │
 │  │     CLI     │  │     API     │  │     Web     │        │
 │  │             │  │             │  │             │        │
-│  │ • Commands  │  │ • REST      │  │ • Streamlit │        │
+│  │ • Commands  │  │ • REST      │  │ • Planned   │        │
 │  │ • Scripts   │  │ • FastAPI   │  │ • Dashboard │        │
 │  │ • Batch     │  │ • Async     │  │ • Visual    │        │
 │  └─────────────┘  └─────────────┘  └─────────────┘        │
@@ -335,11 +335,11 @@ class CustomValidationPlugin(DecisionPlugin):
 - **OpenAPI spec**: Complete API specification
 - **Authentication**: API key and Bearer token support
 
-### 3. Web Interface
-- **Streamlit-based**: Interactive web dashboard
-- **Visual function editor**: Drag-and-drop interface
-- **Trace viewer**: Interactive trace analysis
-- **Configuration management**: Web-based configuration
+### 3. Web Interface (Planned)
+- **Web-based dashboard**: Interactive web interface (not yet implemented)
+- **Visual function editor**: Drag-and-drop interface (planned)
+- **Trace viewer**: Interactive trace analysis (planned)
+- **Configuration management**: Web-based configuration (planned)
 
 ## 🔒 Security & Compliance
 

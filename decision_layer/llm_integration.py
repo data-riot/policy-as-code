@@ -8,13 +8,12 @@ natural language processing, and agentic coordination.
 import asyncio
 import json
 import logging
-from datetime import datetime, timezone
-from typing import Any, Dict, List, Optional, Union
+from datetime import datetime
+from typing import Any, Dict, List, Optional
 from dataclasses import dataclass
 from enum import Enum
 
 import httpx
-from pydantic import BaseModel, Field
 
 from .core import DecisionContext, DecisionFunction
 from .errors import DecisionLayerError, ValidationError
@@ -61,8 +60,8 @@ class AgenticContext:
     service_type: Optional[str] = None
     urgency_level: str = "normal"
     legal_framework: Optional[str] = None
-    historical_precedents: List[Dict] = None
-    cross_agency_data: Dict[str, Any] = None
+    historical_precedents: Optional[List[Dict]] = None
+    cross_agency_data: Optional[Dict[str, Any]] = None
 
 
 class LLMIntegration:

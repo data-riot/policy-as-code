@@ -9,7 +9,7 @@ import json
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta
 from enum import Enum
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, Set
 
 from .errors import DecisionLayerError
 from .release import Release, ReleaseManager
@@ -391,7 +391,7 @@ class AuditWorker:
 
         try:
             # Group traces by function
-            function_traces = {}
+            function_traces: Dict[str, List[TraceRecord]] = {}
             for trace in traces:
                 key = f"{trace.df_id}:{trace.version}"
                 if key not in function_traces:
@@ -429,7 +429,7 @@ class AuditWorker:
             outputs = [trace.output_json for trace in traces]
 
             # Check for consistent decision patterns
-            decision_keys = set()
+            decision_keys: Set[str] = set()
             for output in outputs:
                 decision_keys.update(output.keys())
 

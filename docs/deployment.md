@@ -47,10 +47,7 @@ pip install -e .
 # Initialize the system
 decision-layer init
 
-# Start the web interface
-python run_ui.py
-
-# Start the API server (in another terminal)
+# Start the API server (web interface not implemented)
 python run_api.py
 ```
 
@@ -173,18 +170,6 @@ services:
     volumes:
       - ./traces:/app/traces
       - ./config:/app/config
-    restart: unless-stopped
-
-  # Decision Layer Web Interface
-  web:
-    build: .
-    ports:
-      - "8501:8501"
-    command: python run_ui.py
-    environment:
-      - DECISION_LAYER_API_URL=http://localhost:8000
-    depends_on:
-      - api
     restart: unless-stopped
 
   # PostgreSQL Database

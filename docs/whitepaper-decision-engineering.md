@@ -1,6 +1,5 @@
 # White Paper: Decision Engineering for Accountable Automation
 
-**Prepared for:** Ministry of Finance (Valtiovarainministeriö)
 **Author:** Eevamaija Virtanen
 **Date:** October 2025
 
@@ -8,7 +7,7 @@
 
 ## 1. Executive Summary
 
-Finland has built world-class digital infrastructure — Suomi.fi, Finlex, X-Road, and AuroraAI — that enable secure data exchange and human-centric digital services. However, as automation and artificial intelligence become part of governance, the legal basis of automated decisions is becoming opaque.
+Finland has built world-class digital infrastructure that enable secure data exchange and human-centric digital services. However, as automation and artificial intelligence become part of governance, the legal basis of automated decisions is becoming opaque.
 
 This paper proposes a new national capability: **Decision Engineering** — an operational architecture that connects legislation, automated decision logic, and audit evidence.
 

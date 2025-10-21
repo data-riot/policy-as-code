@@ -4,8 +4,10 @@
 
 ### **Complete Framework Transformation**
 - **12,370+ lines added** across 58 files
-- **Enterprise-grade architecture** with production-ready features
+- **Enterprise-grade architecture** with comprehensive governance framework
 - **AI/ML integration** capabilities (LLMs, knowledge graphs, ontologies)
+
+> **⚠️ Production Status**: This release provides a solid foundation with comprehensive governance features but requires significant development to reach production-grade status. See [Production Readiness Assessment](production-readiness.md) for detailed analysis.
 
 ### **New Core Features**
 - **Cross-domain integration** with knowledge graphs and ontologies
@@ -14,12 +16,11 @@
 - **Temporal queries** for time-based decision analysis
 - **Plugin architecture** for extensible functionality
 
-### **Production Infrastructure**
-- **Docker & Docker Compose** support
-- **FastAPI REST API** with async execution
-- **Streamlit web interface** for visual management
-- **PostgreSQL & Redis** backends
-- **CI/CD pipeline** with multi-Python testing
+### **Production Infrastructure Framework**
+- **Docker & Docker Compose** support (development ready)
+- **FastAPI REST API** with async execution (framework implemented)
+- **PostgreSQL & Redis** backends (configuration ready, missing production setup)
+- **CI/CD pipeline** with multi-Python testing (development ready)
 
 ### **Developer Experience**
 - **One-command setup**: `./scripts/dev-setup.sh`
@@ -34,10 +35,6 @@
 git clone https://github.com/data-riot/decision-layer.git
 cd decision-layer
 ./scripts/dev-setup.sh
-
-# Launch web interface
-python run_ui.py
-# Open http://localhost:8501
 
 # Or start API server
 python run_api.py

@@ -4,13 +4,11 @@ Production-grade feature lookups with replay consistency and temporal integrity
 """
 
 import asyncio
-import hashlib
 import json
 from dataclasses import dataclass, field
-from datetime import datetime, timezone, timedelta
+from datetime import datetime
 from enum import Enum
-from typing import Any, Dict, List, Optional, Union
-from uuid import UUID
+from typing import Any, Dict, List, Optional
 
 from .errors import DecisionLayerError
 from .time_semantics import DeterministicTimestamp, TimeSource
@@ -263,13 +261,18 @@ class PostgreSQLFeatureStore(FeatureStoreBackend):
     def __init__(self, connection_string: str, table_name: str = "feature_store"):
         self.connection_string = connection_string
         self.table_name = table_name
-        self.pool = None
+        self.pool: Optional[Any] = None
 
     async def initialize(self) -> None:
         """Initialize the database connection pool"""
         import asyncpg
 
         self.pool = await asyncpg.create_pool(self.connection_string)
+
+        if self.pool is None:
+            raise FeatureStoreError(
+                "pool_creation_failed", "Failed to create connection pool"
+            )
 
         async with self.pool.acquire() as conn:
             await self._create_table(conn)

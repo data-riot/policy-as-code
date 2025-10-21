@@ -174,9 +174,11 @@ class TraceContext:
                 "source": self.deterministic_time.source.value,
                 "timezone": self.deterministic_time.timezone,
                 "clock_skew_ms": self.deterministic_time.clock_skew_ms,
-                "normalized_timestamp": self.deterministic_time.normalized_timestamp.isoformat()
-                if self.deterministic_time.normalized_timestamp
-                else None,
+                "normalized_timestamp": (
+                    self.deterministic_time.normalized_timestamp.isoformat()
+                    if self.deterministic_time.normalized_timestamp
+                    else None
+                ),
             },
             "feature_lookups": [lookup.to_dict() for lookup in self.feature_lookups],
             "external_calls": self.external_calls,

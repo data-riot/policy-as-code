@@ -1,0 +1,158 @@
+# Pull Request Summary Configuration
+
+# Policy as Code specific file categorization patterns
+categories:
+  decision_functions:
+    patterns:
+      - "decision_layer/.*\\.py$"
+      - "examples/.*\\.py$"
+    description: "Decision Functions & Logic"
+    icon: "⚖️"
+    priority: 1
+
+  governance:
+    patterns:
+      - "decision_layer/(trace_ledger|legal_refs|release|audit_service)\\.py$"
+    description: "Governance & Compliance"
+    icon: "🔒"
+    priority: 2
+
+  agentic_ai:
+    patterns:
+      - "decision_layer/(llm_integration|conversational_interface|workflow_orchestration|agent_performance_monitor)\\.py$"
+    description: "Agentic AI Features"
+    icon: "🤖"
+    priority: 3
+
+  api:
+    patterns:
+      - "decision_layer/(api|agentic_api)\\.py$"
+    description: "API Endpoints"
+    icon: "🌐"
+    priority: 4
+
+  security:
+    patterns:
+      - "decision_layer/(security|auth|caller_auth|kms_integration|replay_protection)\\.py$"
+    description: "Security & Authentication"
+    icon: "🛡️"
+    priority: 5
+
+  testing:
+    patterns:
+      - "tests/.*"
+      - "decision_layer/testing_slos\\.py$"
+    description: "Testing & Quality Assurance"
+    icon: "🧪"
+    priority: 6
+
+  documentation:
+    patterns:
+      - "docs/.*\\.md$"
+      - "README\\.md$"
+      - "claude\\.md$"
+    description: "Documentation"
+    icon: "📚"
+    priority: 7
+
+  configuration:
+    patterns:
+      - "config\\.yaml$"
+      - "docker-compose\\.yml$"
+      - "Dockerfile$"
+      - "Makefile$"
+      - "pyproject\\.toml$"
+    description: "Configuration & Deployment"
+    icon: "⚙️"
+    priority: 8
+
+  examples:
+    patterns:
+      - "examples/.*"
+    description: "Examples & Demos"
+    icon: "💡"
+    priority: 9
+
+# Impact assessment thresholds
+impact_thresholds:
+  large_change_lines: 500
+  complex_change_lines: 100
+  high_priority_categories:
+    - "governance"
+    - "security"
+    - "agentic_ai"
+    - "api"
+
+# Testing recommendations by category
+testing_recommendations:
+  decision_functions:
+    - "Ensure 100% branch coverage for new/modified decision functions"
+    - "Verify deterministic execution and time semantics"
+    - "Test legal reference validation"
+
+  governance:
+    - "Verify trace ledger integrity"
+    - "Test legal reference validation"
+    - "Validate digital signature workflows"
+    - "Run audit service integrity checks"
+
+  security:
+    - "Run security scans and vulnerability assessments"
+    - "Test authentication and authorization flows"
+    - "Verify KMS integration functionality"
+    - "Test replay protection mechanisms"
+
+  agentic_ai:
+    - "Test LLM integration and reasoning capabilities"
+    - "Verify conversational interface functionality"
+    - "Test workflow orchestration and self-management"
+    - "Validate agent performance monitoring"
+
+  api:
+    - "Verify endpoint functionality and schema validation"
+    - "Test API authentication and rate limiting"
+    - "Validate OpenAPI specification compliance"
+    - "Test error handling and response formats"
+
+  testing:
+    - "Validate testing framework and SLO requirements"
+    - "Run mutation testing for boundary conditions"
+    - "Verify contract tests and schema compatibility"
+    - "Test performance benchmarks"
+
+# Policy as Code specific considerations
+policy_considerations:
+  governance:
+    - "Ensure all decision functions maintain legal compliance and audit trails"
+    - "Verify immutable trace ledger integrity"
+    - "Validate legal reference linking (Finlex/EUR-Lex)"
+
+  security:
+    - "Verify authentication and authorization changes don't introduce vulnerabilities"
+    - "Test digital signature validation and separation of duties"
+    - "Validate KMS integration and key management"
+
+  testing:
+    - "Maintain 100% branch coverage and SLO requirements"
+    - "Ensure deterministic execution and replay consistency"
+    - "Validate performance targets (P95 < 100ms, P99 < 500ms)"
+
+  documentation:
+    - "Update relevant documentation for any API or configuration changes"
+    - "Maintain citizen explanation API compatibility"
+    - "Update governance and compliance documentation"
+
+# Summary template customization
+summary_template:
+  header: "📋 Pull Request Summary #{pr_number}"
+  sections:
+    - "change_overview"
+    - "changes_by_category"
+    - "impact_assessment"
+    - "commit_messages"
+    - "testing_recommendations"
+    - "complex_changes"
+    - "policy_considerations"
+
+  max_commits_display: 10
+  max_complex_changes_display: 5

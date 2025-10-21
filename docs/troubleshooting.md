@@ -165,24 +165,20 @@ Error: Address already in use
    pkill -f "run_api.py"
    ```
 
-#### Problem: Web interface won't start
+#### Problem: API server won't start
 
 **Symptoms**:
 ```bash
-$ python run_ui.py
-Error: Port 8501 is already in use
+$ python run_api.py
+Error: Port 8000 is already in use
 ```
 
 **Solutions**:
-1. **Check Streamlit processes**:
+1. **Web interface not implemented**: The web interface is planned but not yet implemented
+2. **Use API instead**: Use the REST API for programmatic access
    ```bash
-   ps aux | grep streamlit
-   pkill -f streamlit
-   ```
-
-2. **Use different port**:
-   ```bash
-   streamlit run streamlit_app.py --server.port 8502
+   python run_api.py
+   # API available at http://localhost:8000
    ```
 
 3. **Check for conflicting services**:

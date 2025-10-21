@@ -290,7 +290,7 @@ class DeterministicFunction:
         self.function_code = function_code
         self.function_name = function_name
         self.checker = DFConstraintChecker()
-        self.compiled_function = None
+        self.compiled_function: Optional[Callable] = None
         self.violations: List[ConstraintViolation] = []
 
     def validate(self) -> List[ConstraintViolation]:
@@ -358,7 +358,14 @@ class DeterministicFunction:
 
             # Extract the function from namespace
             if self.function_name in namespace:
-                self.compiled_function = namespace[self.function_name]
+                func = namespace[self.function_name]
+                if callable(func):
+                    self.compiled_function = func
+                else:
+                    raise DeterminismError(
+                        "invalid_function_type",
+                        f"Expected callable function, got {type(func)}",
+                    )
             else:
                 raise DeterminismError(
                     "function_not_found",

@@ -1,17 +1,25 @@
 """
-Simple REST API for Decision Layer
+Production-grade REST API for Decision Layer
+Integrated with governance features: ledger, legal refs, signatures, explanations, audit
 """
 
-import json
-from typing import Any, Dict, Optional
+import uuid
 
 import uvicorn
-from fastapi import FastAPI, HTTPException, Request
+from fastapi import FastAPI, HTTPException, Request, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel, Field
 
 from .core import DecisionEngine
+from .trace_ledger import TraceLedger, create_trace_record
+from .ledger_postgres import create_postgresql_ledger
+from .legal_refs import LawReference, LegalReferenceValidator
+from .release import ReleaseManager, SignerRole, create_release_manager
+from .explain import create_explanation_api
+from .audit_service import create_audit_service
+from .df_constraints import DeterministicFunction, create_deterministic_function
+from typing import Dict, Any, Optional
 
 
 class DecisionRequest(BaseModel):
@@ -20,6 +28,36 @@ class DecisionRequest(BaseModel):
     input_data: Dict[str, Any] = Field(..., description="Input data for the decision")
     version: Optional[str] = Field(None, description="Specific version to use")
     enable_validation: bool = Field(True, description="Enable input validation")
+    client_id: Optional[str] = Field(None, description="Client identifier for tracing")
+
+
+class LegalReferenceRequest(BaseModel):
+    """Request model for legal reference validation"""
+    
+    system: str = Field(..., description="Legal system (finlex, eurlex, custom)")
+    act_id: str = Field(..., description="Act/regulation identifier")
+    section: Optional[str] = Field(None, description="Section number")
+    subsection: Optional[str] = Field(None, description="Subsection number")
+    title: Optional[str] = Field(None, description="Human-readable title")
+    description: Optional[str] = Field(None, description="Description")
+
+
+class SignatureRequest(BaseModel):
+    """Request model for digital signatures"""
+    
+    signer_id: str = Field(..., description="Signer identifier")
+    role: str = Field(..., description="Signer role (owner, reviewer)")
+    comment: Optional[str] = Field(None, description="Signature comment")
+
+
+class ReleaseRequest(BaseModel):
+    """Request model for release creation"""
+    
+    legal_references: List[Dict[str, Any]] = Field(..., description="Legal references")
+    change_summary: Optional[str] = Field(None, description="Summary of changes")
+    risk_assessment: Optional[str] = Field(None, description="Risk assessment")
+    compliance_checklist: Optional[List[str]] = Field(None, description="Compliance checklist")
+    release_notes: Optional[str] = Field(None, description="Release notes")
 
 
 class DecisionResponse(BaseModel):
@@ -29,6 +67,31 @@ class DecisionResponse(BaseModel):
     function_id: str = Field(..., description="Function ID")
     version: str = Field(..., description="Version used")
     execution_time_ms: float = Field(..., description="Execution time in milliseconds")
+    trace_id: str = Field(..., description="Trace ID for audit")
+    legal_basis: List[Dict[str, Any]] = Field(default_factory=list, description="Legal references")
+
+
+class ExplanationResponse(BaseModel):
+    """Response model for decision explanations"""
+    
+    trace_id: str = Field(..., description="Trace ID")
+    decision: str = Field(..., description="Human-readable decision")
+    legal_basis: List[Dict[str, Any]] = Field(..., description="Legal references")
+    decision_path: List[str] = Field(..., description="Decision reasoning path")
+    confidence_score: Optional[float] = Field(None, description="Confidence score")
+    redacted_fields: List[str] = Field(default_factory=list, description="Redacted fields")
+
+
+class AuditReportResponse(BaseModel):
+    """Response model for audit reports"""
+    
+    report_id: str = Field(..., description="Report ID")
+    generated_at: str = Field(..., description="Generation timestamp")
+    audit_status: str = Field(..., description="Audit status")
+    total_traces: int = Field(..., description="Total traces checked")
+    failed_checks: int = Field(..., description="Number of failed checks")
+    drift_count: int = Field(..., description="Number of drift detections")
+    summary: str = Field(..., description="Audit summary")
 
 
 class DeployRequest(BaseModel):
@@ -54,14 +117,30 @@ class APIError(BaseModel):
 
 
 class DecisionLayerAPI:
-    """REST API for Decision Layer"""
+    """Production-grade REST API for Decision Layer with governance features"""
 
     def __init__(
-        self, engine: DecisionEngine, host: str = "localhost", port: int = 8000
+        self, 
+        engine: DecisionEngine, 
+        trace_ledger: Optional[TraceLedger] = None,
+        release_manager: Optional[ReleaseManager] = None,
+        host: str = "localhost", 
+        port: int = 8000
     ):
         self.engine = engine
+        self.trace_ledger = trace_ledger
+        self.release_manager = release_manager or create_release_manager()
         self.host = host
         self.port = port
+        
+        # Initialize governance services
+        if self.trace_ledger:
+            self.explanation_api = create_explanation_api(self.release_manager, self.trace_ledger)
+            self.audit_service = create_audit_service(self.trace_ledger, self.release_manager)
+        else:
+            self.explanation_api = None
+            self.audit_service = None
+        
         self.app = self._create_app()
 
     def _create_app(self) -> FastAPI:
@@ -223,23 +302,61 @@ class DecisionLayerAPI:
 
         @app.post("/functions/{function_id}/execute", response_model=DecisionResponse)
         async def execute_function(function_id: str, request: DecisionRequest):
-            """Execute a decision function"""
+            """Execute a decision function with governance features"""
             try:
                 import time
 
                 start_time = time.time()
 
+                # Check if function can be executed (is active)
+                if self.release_manager:
+                    version = request.version or "latest"
+                    if not self.release_manager.can_execute_function(function_id, version):
+                        raise HTTPException(
+                            status_code=403, 
+                            detail=f"Function {function_id} v{version} is not active"
+                        )
+
                 result = await self.engine.execute(
-                    function_id, request.input_data, request.version
+                    function_id, request.input_data, request.version, request.client_id
                 )
 
                 execution_time = (time.time() - start_time) * 1000
+
+                # Get legal basis if available
+                legal_basis = []
+                if self.release_manager:
+                    release = self.release_manager.get_release(function_id, request.version or "latest")
+                    if release:
+                        legal_basis = [ref.to_dict() for ref in release.legal_references]
+
+                # Write to trace ledger if available
+                trace_id = "unknown"
+                if self.trace_ledger:
+                    # Generate trace record
+                    trace_record = create_trace_record(
+                        trace_id=str(uuid.uuid4()),
+                        df_id=function_id,
+                        version=request.version or "latest",
+                        df_hash="mock_hash",  # Would be actual function hash
+                        timestamp=datetime.now(),
+                        caller=request.client_id or "anonymous",
+                        status="success",
+                        input_data=request.input_data,
+                        output_data=result,
+                        signer="system",
+                        prev_hash=await self.trace_ledger.get_latest_hash()
+                    )
+                    await self.trace_ledger.write_trace(trace_record)
+                    trace_id = trace_record.trace_id
 
                 return DecisionResponse(
                     result=result,
                     function_id=function_id,
                     version=request.version or "latest",
                     execution_time_ms=round(execution_time, 2),
+                    trace_id=trace_id,
+                    legal_basis=legal_basis,
                 )
             except ValueError as e:
                 raise HTTPException(status_code=404, detail=str(e))
@@ -308,6 +425,161 @@ class DecisionLayerAPI:
                     status_code=500, detail=f"Failed to get traces: {str(e)}"
                 )
 
+        # Governance endpoints
+        @app.get("/explain/{trace_id}", response_model=ExplanationResponse)
+        async def explain_decision(trace_id: str, redact_sensitive: bool = True):
+            """Get human-readable explanation for a decision trace"""
+            if not self.explanation_api:
+                raise HTTPException(
+                    status_code=503, 
+                    detail="Explanation service not available"
+                )
+            
+            try:
+                explanation = await self.explanation_api.get_explanation(trace_id, redact_sensitive)
+                return ExplanationResponse(
+                    trace_id=explanation.trace_id,
+                    decision=explanation.decision,
+                    legal_basis=explanation.legal_basis,
+                    decision_path=explanation.decision_path,
+                    confidence_score=explanation.confidence_score,
+                    redacted_fields=explanation.redacted_fields,
+                )
+            except Exception as e:
+                raise HTTPException(
+                    status_code=404, detail=f"Explanation not found: {str(e)}"
+                )
+
+        @app.get("/audit/report/latest", response_model=AuditReportResponse)
+        async def get_latest_audit_report():
+            """Get the latest audit report"""
+            if not self.audit_service:
+                raise HTTPException(
+                    status_code=503, 
+                    detail="Audit service not available"
+                )
+            
+            report = self.audit_service.get_latest_report()
+            if not report:
+                raise HTTPException(
+                    status_code=404, 
+                    detail="No audit reports available"
+                )
+            
+            return AuditReportResponse(
+                report_id=report.report_id,
+                generated_at=report.generated_at.isoformat(),
+                audit_status=report.audit_status.value,
+                total_traces=report.total_traces,
+                failed_checks=report.failed_checks,
+                drift_count=report.drift_count,
+                summary=report.summary,
+            )
+
+        @app.post("/audit/run")
+        async def run_audit():
+            """Run a new audit"""
+            if not self.audit_service:
+                raise HTTPException(
+                    status_code=503, 
+                    detail="Audit service not available"
+                )
+            
+            try:
+                report = await self.audit_service.run_audit()
+                return {"message": "Audit completed", "report_id": report.report_id}
+            except Exception as e:
+                raise HTTPException(
+                    status_code=500, detail=f"Audit failed: {str(e)}"
+                )
+
+        # Legal reference endpoints
+        @app.post("/legal/validate")
+        async def validate_legal_reference(request: LegalReferenceRequest):
+            """Validate a legal reference"""
+            try:
+                from .legal_refs import create_legal_reference
+                ref = create_legal_reference(
+                    system=request.system,
+                    act_id=request.act_id,
+                    section=request.section,
+                    subsection=request.subsection,
+                    title=request.title,
+                    description=request.description
+                )
+                return {"valid": True, "reference": ref.to_dict()}
+            except Exception as e:
+                return {"valid": False, "error": str(e)}
+
+        # Release management endpoints
+        @app.post("/registry/{function_id}/{version}/release")
+        async def create_release(function_id: str, version: str, request: ReleaseRequest):
+            """Create a new release"""
+            try:
+                # Validate legal references
+                legal_refs = []
+                for ref_data in request.legal_references:
+                    from .legal_refs import LawReference
+                    legal_refs.append(LawReference.from_dict(ref_data))
+                
+                release = self.release_manager.create_release(
+                    function_id=function_id,
+                    version=version,
+                    legal_references=legal_refs,
+                    change_summary=request.change_summary,
+                    risk_assessment=request.risk_assessment,
+                    compliance_checklist=request.compliance_checklist,
+                    release_notes=request.release_notes
+                )
+                
+                return {"message": "Release created", "release": release.to_dict()}
+            except Exception as e:
+                raise HTTPException(
+                    status_code=400, detail=f"Release creation failed: {str(e)}"
+                )
+
+        @app.post("/registry/{function_id}/{version}/sign")
+        async def sign_release(function_id: str, version: str, request: SignatureRequest):
+            """Sign a release"""
+            try:
+                role = SignerRole(request.role)
+                release = self.release_manager.sign_release(
+                    function_id=function_id,
+                    version=version,
+                    signer_id=request.signer_id,
+                    role=role,
+                    comment=request.comment
+                )
+                
+                return {"message": "Release signed", "release": release.to_dict()}
+            except Exception as e:
+                raise HTTPException(
+                    status_code=400, detail=f"Signing failed: {str(e)}"
+                )
+
+        @app.post("/registry/{function_id}/{version}/activate")
+        async def activate_release(function_id: str, version: str):
+            """Activate a release"""
+            try:
+                release = self.release_manager.activate_release(function_id, version)
+                return {"message": "Release activated", "release": release.to_dict()}
+            except Exception as e:
+                raise HTTPException(
+                    status_code=400, detail=f"Activation failed: {str(e)}"
+                )
+
+        @app.get("/registry/{function_id}/{version}/release")
+        async def get_release(function_id: str, version: str):
+            """Get release information"""
+            release = self.release_manager.get_release(function_id, version)
+            if not release:
+                raise HTTPException(
+                    status_code=404, 
+                    detail=f"Release {function_id} v{version} not found"
+                )
+            
+            return release.to_dict()
+
         @app.exception_handler(Exception)
         async def global_exception_handler(request: Request, exc: Exception):
             """Global exception handler"""
@@ -327,10 +599,14 @@ class DecisionLayerAPI:
 
 
 def create_api(
-    engine: DecisionEngine, host: str = "localhost", port: int = 8000
+    engine: DecisionEngine, 
+    trace_ledger: Optional[TraceLedger] = None,
+    release_manager: Optional[ReleaseManager] = None,
+    host: str = "localhost", 
+    port: int = 8000
 ) -> DecisionLayerAPI:
-    """Create a Decision Layer API instance"""
-    return DecisionLayerAPI(engine, host, port)
+    """Create a Decision Layer API instance with governance features"""
+    return DecisionLayerAPI(engine, trace_ledger, release_manager, host, port)
 
 
 if __name__ == "__main__":

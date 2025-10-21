@@ -1,11 +1,16 @@
-click>=8.0.0
-pyyaml>=6.0
+# Core dependencies
 fastapi>=0.100.0
 uvicorn>=0.20.0
 pydantic>=2.0.0
 pytest>=7.0.0
 pytest-asyncio>=0.21.0
 asyncpg>=0.28.0
-streamlit>=1.28.0
-pandas>=2.0.0
-plotly>=5.0.0 
+pyyaml>=6.0
+
+# Production governance dependencies
+cryptography>=41.0.0  # For digital signatures
+psycopg2-binary>=2.9.0  # PostgreSQL adapter
+python-multipart>=0.0.6  # For file uploads
+httpx>=0.25.2  # For API testing
+pandas>=2.0.0  # For analytics
+numpy>=1.25.0  # For numerical operations 

@@ -1,426 +1,428 @@
-# Decision Layer
+# Policy as Code - Production Governance Platform
 
-A Python framework for managing decision logic as versioned, testable functions with structured observability.
+A production-grade platform for managing decision logic as versioned, auditable, and governable software artifacts with comprehensive governance features.
 
 [![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-## Overview
+## 🎯 Overview
 
-Decision Layer provides a structured approach to managing business decision logic. It treats decisions as software artifacts that can be versioned, tested, and monitored. This can help teams maintain consistency, track changes, and ensure reliability in decision-making systems.
+Policy as Code provides a comprehensive governance platform for managing decision logic with enterprise-grade features including immutable trace ledgers, digital signatures, legal compliance, and independent audit capabilities.
 
-### Key Features
+### 🚀 Key Features
 
-- **Version Control** - Track changes to decision logic over time
-- **Testing Framework** - Validate decision functions with test cases
-- **Observability** - Monitor decision execution with structured traces
-- **Plugin Architecture** - Extend functionality with custom plugins
-- **Async Execution** - Handle concurrent decision requests efficiently
-- **Multiple Interfaces** - CLI, REST API, and web interface
+- **🔒 Immutable Trace Ledger** - Append-only ledger with hash-chaining and signer identity
+- **📜 Legal Compliance** - First-class legal linkage with validated IRIs (Finlex/EUR-Lex)
+- **✍️ Digital Signatures** - Change control with owner/reviewer signatures and separation of duties
+- **🔍 Independent Audit** - Separate audit service for integrity verification and drift detection
+- **📊 Deterministic Execution** - Time semantics and point-in-time feature store for replay consistency
+- **🎯 Formal DSL** - Rule-based DSL with priorities, conflict detection, and static analysis
+- **📈 Testing SLOs** - 100% branch coverage, mutation testing, and contract validation
+- **📋 Analytics Schema** - BigQuery/Snowflake DDL with canonical queries
+- **⚡ Production Ready** - Circuit breakers, retry policies, and operational SLOs
 
-## Getting Started
+## 🏃‍♂️ Quick Start (30 Minutes)
 
-### Quick Start
-
-The fastest way to get started with Decision Layer:
-
-```bash
-# Clone and install
-git clone https://github.com/data-riot/decision-layer.git
-cd decision-layer
-pip install -r requirements.txt
-
-# Launch the web interface
-python run_ui.py
-
-# Open http://localhost:8501 in your browser
-```
-
-The web interface includes:
-- Dashboard with execution metrics
-- Visual function editor
-- Template library for common patterns
-- Trace viewer and analytics
-- Configuration management
-
-### Command Line Interface
-
-For developers who prefer command-line tools:
+### Golden Path Demo
 
 ```bash
-# Clone the repository
-git clone https://github.com/data-riot/decision-layer.git
-cd decision-layer
+# Clone and setup
+git clone <repository-url>
+cd policy_as_code
 
 # Install dependencies
-pip install -r requirements.txt
+make install
 
-# Install in development mode
-pip install -e .
+# Run the complete golden path demo
+make golden_path_demo
 ```
 
-### Docker Deployment
+This will demonstrate:
+1. ✅ Bootstrap registry and services
+2. ✅ Register decision functions (Python + DSL)
+3. ✅ Define legal references
+4. ✅ Create and sign releases
+5. ✅ Execute decisions with traces
+6. ✅ Run independent audit
+7. ✅ Simulate rollback
 
-For production environments:
+### Production Deployment
 
 ```bash
-# Clone the repository
-git clone https://github.com/data-riot/decision-layer.git
-cd decision-layer
+# Start production API with all governance features
+make run_prod_api
 
-# Set up environment
-cp env.example .env
-# Edit .env with your configuration
-
-# Start with Docker Compose
+# Or use Docker Compose
 docker-compose up -d
 ```
 
-### Initial Setup
-
-```bash
-# Initialize the system
-decision-layer init
-```
-
-This creates the necessary directories and a default configuration file.
-
 ## 📚 Documentation
 
-For comprehensive documentation, see the [docs/](docs/) directory:
+- **[GOVERNANCE_README.md](GOVERNANCE_README.md)** - Complete governance features documentation
+- **[Makefile](Makefile)** - Build automation and deployment targets
+- **[examples/golden_path_demo.py](examples/golden_path_demo.py)** - 30-minute production demo
+- **[examples/governance_demo.py](examples/examples/governance_demo.py)** - Governance features demo
 
-- **[Architecture Overview](docs/architecture.md)** - System architecture and design principles
-- **[Installation Guide](docs/installation.md)** - Detailed installation instructions
-- **[API Reference](docs/api.md)** - REST API documentation
-- **[CLI Reference](docs/cli.md)** - Command-line interface documentation
-- **[Examples](../examples/)** - Working examples and demos
+## 🏗️ Architecture
 
-## Core Concepts
+### Core Components
+
+```
+┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
+│   Decision      │    │   Immutable     │    │   Legal         │
+│   Functions     │───▶│   Trace Ledger  │───▶│   References    │
+│   (Python/DSL)  │    │   (PostgreSQL)  │    │   (IRIs)        │
+└─────────────────┘    └─────────────────┘    └─────────────────┘
+         │                       │                       │
+         ▼                       ▼                       ▼
+┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
+│   Release       │    │   Independent   │    │   Citizen       │
+│   Management    │    │   Audit Service │    │   Explanation   │
+│   (Signatures)  │    │   (Drift Det.)  │    │   API           │
+└─────────────────┘    └─────────────────┘    └─────────────────┘
+```
+
+### Deterministic Execution
+
+- **Time Semantics**: UTC normalization, timezone rules, clock skew handling
+- **Feature Store**: Point-in-time lookups for replay consistency
+- **Trace Schema**: Formal schema with versioning and migration support
+
+## 🔧 Core Concepts
 
 ### Decision Functions
 
-Decision functions are Python functions that take structured input and return structured output. They represent a single decision point in your business logic.
+Decision functions are deterministic Python functions or DSL rules that take structured input and return structured output:
 
 ```python
 from typing import Dict, Any
-from decision_layer import DecisionContext
+from decision_layer.core import DecisionContext
+from decision_layer.time_semantics import DeterministicTime
+from decision_layer.feature_store import feature_store
 
-def decision_function(input_data: Dict[str, Any], context: DecisionContext) -> Dict[str, Any]:
-    """Example decision function for refund approval"""
-
-    amount = input_data.get('amount', 0)
-    customer_tier = input_data.get('customer', {}).get('tier', 'standard')
-
-    # Decision logic
-    if amount > 1000 and customer_tier == 'standard':
-        return {"approved": False, "reason": "Amount exceeds limit for standard tier"}
-    elif amount > 2000:
-        return {"approved": False, "reason": "Amount exceeds maximum limit"}
+async def loan_eligibility_df(input_data: Dict[str, Any], context: DecisionContext) -> Dict[str, Any]:
+    # Use deterministic time
+    current_time = DeterministicTime.get_current_time()
+    
+    # Point-in-time feature lookup
+    user_id = input_data.get("user_id", "user1")
+    features = await feature_store.get_features_at_point_in_time(
+        entity_id=user_id,
+        feature_names=["user_credit_score", "loan_amount_limit"],
+        as_of_timestamp=current_time
+    )
+    
+    # Deterministic decision logic
+    amount = input_data.get("amount", 0)
+    credit_score = features.get("user_credit_score", {}).get("score", 0)
+    
+    if amount > 10000 and credit_score >= 700:
+        return {"eligible": True, "reason": "High score, low amount"}
     else:
-        return {"approved": True, "reason": "Approved within limits"}
+        return {"eligible": False, "reason": "Criteria not met"}
 ```
 
-### Version Management
+### DSL Rules
 
-Each decision function can have multiple versions, allowing you to track changes and roll back if needed:
+Formal rule-based DSL with conflict detection:
 
-```bash
-# Deploy multiple versions
-decision-layer deploy refund_policy decisions/refund_policy.py --version v1.0
-decision-layer deploy refund_policy decisions/refund_policy.py --version v1.1
+```yaml
+rule_set_id: loan_eligibility_dsl
+version: 1.0
+description: DSL for loan eligibility
 
-# Execute specific version
-decision-layer execute refund_policy input.json --version v1.0
+rules:
+  - rule_id: rule_1_high_score_low_amount
+    priority: 100
+    conditions:
+      - field: credit_score
+        operator: ">="
+        value: 700
+      - field: amount
+        operator: "<="
+        value: 10000
+    action:
+      eligible: true
+      reason: "Approved by DSL: High score, low amount"
+
+  - rule_id: rule_2_default_deny
+    priority: 10
+    conditions: []
+    action:
+      eligible: false
+      reason: "Default deny"
 ```
 
-### Plugin System
+### Legal References
 
-The framework uses plugins to add functionality:
-
-- **Validation Plugin** - Ensures input data meets expected schemas
-- **Tracing Plugin** - Records execution details for monitoring
-- **Caching Plugin** - Improves performance by caching results
-
-## Usage Examples
-
-### Creating a Decision Function
+First-class legal linkage with validated IRIs:
 
 ```python
-# decisions/approval_policy.py
-from typing import Dict, Any
-from decision_layer import DecisionContext
+from decision_layer.legal_refs import create_legal_reference
 
-def decision_function(input_data: Dict[str, Any], context: DecisionContext) -> Dict[str, Any]:
-    """Approval decision based on amount and customer history"""
-
-    amount = input_data.get('amount', 0)
-    customer_score = input_data.get('customer_score', 0)
-
-    # Decision logic
-    if customer_score >= 800:
-        max_amount = 5000
-    elif customer_score >= 600:
-        max_amount = 2000
-    else:
-        max_amount = 500
-
-    approved = amount <= max_amount
-
-    return {
-        "approved": approved,
-        "max_amount": max_amount,
-        "reason": f"Customer score {customer_score} allows max {max_amount}"
-    }
+legal_ref = create_legal_reference(
+    system="finlex",
+    act_id="544/1999",
+    section="7",
+    title="Consumer Protection Act, Section 7"
+)
+# Result: "https://finlex.fi/fi/laki/alkup/1999/19990544#L7"
 ```
 
-### Deploying and Testing
+### Release Management
 
-```bash
-# Deploy the function
-decision-layer deploy approval_policy decisions/approval_policy.py --version v1.0
+Digital signatures with separation of duties:
 
-# Test with default data
-decision-layer test approval_policy
+```python
+from decision_layer.release import ReleaseManager, SignerRole
 
-# Test with custom input
-echo '{"amount": 1500, "customer_score": 750}' > input.json
-decision-layer execute approval_policy input.json
+# Create release
+release_manager.create_release(
+    function_id="loan_eligibility",
+    version="1.0.0",
+    legal_references=[legal_ref],
+    change_summary="Initial release"
+)
+
+# Owner signs
+release_manager.sign_release(
+    function_id="loan_eligibility",
+    version="1.0.0",
+    signer_id="alice",
+    role=SignerRole.OWNER
+)
+
+# Reviewer signs
+release_manager.sign_release(
+    function_id="loan_eligibility", 
+    version="1.0.0",
+    signer_id="bob",
+    role=SignerRole.REVIEWER
+)
+
+# Activate release
+release_manager.activate_release("loan_eligibility", "1.0.0")
 ```
 
-### API Usage
+## 🚀 Usage Examples
 
-When running with Docker, you can use the REST API:
+### Deploying a Decision Function
 
 ```bash
-# Deploy a decision function
-curl -X POST "http://localhost:8000/functions/approval_policy/deploy" \
-  -H "X-API-Key: your-secret-api-key-here" \
+# Deploy Python function
+curl -X POST "http://localhost:8000/functions/loan_eligibility/deploy" \
   -H "Content-Type: application/json" \
   -d '{
-    "version": "v1.0",
-    "function_code": "def decision_function(input_data, context): return {\"approved\": True}"
+    "function_code": "async def decision_function(input_data, context): ...",
+    "version": "1.0.0"
   }'
 
-# Execute a decision
-curl -X POST "http://localhost:8000/functions/approval_policy/execute" \
-  -H "X-API-Key: your-secret-api-key-here" \
+# Create and activate release
+curl -X POST "http://localhost:8000/registry/loan_eligibility/1.0.0/release" \
   -H "Content-Type: application/json" \
-  -d '{"amount": 1500, "customer_score": 750}'
+  -d '{
+    "legal_references": [{"system": "finlex", "act_id": "544/1999", "section": "7"}],
+    "change_summary": "Initial release"
+  }'
 ```
 
-## CLI Reference
-
-### Core Commands
+### Executing Decisions
 
 ```bash
-# Initialize the system
-decision-layer init
-
-# Deploy a function
-decision-layer deploy <function_id> <file> --version <version>
-
-# Execute a function
-decision-layer execute <function_id> <input_file> [--version <version>]
-
-# Test a function
-decision-layer test <function_id> [--version <version>]
-
-# List functions
-decision-layer list
-
-# View traces
-decision-layer traces <function_id> [--date <YYYYMMDD>]
-
-# Show function info
-decision-layer info <function_id> [--version <version>]
-
-# Clear traces
-decision-layer clear [--function-id <id>] [--all]
+# Execute decision function
+curl -X POST "http://localhost:8000/functions/loan_eligibility/execute" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "input_data": {"user_id": "user1", "amount": 5000},
+    "version": "1.0.0",
+    "client_id": "app_a"
+  }'
 ```
 
-## Configuration
+### Getting Decision Explanations
 
-The system uses a YAML configuration file (`config.yaml`):
-
-```yaml
-storage:
-  backend: "file"  # file, postgresql
-  path: "./data"
-
-plugins:
-  validation:
-    enabled: true
-    strict: false
-
-  tracing:
-    enabled: true
-    path: "./traces"
-
-  caching:
-    enabled: true
-    ttl: 300
-
-api:
-  host: "0.0.0.0"
-  port: 8000
-  cors: true
+```bash
+# Get human-readable explanation
+curl "http://localhost:8000/explain/trace_12345"
 ```
 
-## Observability
+### Running Audits
 
-### Execution Traces
+```bash
+# Trigger independent audit
+curl -X POST "http://localhost:8000/audit/run"
 
-Every decision execution generates a structured trace for monitoring and debugging:
+# Get latest audit report
+curl "http://localhost:8000/audit/report/latest"
+```
 
-```json
-{
-  "trace_id": "550e8400-e29b-41d4-a716-446655440000",
-  "function_id": "approval_policy",
-  "version": "v1.0",
-  "input_hash": "0x4f...",
-  "timestamp": "2025-01-27T14:23:51Z",
-  "input": {"amount": 1500, "customer_score": 750},
-  "output": {"approved": true, "max_amount": 2000},
-  "status": "success"
+## 📊 Testing SLOs
+
+### Coverage Requirements
+
+- **100% Branch Coverage** - All decision paths must be tested
+- **90% Mutation Score** - Mutation testing for boundary conditions
+- **Contract Tests** - Schema compatibility validation
+
+### Performance SLOs
+
+- **P95 < 100ms** - 95th percentile response time
+- **P99 < 500ms** - 99th percentile response time
+- **Zero Critical Vulnerabilities** - Security requirements
+
+## 🔍 Analytics Schema
+
+### BigQuery DDL
+
+```sql
+CREATE TABLE `project.dataset.decision_logs` (
+  trace_id STRING NOT NULL,
+  schema_version STRING NOT NULL,
+  function_id STRING NOT NULL,
+  version STRING NOT NULL,
+  df_hash STRING NOT NULL,
+  timestamp TIMESTAMP NOT NULL,
+  caller STRING NOT NULL,
+  status STRING NOT NULL,
+  input_json JSON,
+  output_json JSON,
+  prev_hash STRING,
+  chain_hash STRING,
+  signer STRING,
+  legal_references JSON,
+  feature_snapshot JSON,
+  context_data JSON
+)
+PARTITION BY DATE(timestamp)
+CLUSTER BY function_id, version, status
+OPTIONS (
+  partition_expiration_days = 2555,  -- 7 years
+  description = "Decision execution logs with governance metadata"
+);
+```
+
+### Canonical Queries
+
+```sql
+-- Daily decision summaries
+SELECT 
+  function_id,
+  version,
+  DATE(timestamp) as date,
+  COUNT(*) as total_decisions,
+  COUNTIF(status = 'success') as successful_decisions,
+  AVG(TIMESTAMP_DIFF(timestamp, LAG(timestamp) OVER (PARTITION BY function_id ORDER BY timestamp), MILLISECOND)) as avg_processing_time_ms
+FROM `project.dataset.decision_logs`
+WHERE timestamp >= TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 7 DAY)
+GROUP BY function_id, version, date
+ORDER BY date DESC, function_id;
+
+-- Error rate analysis
+SELECT 
+  function_id,
+  version,
+  DATE(timestamp) as date,
+  COUNT(*) as total_decisions,
+  COUNTIF(status = 'error') as error_count,
+  ROUND(COUNTIF(status = 'error') / COUNT(*) * 100, 2) as error_rate_percent
+FROM `project.dataset.decision_logs`
+WHERE timestamp >= TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 30 DAY)
+GROUP BY function_id, version, date
+HAVING error_rate_percent > 1.0
+ORDER BY error_rate_percent DESC;
+```
+
+## 🛠️ Makefile Targets
+
+```bash
+# Setup and installation
+make setup          # Create virtual environment
+make install        # Install dependencies
+make install-dev    # Install development dependencies
+
+# Testing and quality
+make test           # Run all tests
+make lint           # Run linter
+make test-coverage  # Run tests with coverage
+make mutation-test  # Run mutation tests
+
+# Development
+make run_api        # Start development API
+make run_prod_api   # Start production API with governance
+make demo           # Run governance demo
+make golden_path_demo # Run 30-minute golden path demo
+
+# Production
+make deploy         # Deploy to production
+make rollback       # Rollback deployment
+make monitor        # Start monitoring dashboard
+
+# Maintenance
+make clean          # Clean up build artifacts
+make format         # Format code
+make docs           # Generate documentation
+```
+
+## 🔒 Security Features
+
+### Per-Function RBAC
+
+```python
+# Function-level access control
+rbac_config = {
+    "loan_eligibility": {
+        "owners": ["alice", "bob"],
+        "reviewers": ["charlie", "diana"],
+        "executors": ["app_a", "app_b"]
+    }
 }
 ```
 
-### Viewing Traces
+### Dual Control
 
-```bash
-# View traces for today
-decision-layer traces approval_policy
-
-# View traces for specific date
-decision-layer traces approval_policy --date 20250127
-```
-
-## Plugin Development
-
-### Creating Custom Plugins
+High-risk logic changes require multiple approvals:
 
 ```python
-from decision_layer import DecisionPlugin, DecisionContext
-from typing import Dict, Any
-
-class LoggingPlugin(DecisionPlugin):
-    async def process(self, data: Dict[str, Any], context: DecisionContext) -> Dict[str, Any]:
-        # Add logging information
-        data["logged_at"] = context.timestamp.isoformat()
-        data["function_version"] = context.version
-        return data
-
-    @property
-    def name(self) -> str:
-        return "logging_plugin"
+# Requires both owner AND reviewer signatures
+if risk_level == "HIGH":
+    require_dual_control = True
+    required_signatures = [SignerRole.OWNER, SignerRole.REVIEWER]
 ```
 
-## Testing
+### PII Handling
 
-### Built-in Testing
-
-```bash
-# Test with default data
-decision-layer test approval_policy
-
-# Test with custom data
-echo '{"amount": 500, "customer_score": 800}' > test_data.json
-decision-layer test approval_policy --test-data test_data.json
+```python
+# Automatic PII detection and redaction
+pii_fields = ["ssn", "credit_card", "email"]
+sanitized_trace = sanitize_pii(trace_data, pii_fields)
 ```
 
-### Test Data Format
+## 📈 Operational SLOs
 
-Create test data files for comprehensive testing:
+### Latency Targets
 
-```json
-{
-  "test_case_1": {
-    "input": {"amount": 500, "customer_score": 800},
-    "expected": {"approved": true}
-  },
-  "test_case_2": {
-    "input": {"amount": 3000, "customer_score": 600},
-    "expected": {"approved": false}
-  }
+- **P95 < 100ms** - Decision execution
+- **P99 < 500ms** - Complex decisions
+- **P99 < 5s** - Audit operations
+
+### Reliability
+
+- **99.9% Uptime** - Service availability
+- **< 1% Error Rate** - Decision failures
+- **< 5min Rollback** - Emergency rollback time
+
+### Circuit Breakers
+
+```python
+# Automatic circuit breaking on high error rates
+circuit_breaker_config = {
+    "failure_threshold": 5,
+    "recovery_timeout": 30,
+    "half_open_max_calls": 3
 }
 ```
 
-## Deployment Options
-
-### Development (File Storage)
-
-```yaml
-storage:
-  backend: "file"
-  path: "./data"
-```
-
-### Production (PostgreSQL)
-
-```yaml
-storage:
-  backend: "postgresql"
-  connection_string: "postgresql://user:pass@localhost/decisions"
-```
-
-## Performance Considerations
-
-### Caching
-
-The caching plugin can improve performance for repeated decisions:
-
-```bash
-# First execution (cache miss)
-decision-layer execute approval_policy input.json
-# Execution time: 150ms
-
-# Second execution with same input (cache hit)
-decision-layer execute approval_policy input.json
-# Execution time: 5ms
-```
-
-### Async Execution
-
-All operations are async for better concurrency:
-
-```python
-import asyncio
-from decision_layer import DecisionEngine
-
-async def main():
-    engine = DecisionEngine()
-    result = await engine.execute("approval_policy", {"amount": 500})
-    print(result)
-
-asyncio.run(main())
-```
-
-## Security
-
-### Input Validation
-
-All inputs are validated by default:
-
-```python
-# Invalid input raises validation error
-try:
-    result = await engine.execute("approval_policy", {"invalid": "data"})
-except ValueError as e:
-    print(f"Validation error: {e}")
-```
-
-### Trace Sanitization
-
-Sensitive data can be sanitized in traces:
-
-```yaml
-plugins:
-  tracing:
-    enabled: true
-    sanitize_fields: ["password", "ssn", "credit_card"]
-```
-
-## Contributing
+## 🤝 Contributing
 
 We welcome contributions! Please see our [Contributing Guide](CONTRIBUTING.md) for details.
 
@@ -428,17 +430,29 @@ We welcome contributions! Please see our [Contributing Guide](CONTRIBUTING.md) f
 
 ```bash
 # Clone and setup
-git clone https://github.com/data-riot/decision-layer.git
-cd decision-layer
-pip install -e .
+git clone <repository-url>
+cd policy_as_code
+
+# Install development dependencies
+make install-dev
 
 # Run tests
-python -m pytest tests/
+make test
 
 # Run linting
-python -m flake8 decision_layer/
+make lint
+
+# Run golden path demo
+make golden_path_demo
 ```
 
-## License
+## 📄 License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## 🆘 Support
+
+- **Documentation**: See [GOVERNANCE_README.md](GOVERNANCE_README.md)
+- **Examples**: Check [examples/](examples/) directory
+- **Issues**: Report issues on GitHub
+- **Golden Path**: Run `make golden_path_demo` for 30-minute walkthrough

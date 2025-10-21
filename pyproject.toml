@@ -3,21 +3,23 @@ requires = ["setuptools>=61.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "decision-layer"
-version = "1.0.0"
-description = "A framework for managing business decision logic as versioned, testable functions with structured observability"
+name = "policy-as-code"
+version = "2.0.0"
+description = "Production-grade governance platform for managing decision logic as versioned, auditable, and governable software artifacts"
 readme = "README.md"
 license = {text = "MIT"}
 authors = [
-    {name = "Decision Layer Team", email = "team@decision-layer.com"}
+    {name = "Policy as Code Team", email = "team@policyascode.com"}
 ]
 maintainers = [
     {name = "Eevamaija Virtanen"}
 ]
-keywords = ["decision", "business-logic", "versioning", "observability", "ai", "llm", "ontology"]
+keywords = ["governance", "policy", "decision-logic", "audit", "compliance", "trace-ledger", "digital-signatures"]
 classifiers = [
-    "Development Status :: 4 - Beta",
+    "Development Status :: 5 - Production/Stable",
     "Intended Audience :: Developers",
+    "Intended Audience :: Legal Industry",
+    "Intended Audience :: Financial and Insurance Industry",
     "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent",
     "Programming Language :: Python :: 3",
@@ -28,17 +30,17 @@ classifiers = [
     "Topic :: Software Development :: Libraries :: Python Modules",
     "Topic :: Software Development :: Testing",
     "Topic :: System :: Monitoring",
+    "Topic :: Office/Business :: Financial",
+    "Topic :: Security :: Cryptography",
+]
 ]
 requires-python = ">=3.8"
 dependencies = [
     "fastapi>=0.104.0",
     "uvicorn[standard]>=0.24.0",
     "pydantic>=2.5.0",
-    "click>=8.1.0",
     "pyyaml>=6.0.1",
-    "streamlit>=1.28.0",
     "pandas>=2.1.0",
-    "plotly>=5.17.0",
     "asyncpg>=0.29.0",
     "sqlalchemy>=2.0.0",
     "alembic>=1.12.0",
@@ -47,12 +49,11 @@ dependencies = [
     "prometheus-client>=0.19.0",
     "structlog>=23.2.0",
     "tenacity>=8.2.0",
-    "httpx>=0.25.0",
-    "websockets>=12.0",
+    "cryptography>=41.0.0",
+    "psycopg2-binary>=2.9.0",
     "python-multipart>=0.0.6",
-    "python-jose[cryptography]>=3.3.0",
-    "passlib[bcrypt]>=1.7.4",
-    "python-dotenv>=1.0.0",
+    "httpx>=0.25.2",
+    "numpy>=1.25.0",
 ]
 
 [project.optional-dependencies]

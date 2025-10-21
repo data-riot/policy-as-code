@@ -9,7 +9,7 @@ services:
       - DECISION_LAYER_API_KEY=${DECISION_LAYER_API_KEY:-your-secret-api-key}
     volumes:
       - ./config.yaml:/app/config.yaml:ro
-      - ./functions:/app/functions
+      - ./data:/app/data
       - ./traces:/app/traces
     depends_on:
       - postgres

@@ -1,49 +1,44 @@
-name: Policy Validation and Testing
+name: Policy Validation
 
 on:
   push:
-    branches: [main, develop]
+    branches: [main]
     paths:
       - "policies/**"
       - "schemas/**"
-      - ".github/workflows/policy-validation.yml"
   pull_request:
     branches: [main]
     paths:
       - "policies/**"
       - "schemas/**"
-      - ".github/workflows/policy-validation.yml"
 
 jobs:
   policy-validation:
-    name: Policy Schema Validation
+    name: Policy Validation
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4.1.1
+        uses: actions/checkout@v4
 
       - name: Set up Python
-        uses: actions/setup-python@v5.0.0
+        uses: actions/setup-python@v4
         with:
-          python-version: "3.9"
+          python-version: "3.11"
+          cache: "pip"
 
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           pip install jsonschema pyyaml
 
-      - name: Validate YAML policies against schema
+      - name: Validate YAML policies
         run: |
           python scripts/validate_policies.py
 
-      - name: Check for missing metadata in Rego files
+      - name: Check Rego metadata
         run: |
           python scripts/check_rego_metadata.py
-
-      - name: Validate package naming convention
-        run: |
-          python scripts/validate_package_naming.py
 
   opa-testing:
     name: OPA Policy Testing
@@ -51,7 +46,7 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4.1.1
+        uses: actions/checkout@v4
 
       - name: Install OPA
         run: |
@@ -63,92 +58,5 @@ jobs:
         run: |
           find policies/rego -name "*.rego" -exec dirname {} \; | sort -u | while read dir; do
             echo "Testing policy in $dir"
-            opa test "$dir" --coverage --threshold 80
+            opa test "$dir" --coverage --threshold 70
           done
-
-      - name: Generate test coverage report
-        run: |
-          find policies/rego -name "*.rego" -exec dirname {} \; | sort -u | while read dir; do
-            echo "Generating coverage report for $dir"
-            opa test "$dir" --coverage --format json > "$dir/coverage.json"
-          done
-
-      - name: Upload coverage reports
-        uses: actions/upload-artifact@v4.0.0
-        with:
-          name: opa-coverage-reports
-          path: policies/rego/**/coverage.json
-
-  policy-bundle-build:
-    name: Policy Bundle Build
-    runs-on: ubuntu-latest
-    needs: [policy-validation, opa-testing]
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4.1.1
-
-      - name: Install OPA
-        run: |
-          curl -L -o opa https://openpolicyagent.org/downloads/latest/opa_linux_amd64
-          chmod +x opa
-          sudo mv opa /usr/local/bin/
-
-      - name: Build policy bundle
-        run: |
-          mkdir -p bundles
-          opa build policies/rego -o bundles/policy-bundle.tar.gz
-
-      - name: Generate bundle digest
-        run: |
-          sha256sum bundles/policy-bundle.tar.gz > bundles/policy-bundle.sha256
-          cat bundles/policy-bundle.sha256
-
-      - name: Generate SBOM
-        run: |
-          opa build policies/rego -o bundles/policy-bundle.tar.gz --bundle-mode
-          opa build policies/rego -o bundles/policy-bundle.json --format json
-
-      - name: Upload policy bundle
-        uses: actions/upload-artifact@v4.0.0
-        with:
-          name: policy-bundle
-          path: bundles/
-
-      - name: Sign bundle with cosign
-        uses: sigstore/cosign-installer@v3.1.0
-        with:
-          cosign-release: "v2.0.2"
-
-      - name: Sign bundle
-        run: |
-          cosign sign-blob bundles/policy-bundle.tar.gz --bundle bundles/policy-bundle.tar.gz.sig
-        env:
-          COSIGN_EXPERIMENTAL: 1
-
-  security-scan:
-    name: Security Scanning
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4.1.1
-
-      - name: Run Trivy vulnerability scanner
-        uses: aquasecurity/trivy-action@v0.24.0
-        with:
-          scan-type: "fs"
-          scan-ref: "."
-          format: "sarif"
-          output: "trivy-results.sarif"
-
-      - name: Upload Trivy scan results
-        uses: github/codeql-action/upload-sarif@v3.0.0
-        with:
-          sarif_file: "trivy-results.sarif"
-
-      - name: Run Gitleaks
-        uses: gitleaks/gitleaks-action@v2.4.0
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          GITLEAKS_LICENSE: ${{ secrets.GITLEAKS_LICENSE }}

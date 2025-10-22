@@ -1,0 +1,11 @@
+{
+  "@context": "https://example.org/policy-as-code/v1/context.jsonld",
+  "id": "urn:decision:20251022-abc123",
+  "type": "DecisionEvent",
+  "timestamp": "2025-10-22T13:11:00Z",
+  "bundle_digest": "sha256:92cfb2…",
+  "input_hash": "sha256:49e3e1…",
+  "policy": "https://example.org/policy/loan-approval/v1.2.0",
+  "result": { "approved": false, "reason": "risk_high" },
+  "owner": "urn:engine:policy-as-code@1.4.3"
+}

@@ -1,0 +1,12 @@
+PREFIX dcat: <http://www.w3.org/ns/dcat#>
+PREFIX dct:  <http://purl.org/dc/terms/>
+PREFIX pa:   <https://example.org/policy-as-code/v1#>
+
+SELECT ?id ?title ?pii
+WHERE {
+  ?ds a dcat:Dataset ;
+      dct:identifier ?id ;
+      dct:title ?title ;
+      pa:pii_class ?pii .
+}
+ORDER BY ?id

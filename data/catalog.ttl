@@ -1,0 +1,70 @@
+@prefix dcat: <http://www.w3.org/ns/dcat#> .
+@prefix dct:  <http://purl.org/dc/terms/> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+@prefix pa:   <https://example.org/policy-as-code/v1#> .
+@prefix ds:   <https://example.org/dataset/> .
+@prefix cat:  <https://example.org/catalog/> .
+
+cat:main a dcat:Catalog ;
+  dct:title "Data Catalog" ;
+  dct:description "Datasets referenced by policies" ;
+  dct:publisher <https://example.org/org> ;
+  dct:language "en" ;
+  dcat:dataset ds:credit-bureau, ds:loan-applications, ds:customers .
+
+# helper vocabulary (simple, pragmatic)
+pa:piiClass a skos:ConceptScheme .
+pa:PII_None a skos:Concept ; skos:inScheme pa:piiClass ; skos:prefLabel "none" .
+pa:PII_Low  a skos:Concept ; skos:inScheme pa:piiClass ; skos:prefLabel "low" .
+pa:PII_Med  a skos:Concept ; skos:inScheme pa:piiClass ; skos:prefLabel "medium" .
+pa:PII_High a skos:Concept ; skos:inScheme pa:piiClass ; skos:prefLabel "high" .
+
+# dataset: credit bureau pulls
+ds:credit-bureau a dcat:Dataset ;
+  dct:title "Credit Bureau Snapshot" ;
+  dct:description "Monthly credit bureau attributes per applicant" ;
+  dct:identifier "credit-bureau-raw" ;
+  dct:accrualPeriodicity "R/P1M" ;
+  dct:creator <https://example.org/org/credit-risk> ;
+  dct:issued "2024-01-01"^^xsd:date ;
+  dct:modified "2025-10-01"^^xsd:date ;
+  pa:pii_class pa:PII_High ;
+  pa:lawful_basis "GDPR-6-1-b" ;
+  pa:retention_days "1825"^^xsd:integer ;
+  dcat:distribution [
+    a dcat:Distribution ;
+    dct:format "parquet" ;
+    dcat:accessURL <s3://data/credit_bureau/snapshot/> ;
+  ] .
+
+# dataset: loan applications
+ds:loan-applications a dcat:Dataset ;
+  dct:title "Loan Applications" ;
+  dct:description "Applicants, requested amounts, risk scores, decision outcomes" ;
+  dct:identifier "loan-apps" ;
+  dct:creator <https://example.org/org/credit-risk> ;
+  dct:modified "2025-10-15"^^xsd:date ;
+  pa:pii_class pa:PII_Med ;
+  pa:lawful_basis "GDPR-6-1-b" ;
+  pa:retention_days "730"^^xsd:integer ;
+  dcat:distribution [
+    a dcat:Distribution ;
+    dct:format "delta" ;
+    dcat:accessURL <s3://data/loan_applications/> ;
+  ] .
+
+# dataset: customer master (reference)
+ds:customers a dcat:Dataset ;
+  dct:title "Customer Master" ;
+  dct:identifier "customers" ;
+  dct:creator <https://example.org/org/crm> ;
+  dct:modified "2025-09-28"^^xsd:date ;
+  pa:pii_class pa:PII_High ;
+  pa:lawful_basis "GDPR-6-1-b" ;
+  pa:retention_days "3650"^^xsd:integer ;
+  dcat:distribution [
+    a dcat:Distribution ;
+    dct:format "postgres" ;
+    dcat:accessURL <jdbc:postgresql://db/customers> ;
+  ] .

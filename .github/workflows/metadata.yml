@@ -1,0 +1,17 @@
+name: Validate Metadata
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  validate-jsonld:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4.1.1
+      - name: Install validator
+        run: pip install pyshacl rdflib
+      - name: Validate Policy Metadata
+        run: |
+          pyshacl -s schemas/policy_shape.ttl -df json-ld -i examples/policies/loan_approval.metadata.jsonld

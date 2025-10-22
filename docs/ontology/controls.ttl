@@ -1,0 +1,73 @@
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+@prefix dct:  <http://purl.org/dc/terms/> .
+@prefix ctr:  <https://example.org/policy-as-code/controls#> .
+
+ctr:Scheme a skos:ConceptScheme ;
+  dct:title "Policy-as-Code Control Scheme" ;
+  dct:creator "Policy-as-Code Maintainers" ;
+  dct:identifier "controls-v1" .
+
+# GDPR (selected)
+ctr:gdpr a skos:Collection ;
+  skos:prefLabel "GDPR" ;
+  skos:member ctr:gdpr-art6-1a, ctr:gdpr-art6-1b, ctr:gdpr-art6-1c, ctr:gdpr-art6-1d, ctr:gdpr-art6-1e, ctr:gdpr-art6-1f,
+               ctr:gdpr-art5-1c, ctr:gdpr-art5-1e, ctr:gdpr-art25, ctr:gdpr-art32 .
+
+ctr:gdpr-art6-1f a skos:Concept ;
+  skos:inScheme ctr:Scheme ;
+  skos:prefLabel "GDPR Art. 6(1)(f) Legitimate interests" ;
+  skos:notation "GDPR-6-1-f" ;
+  skos:definition "Processing is lawful if necessary for the purposes of legitimate interests, except where overridden by interests or fundamental rights of the data subject." .
+
+ctr:gdpr-art6-1b a skos:Concept ;
+  skos:inScheme ctr:Scheme ;
+  skos:prefLabel "GDPR Art. 6(1)(b) Contract" ;
+  skos:notation "GDPR-6-1-b" ;
+  skos:definition "Processing necessary for the performance of a contract with the data subject." .
+
+ctr:gdpr-art5-1c a skos:Concept ;
+  skos:inScheme ctr:Scheme ;
+  skos:prefLabel "GDPR Art. 5(1)(c) Data minimisation" ;
+  skos:notation "GDPR-5-1-c" ;
+  skos:definition "Personal data must be adequate, relevant and limited to what is necessary." .
+
+ctr:gdpr-art5-1e a skos:Concept ;
+  skos:inScheme ctr:Scheme ;
+  skos:prefLabel "GDPR Art. 5(1)(e) Storage limitation" ;
+  skos:notation "GDPR-5-1-e" ;
+  skos:definition "Personal data kept no longer than necessary for the purposes." .
+
+ctr:gdpr-art25 a skos:Concept ;
+  skos:inScheme ctr:Scheme ;
+  skos:prefLabel "GDPR Art. 25 Privacy by design and by default" ;
+  skos:notation "GDPR-25" .
+
+ctr:gdpr-art32 a skos:Concept ;
+  skos:inScheme ctr:Scheme ;
+  skos:prefLabel "GDPR Art. 32 Security of processing" ;
+  skos:notation "GDPR-32" .
+
+# ISO/IEC 27001:2022 (selected)
+ctr:iso27001 a skos:Collection ;
+  skos:prefLabel "ISO/IEC 27001:2022 Annex A" ;
+  skos:member ctr:iso-A-5-14, ctr:iso-A-8-2, ctr:iso-A-8-10, ctr:iso-A-8-12 .
+
+ctr:iso-A-8-2 a skos:Concept ;
+  skos:inScheme ctr:Scheme ;
+  skos:prefLabel "ISO A.8.2 Information classification" ;
+  skos:notation "ISO27001-A.8.2" .
+
+ctr:iso-A-8-10 a skos:Concept ;
+  skos:inScheme ctr:Scheme ;
+  skos:prefLabel "ISO A.8.10 Data deletion" ;
+  skos:notation "ISO27001-A.8.10" .
+
+ctr:iso-A-8-12 a skos:Concept ;
+  skos:inScheme ctr:Scheme ;
+  skos:prefLabel "ISO A.8.12 Data masking" ;
+  skos:notation "ISO27001-A.8.12" .
+
+ctr:iso-A-5-14 a skos:Concept ;
+  skos:inScheme ctr:Scheme ;
+  skos:prefLabel "ISO A.5.14 Information transfer" ;
+  skos:notation "ISO27001-A.5.14" .

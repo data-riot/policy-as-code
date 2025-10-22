@@ -1,0 +1,13 @@
+@prefix sh:  <http://www.w3.org/ns/shacl#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix dcat:<http://www.w3.org/ns/dcat#> .
+@prefix dct: <http://purl.org/dc/terms/> .
+@prefix pa:  <https://example.org/policy-as-code/v1#> .
+
+pa:DatasetShape a sh:NodeShape ;
+  sh:targetClass dcat:Dataset ;
+  sh:property [ sh:path dct:title ; sh:minCount 1 ] ;
+  sh:property [ sh:path dct:identifier ; sh:minCount 1 ] ;
+  sh:property [ sh:path pa:pii_class ; sh:minCount 1 ] ;
+  sh:property [ sh:path pa:retention_days ; sh:datatype xsd:integer ; sh:minInclusive 0 ] ;
+  sh:property [ sh:path dcat:distribution ; sh:minCount 1 ] .

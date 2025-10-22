@@ -1,0 +1,25 @@
+name: Graph & Metadata
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  validate-graph:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: pip install rdflib pyshacl
+      - name: Validate policy metadata
+        run: pyshacl -s schemas/policy_shape.ttl -df json-ld -i examples/policies/loan_approval.metadata.jsonld
+      - name: Validate catalog
+        run: pyshacl -s schemas/catalog_shape.ttl -df turtle -i data/catalog.ttl
+      - name: Validate controls TTL parses
+        run: |
+          python - <<'PY'
+          from rdflib import Graph
+          for path in ["docs/ontology/controls.ttl","data/catalog.ttl"]:
+              g=Graph().parse(path, format="turtle")
+              print(path, len(g), "triples")
+          PY

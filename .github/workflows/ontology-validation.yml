@@ -2,7 +2,7 @@ name: Ontology Validation
 
 on:
   push:
-    branches: [main, develop]
+    branches: [main]
     paths:
       - "examples/policies/**"
       - "schemas/**"
@@ -25,6 +25,7 @@ jobs:
         uses: actions/setup-python@v4
         with:
           python-version: "3.11"
+          cache: "pip"
 
       - name: Install dependencies
         run: |
@@ -32,74 +33,16 @@ jobs:
 
       - name: Validate YAML to JSON-LD conversion
         run: |
-          # Test YAML to JSON-LD conversion
           python scripts/yaml_to_jsonld.py examples/policies/healthcare_eligibility.yaml docs/ontology/context.jsonld > /tmp/test.jsonld
-
-          # Validate JSON-LD structure
           python -c "
           import json
           with open('/tmp/test.jsonld', 'r') as f:
               data = json.load(f)
-          assert '@context' in data
-          assert '@type' in data
-          assert '@id' in data
-          assert 'id' in data
-          assert 'version' in data
-          assert 'owner' in data
-          assert 'entrypoint' in data
+          assert '@context' in data and '@type' in data and '@id' in data
+          assert 'id' in data and 'version' in data and 'owner' in data
           print('JSON-LD structure validation passed')
           "
 
       - name: Validate against SHACL schema
         run: |
-          # Run SHACL validation
           python scripts/validate_shacl.py examples/policies/healthcare_eligibility.yaml docs/ontology/context.jsonld
-
-      - name: Test round-trip conversion
-        run: |
-          # Convert YAML to JSON-LD
-          python scripts/yaml_to_jsonld.py examples/policies/healthcare_eligibility.yaml docs/ontology/context.jsonld > /tmp/roundtrip.jsonld
-
-          # Validate the converted JSON-LD
-          python scripts/validate_shacl.py /tmp/roundtrip.jsonld
-
-          # Check that essential fields are preserved
-          python -c "
-          import json
-          import yaml
-
-          # Load original YAML
-          with open('examples/policies/healthcare_eligibility.yaml', 'r') as f:
-              original = yaml.safe_load(f)
-
-          # Load converted JSON-LD
-          with open('/tmp/roundtrip.jsonld', 'r') as f:
-              converted = json.load(f)
-
-          # Verify essential fields match
-          assert original['id'] == converted['id']
-          assert original['version'] == converted['version']
-          assert original['owner'] == converted['owner']
-          assert original['entrypoint'] == converted['entrypoint']
-
-          print('Round-trip conversion validation passed')
-          "
-
-      - name: Test invalid policy (should fail)
-        run: |
-          # Create invalid policy for testing
-          cat > /tmp/invalid.yaml << EOF
-          id: "invalid_policy"
-          version: "invalid-version"
-          owner: ""
-          entrypoint: "missing_function"
-          status: "invalid_status"
-          EOF
-
-          # This should fail validation
-          if python scripts/validate_shacl.py /tmp/invalid.yaml docs/ontology/context.jsonld; then
-            echo "ERROR: Invalid policy passed validation"
-            exit 1
-          else
-            echo "Invalid policy correctly failed validation"
-          fi

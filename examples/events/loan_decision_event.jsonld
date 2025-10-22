@@ -6,6 +6,9 @@
   "bundle_digest": "sha256:92cfb2…",
   "input_hash": "sha256:49e3e1…",
   "policy": "https://example.org/policy/loan-approval/v1.2.0",
-  "result": { "approved": false, "reason": "risk_high" },
+  "result": {
+    "approved": false,
+    "reason": "risk_high"
+  },
   "owner": "urn:engine:policy-as-code@1.4.3"
 }

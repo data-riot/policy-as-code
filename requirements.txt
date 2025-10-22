@@ -15,3 +15,8 @@ python-multipart>=0.0.6  # For file uploads
 httpx>=0.25.2  # For API testing
 pandas>=2.0.0  # For analytics
 numpy>=1.24.0  # For numerical operations
+
+# Semantic Web and validation dependencies
+pyshacl>=0.30.0  # For SHACL validation
+rdflib>=7.0.0  # For RDF/JSON-LD processing
+jsonschema>=4.0.0  # For JSON schema validation

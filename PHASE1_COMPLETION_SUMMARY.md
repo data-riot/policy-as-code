@@ -1,5 +1,7 @@
 # Phase 1 Completion Summary
 
+> **📋 Note**: This file is maintained for historical reference. For current project status, see **[PROJECT_STATUS.md](./PROJECT_STATUS.md)**.
+
 ## 🎉 **Phase 1: Foundation Complete**
 
 The Policy as Code platform has successfully completed Phase 1 development, delivering a comprehensive foundation for agentic government operations with production-ready core features.

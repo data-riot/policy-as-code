@@ -1,5 +1,7 @@
 # Policy as Code Platform - Development Roadmap
 
+> **📋 Note**: For current project status, see **[PROJECT_STATUS.md](./PROJECT_STATUS.md)**.
+
 ## 🎯 **Current Status: Production-Grade Foundation**
 
 The Policy as Code platform now has a solid foundation with:

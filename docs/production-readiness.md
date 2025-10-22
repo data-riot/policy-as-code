@@ -1,5 +1,7 @@
 # Production Readiness Assessment
 
+> **📋 Note**: For current project status, see **[PROJECT_STATUS.md](../PROJECT_STATUS.md)**.
+
 ## 🎯 **Current Status: Foundation Complete, Production Hardening Required**
 
 The Policy as Code platform has achieved a solid foundation with comprehensive architecture and core functionality. However, production deployment requires addressing specific hardening requirements.

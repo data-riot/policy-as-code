@@ -60,12 +60,25 @@ def validate_with_shacl(jsonld_policy: Dict[str, Any], shape_file: str) -> List[
         with tempfile.NamedTemporaryFile(
             mode="w", suffix=".jsonld", delete=False
         ) as tmp_file:
-            json.dump(jsonld_policy, tmp_file, indent=2)
+            # Fix context path to be absolute
+            if "@context" in jsonld_policy and isinstance(
+                jsonld_policy["@context"], str
+            ):
+                if jsonld_policy["@context"].startswith("../../"):
+                    # Convert relative path to absolute
+                    context_path = Path(jsonld_policy["@context"]).resolve()
+                    jsonld_policy_copy = jsonld_policy.copy()
+                    jsonld_policy_copy["@context"] = str(context_path)
+                    json.dump(jsonld_policy_copy, tmp_file, indent=2)
+                else:
+                    json.dump(jsonld_policy, tmp_file, indent=2)
+            else:
+                json.dump(jsonld_policy, tmp_file, indent=2)
             tmp_path = tmp_file.name
 
         # Run pyshacl validation
         result = subprocess.run(
-            ["pyshacl", "-s", shape_file, "-df", "json-ld", "-i", tmp_path],
+            ["python3", "-m", "pyshacl", "-s", shape_file, "-df", "json-ld", tmp_path],
             capture_output=True,
             text=True,
         )

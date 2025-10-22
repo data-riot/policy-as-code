@@ -1,7 +1,35 @@
 {
-  "@context": "https://example.org/policy-as-code/v1/context.jsonld",
+  "@context": {
+    "@vocab": "https://example.org/policy-as-code/v1#",
+    "dct": "http://purl.org/dc/terms/",
+    "prov": "http://www.w3.org/ns/prov#",
+    "odrl": "http://www.w3.org/ns/odrl/2/",
+    "dcat": "http://www.w3.org/ns/dcat#",
+    "schema": "http://schema.org/",
+    "skos": "http://www.w3.org/2004/02/skos/core#",
+    "Policy": "https://example.org/policy-as-code/v1#Policy",
+    "DecisionEvent": "https://example.org/policy-as-code/v1#DecisionEvent",
+    "Dataset": "https://example.org/policy-as-code/v1#Dataset",
+    "Control": "https://example.org/policy-as-code/v1#Control",
+    "id": "@id",
+    "type": "@type",
+    "name": "dct:title",
+    "description": "dct:description",
+    "version": "schema:version",
+    "owner": "dct:creator",
+    "jurisdiction": "schema:jurisdiction",
+    "controls": {
+      "@id": "odrl:hasPolicy",
+      "@type": "@id"
+    },
+    "entrypoint": "schema:softwareHelp",
+    "bundle_digest": "prov:used",
+    "input_hash": "prov:entity",
+    "result": "prov:value",
+    "timestamp": "prov:generatedAtTime"
+  },
   "id": "https://example.org/policy/loan-approval/v1.2.0",
-  "type": "Policy",
+  "@type": "Policy",
   "name": "Loan Approval",
   "description": "Approves or denies loans based on applicant risk and credit data.",
   "version": "1.2.0",
@@ -11,5 +39,11 @@
     "https://example.org/control/gdpr-art6-1f",
     "https://example.org/control/iso27001-A.8.2"
   ],
-  "entrypoint": "authz.loan_approval.allow"
+  "entrypoint": "authz.loan_approval.allow",
+  "https://example.org/policy-as-code/v1#entrypoint": "authz.loan_approval.allow",
+  "https://example.org/policy-as-code/v1#owner": "Credit Risk Team",
+  "https://example.org/policy-as-code/v1#controls": [
+    "https://example.org/control/gdpr-art6-1f",
+    "https://example.org/control/iso27001-A.8.2"
+  ]
 }

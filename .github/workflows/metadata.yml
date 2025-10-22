@@ -11,7 +11,8 @@ jobs:
     steps:
       - uses: actions/checkout@v4.1.1
       - name: Install validator
-        run: pip install pyshacl rdflib
+        run: |
+          pip install pyshacl rdflib jsonschema pyyaml
       - name: Validate Policy Metadata
         run: |
-          pyshacl -s schemas/policy_shape.ttl -df json-ld -i examples/policies/loan_approval.metadata.jsonld
+          python3 scripts/validate_policies_comprehensive.py

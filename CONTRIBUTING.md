@@ -11,7 +11,7 @@ Thank you for your interest in contributing to Policy as Code! This project aims
 - ✅ **Code Quality**: Production-grade code with comprehensive testing
 - 🚧 **OSS Readiness**: Following [PUBLIC_BACKLOG.md](./PUBLIC_BACKLOG.md) for open-source hygiene
 
-See [Production Readiness Assessment](docs/production-readiness.md) for details.
+See [PROJECT_STATUS.md](./PROJECT_STATUS.md) for complete project status and [Production Readiness Assessment](docs/production-readiness.md) for details.
 
 ## 📋 **Development Priorities**
 

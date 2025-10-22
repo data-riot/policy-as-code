@@ -10,37 +10,37 @@ jobs:
     if: github.event.pull_request.draft == false
 
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v4
-      with:
-        fetch-depth: 0
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
-    - name: Set up Python
-      uses: actions/setup-python@v4
-      with:
-        python-version: '3.11'
-        cache: 'pip'
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.11"
+          cache: "pip"
 
-    - name: Install dependencies
-      run: |
-        pip install requests pyyaml
+      - name: Install dependencies
+        run: |
+          pip install requests pyyaml
 
-    - name: Generate and comment PR Summary
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        PR_NUMBER: ${{ github.event.pull_request.number }}
-        REPO_OWNER: ${{ github.repository_owner }}
-        REPO_NAME: ${{ github.event.repository.name }}
-      run: |
-        python scripts/generate_pr_summary.py \
-          --pr-number $PR_NUMBER \
-          --repo-owner $REPO_OWNER \
-          --repo-name $REPO_NAME \
-          --base-branch ${{ github.event.pull_request.base.ref }} \
-          --head-branch ${{ github.event.pull_request.head.ref }}
-        
-        python scripts/comment_pr_summary.py \
-          --pr-number $PR_NUMBER \
-          --repo-owner $REPO_OWNER \
-          --repo-name $REPO_NAME \
-          --summary-file pr_summary.md
+      - name: Generate and comment PR Summary
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          REPO_OWNER: ${{ github.repository_owner }}
+          REPO_NAME: ${{ github.event.repository.name }}
+        run: |
+          python scripts/generate_pr_summary.py \
+            --pr-number $PR_NUMBER \
+            --repo-owner $REPO_OWNER \
+            --repo-name $REPO_NAME \
+            --base-branch ${{ github.event.pull_request.base.ref }} \
+            --head-branch ${{ github.event.pull_request.head.ref }}
+
+          python scripts/comment_pr_summary.py \
+            --pr-number $PR_NUMBER \
+            --repo-owner $REPO_OWNER \
+            --repo-name $REPO_NAME \
+            --summary-file pr_summary.md

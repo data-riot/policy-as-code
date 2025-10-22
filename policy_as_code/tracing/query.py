@@ -5,6 +5,7 @@ This module provides advanced querying capabilities for trace records,
 enabling complex searches, filtering, and analytics on trace data.
 """
 
+import hashlib
 import json
 from datetime import datetime, timedelta
 from typing import Any, Dict, List, Optional, Union

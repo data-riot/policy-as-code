@@ -214,7 +214,7 @@ class ELIValidator:
             result = ELIValidationResult(
                 status=ELIValidationStatus.INVALID_FORMAT,
                 eli_uri=eli_uri,
-                error_message=f"Invalid ELI URI format. Expected: https://finlex.fi/eli/laki/YYYY/NUMBER#SECTION",
+                error_message="Invalid ELI URI format. Expected: https://finlex.fi/eli/laki/YYYY/NUMBER#SECTION",
             )
             self.validation_cache[eli_uri] = result
             return result

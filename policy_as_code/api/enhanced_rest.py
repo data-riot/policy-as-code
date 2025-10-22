@@ -7,6 +7,9 @@ from datetime import datetime, timedelta
 from typing import Any, Dict, List, Optional
 from uuid import UUID
 import json
+import hashlib
+import time
+import logging
 
 from fastapi import (
     FastAPI,
@@ -20,10 +23,6 @@ from fastapi import (
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from pydantic import BaseModel, Field
-from typing import Optional, List
-import hashlib
-import time
-import logging
 
 from policy_as_code.core.enhanced_engine import DecisionEngine
 from policy_as_code.core.types import DecisionContext, DecisionResult
@@ -847,8 +846,6 @@ async def validate_eli_references_batch(
 ):
     """Validate multiple ELI references"""
     try:
-        from policy_as_code.validation.eli_validator import ELIValidator
-
         results = {}
         async with ELIValidator() as validator:
             for eli_uri in eli_uris:

@@ -11,7 +11,9 @@ from strawberry.types import Info
 
 from policy_as_code.core.enhanced_engine import DecisionEngine
 from policy_as_code.core.types import DecisionContext, DecisionResult
-from policy_as_code.tracing.enhanced_ledger import TraceEntryType
+from policy_as_code.tracing.enhanced_ledger import (
+    TraceEntryType as LedgerTraceEntryType,
+)
 
 
 @strawberry.type

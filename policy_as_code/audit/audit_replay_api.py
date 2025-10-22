@@ -336,7 +336,7 @@ class AuditReplayEngine:
                     version=version,
                     drift_type=DriftType.HASH_MISMATCH,
                     severity="critical",
-                    description=f"Decision function hash mismatch",
+                    description="Decision function hash mismatch",
                     detected_at=datetime.utcnow(),
                     expected_value=spec_hash,
                     actual_value=stored_hash,

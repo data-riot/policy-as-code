@@ -1,0 +1,301 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "CoreOntology",
+  "description": "Core ontology v0.1 for Policy as Code platform - DVV integration",
+  "version": "0.1",
+  "type": "object",
+  "properties": {
+    "Person": {
+      "type": "object",
+      "description": "Person entity with DVV integration",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "HETU or VTJ ID",
+          "pattern": "^(\\d{6}[+-A]\\d{3}[0-9A-Z]|VTJ_[0-9]+)$"
+        },
+        "domicile_code": {
+          "type": "string",
+          "description": "VTJ municipality code",
+          "pattern": "^[0-9]{3}$"
+        },
+        "age": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 150,
+          "description": "Age in years"
+        },
+        "citizenship": {
+          "type": "string",
+          "description": "Citizenship code (ISO 3166-1 alpha-2)",
+          "pattern": "^[A-Z]{2}$"
+        },
+        "residence_status": {
+          "type": "string",
+          "enum": [
+            "citizen",
+            "permanent_resident",
+            "temporary_resident",
+            "refugee",
+            "other"
+          ],
+          "description": "Legal residence status"
+        }
+      },
+      "required": [
+        "id"
+      ]
+    },
+    "Income": {
+      "type": "object",
+      "description": "Income information with source tracking",
+      "properties": {
+        "monthly_net_eur": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Monthly net income in euros"
+        },
+        "source": {
+          "type": "string",
+          "enum": [
+            "vero",
+            "kela",
+            "manual",
+            "dvv"
+          ],
+          "description": "Data source for income information"
+        },
+        "verification_date": {
+          "type": "string",
+          "format": "date",
+          "description": "Date when income was verified"
+        },
+        "income_type": {
+          "type": "string",
+          "enum": [
+            "salary",
+            "pension",
+            "benefit",
+            "business",
+            "investment",
+            "other"
+          ],
+          "description": "Type of income"
+        }
+      },
+      "required": [
+        "monthly_net_eur",
+        "source"
+      ]
+    },
+    "Residence": {
+      "type": "object",
+      "description": "Residence information with municipality codes",
+      "properties": {
+        "municipality_code": {
+          "type": "string",
+          "description": "VTJ municipality code",
+          "pattern": "^[0-9]{3}$"
+        },
+        "municipality_name": {
+          "type": "string",
+          "description": "Municipality name in Finnish"
+        },
+        "since": {
+          "type": "string",
+          "format": "date",
+          "description": "Residence start date"
+        },
+        "residence_type": {
+          "type": "string",
+          "enum": [
+            "permanent",
+            "temporary",
+            "registered",
+            "unregistered"
+          ],
+          "description": "Type of residence"
+        },
+        "address": {
+          "type": "object",
+          "properties": {
+            "street": {
+              "type": "string",
+              "description": "Street address"
+            },
+            "postal_code": {
+              "type": "string",
+              "pattern": "^[0-9]{5}$",
+              "description": "Postal code"
+            },
+            "city": {
+              "type": "string",
+              "description": "City name"
+            }
+          }
+        }
+      },
+      "required": [
+        "municipality_code"
+      ]
+    },
+    "Family": {
+      "type": "object",
+      "description": "Family relationships and care network",
+      "properties": {
+        "marital_status": {
+          "type": "string",
+          "enum": [
+            "single",
+            "married",
+            "divorced",
+            "widowed",
+            "cohabiting"
+          ],
+          "description": "Marital status"
+        },
+        "dependents": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "description": "Dependent person ID"
+              },
+              "relationship": {
+                "type": "string",
+                "enum": [
+                  "child",
+                  "spouse",
+                  "parent",
+                  "sibling",
+                  "other"
+                ],
+                "description": "Relationship to main person"
+              },
+              "age": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 150
+              },
+              "care_level": {
+                "type": "string",
+                "enum": [
+                  "full_care",
+                  "partial_care",
+                  "supervision",
+                  "none"
+                ],
+                "description": "Level of care required"
+              }
+            },
+            "required": [
+              "id",
+              "relationship"
+            ]
+          }
+        },
+        "care_network": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "caregiver_id": {
+                "type": "string",
+                "description": "Caregiver person ID"
+              },
+              "care_type": {
+                "type": "string",
+                "enum": [
+                  "primary",
+                  "secondary",
+                  "emergency",
+                  "professional"
+                ],
+                "description": "Type of care provided"
+              },
+              "care_intensity": {
+                "type": "string",
+                "enum": [
+                  "high",
+                  "medium",
+                  "low",
+                  "occasional"
+                ],
+                "description": "Intensity of care"
+              }
+            },
+            "required": [
+              "caregiver_id",
+              "care_type"
+            ]
+          }
+        }
+      }
+    },
+    "EconomicActivity": {
+      "type": "object",
+      "description": "Economic activity and work capacity",
+      "properties": {
+        "employment_status": {
+          "type": "string",
+          "enum": [
+            "employed",
+            "unemployed",
+            "student",
+            "retired",
+            "disabled",
+            "other"
+          ],
+          "description": "Current employment status"
+        },
+        "work_capacity": {
+          "type": "string",
+          "enum": [
+            "full",
+            "partial",
+            "limited",
+            "none"
+          ],
+          "description": "Work capacity assessment"
+        },
+        "barriers_to_work": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "health",
+              "care_responsibilities",
+              "education",
+              "language",
+              "transportation",
+              "discrimination",
+              "other"
+            ]
+          },
+          "description": "Barriers preventing work"
+        },
+        "education_level": {
+          "type": "string",
+          "enum": [
+            "basic",
+            "secondary",
+            "vocational",
+            "higher",
+            "postgraduate"
+          ],
+          "description": "Highest education level"
+        },
+        "skills": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Relevant skills and competencies"
+        }
+      }
+    }
+  },
+  "additionalProperties": false
+}

@@ -221,7 +221,7 @@ COMMON_LEGAL_REFERENCES = {
     "finnish_data_protection_act": LawReference(
         system=LegalSystem.FINLEX,
         act_id="2018/1050",
-        title="Henkilötietojen käsittelyä koskeva laki",
+        title="Personal Data Processing Act",
         description="Finnish Data Protection Act",
     ),
 }

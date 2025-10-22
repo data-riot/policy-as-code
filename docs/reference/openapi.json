@@ -1,13 +1,12 @@
 {
   "openapi": "3.0.3",
   "info": {
-    "title": "Policy as Code API",
-    "description": "Production-grade REST API for Policy as Code platform with governance features: immutable trace ledger, legal compliance, digital signatures, and audit capabilities",
+    "title": "Policy as Code Platform API",
+    "description": "Comprehensive governance platform for managing decision logic as versioned, auditable software artifacts",
     "version": "1.0.0",
     "contact": {
-      "name": "Policy as Code Team",
-      "email": "",
-      "url": ""
+      "name": "Policy as Code Platform",
+      "url": "https://github.com/data-riot/policy-as-code"
     },
     "license": {
       "name": "MIT",
@@ -16,41 +15,130 @@
   },
   "servers": [
     {
-      "url": "https://api.localhost/v1",
-      "description": "Production server"
-    },
-    {
-      "url": "https://staging-api.localhost/v1",
-      "description": "Staging server"
-    },
-    {
       "url": "http://localhost:8000",
       "description": "Development server"
+    },
+    {
+      "url": "https://api.policy-as-code.gov",
+      "description": "Production server"
     }
   ],
   "security": [
     {
-      "JWT": []
+      "BearerAuth": []
     },
     {
       "mTLS": []
     }
   ],
   "paths": {
-    "/execute": {
+    "/health": {
+      "get": {
+        "summary": "Health Check",
+        "description": "Get system health status",
+        "operationId": "healthCheck",
+        "responses": {
+          "200": {
+            "description": "System is healthy",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HealthStatus"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/registry/functions": {
+      "get": {
+        "summary": "List Decision Functions",
+        "description": "Get list of all registered decision functions",
+        "operationId": "listFunctions",
+        "responses": {
+          "200": {
+            "description": "List of decision functions",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/DecisionFunction"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
       "post": {
-        "summary": "Execute Decision Function",
-        "description": "Execute a decision function with input validation, legal compliance checking, and immutable trace recording",
-        "operationId": "executeDecisionFunction",
-        "tags": [
-          "Execution"
-        ],
-        "security": [
-          {
-            "JWT": []
+        "summary": "Register Decision Function",
+        "description": "Register a new decision function",
+        "operationId": "registerFunction",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DecisionFunctionSpec"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Decision function registered successfully"
           },
+          "400": {
+            "description": "Invalid decision function specification"
+          }
+        }
+      }
+    },
+    "/registry/functions/{function_id}": {
+      "get": {
+        "summary": "Get Decision Function",
+        "description": "Get a specific decision function by ID",
+        "operationId": "getFunction",
+        "parameters": [
           {
-            "mTLS": []
+            "name": "function_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Decision function details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DecisionFunction"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Decision function not found"
+          }
+        }
+      },
+      "put": {
+        "summary": "Update Decision Function",
+        "description": "Update an existing decision function",
+        "operationId": "updateFunction",
+        "parameters": [
+          {
+            "name": "function_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
           }
         ],
         "requestBody": {
@@ -58,25 +146,65 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/ExecutionRequest"
-              },
-              "examples": {
-                "loan_eligibility": {
-                  "summary": "Loan Eligibility Check",
-                  "value": {
-                    "function_id": "loan_eligibility",
-                    "version": "1.0.0",
-                    "input_data": {
-                      "applicant_id": "12345",
-                      "loan_amount": 50000,
-                      "credit_score": 750,
-                      "income": 80000
-                    },
-                    "nonce": "req_1234567890",
-                    "request_id": "req_abc123",
-                    "correlation_id": "corr_xyz789"
-                  }
-                }
+                "$ref": "#/components/schemas/DecisionFunctionSpec"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Decision function updated successfully"
+          },
+          "404": {
+            "description": "Decision function not found"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete Decision Function",
+        "description": "Delete a decision function",
+        "operationId": "deleteFunction",
+        "parameters": [
+          {
+            "name": "function_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Decision function deleted successfully"
+          },
+          "404": {
+            "description": "Decision function not found"
+          }
+        }
+      }
+    },
+    "/decisions/{function_id}": {
+      "post": {
+        "summary": "Execute Decision",
+        "description": "Execute a decision function with input data",
+        "operationId": "executeDecision",
+        "parameters": [
+          {
+            "name": "function_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DecisionInput"
               }
             }
           }
@@ -87,53 +215,149 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ExecutionResponse"
+                  "$ref": "#/components/schemas/DecisionResult"
                 }
               }
             }
           },
           "400": {
-            "description": "Bad request - validation error",
+            "description": "Invalid input data"
+          },
+          "404": {
+            "description": "Decision function not found"
+          }
+        }
+      }
+    },
+    "/audit/reports": {
+      "get": {
+        "summary": "Get Audit Reports",
+        "description": "Get audit reports for decision functions",
+        "operationId": "getAuditReports",
+        "parameters": [
+          {
+            "name": "function_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "start_date",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
+          },
+          {
+            "name": "end_date",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Audit reports",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/AuditReport"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/legal/validate": {
+      "post": {
+        "summary": "Validate Legal Reference",
+        "description": "Validate a legal reference (ELI, Finlex, EUR-Lex)",
+        "operationId": "validateLegalReference",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "reference": {
+                    "type": "string",
+                    "description": "Legal reference URL or identifier"
+                  },
+                  "reference_type": {
+                    "type": "string",
+                    "enum": [
+                      "ELI",
+                      "Finlex",
+                      "EUR-Lex"
+                    ],
+                    "description": "Type of legal reference"
+                  }
+                },
+                "required": [
+                  "reference",
+                  "reference_type"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Legal reference validation result",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LegalValidationResult"
                 }
               }
             }
           },
-          "401": {
-            "description": "Unauthorized - invalid credentials",
+          "400": {
+            "description": "Invalid legal reference format"
+          }
+        }
+      }
+    },
+    "/functions/register": {
+      "post": {
+        "summary": "Register Decision Function",
+        "description": "Register a new decision function",
+        "operationId": "registerFunction",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FunctionRegistrationRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Function registered successfully",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
+                  "$ref": "#/components/schemas/FunctionRegistrationResponse"
                 }
               }
             }
           },
-          "403": {
-            "description": "Forbidden - insufficient permissions or unsigned function",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "429": {
-            "description": "Too many requests - rate limited",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Internal server error",
+          "400": {
+            "description": "Invalid request",
             "content": {
               "application/json": {
                 "schema": {
@@ -145,49 +369,135 @@
         }
       }
     },
+    "/functions/{function_id}/execute": {
+      "post": {
+        "summary": "Execute Decision Function",
+        "description": "Execute a decision function with input data",
+        "operationId": "executeFunction",
+        "parameters": [
+          {
+            "name": "function_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "version",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "latest"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ExecutionRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Execution successful",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExecutionResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Function not signed or unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/functions/{function_id}/history": {
+      "get": {
+        "summary": "Get Decision History",
+        "description": "Get execution history for a function",
+        "operationId": "getDecisionHistory",
+        "parameters": [
+          {
+            "name": "function_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 100,
+              "maximum": 1000
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 0
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "History retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HistoryResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/explain/{trace_id}": {
       "get": {
-        "summary": "Get Decision Explanation",
-        "description": "Retrieve human-readable explanation of a decision with legal basis and redacted sensitive information",
-        "operationId": "getDecisionExplanation",
-        "tags": [
-          "Explanation"
-        ],
+        "summary": "Explain Decision",
+        "description": "Get human-readable explanation of a decision",
+        "operationId": "explainDecision",
         "parameters": [
           {
             "name": "trace_id",
             "in": "path",
             "required": true,
             "schema": {
-              "type": "string",
-              "format": "uuid"
-            },
-            "description": "Trace ID of the decision to explain"
-          },
-          {
-            "name": "redact_sensitive",
-            "in": "query",
-            "required": false,
-            "schema": {
-              "type": "boolean",
-              "default": true
-            },
-            "description": "Whether to redact sensitive information"
-          },
-          {
-            "name": "language",
-            "in": "query",
-            "required": false,
-            "schema": {
-              "type": "string",
-              "enum": [
-                "en",
-                "fi",
-                "sv"
-              ],
-              "default": "en"
-            },
-            "description": "Language for explanation"
+              "type": "string"
+            }
           }
         ],
         "responses": {
@@ -217,11 +527,8 @@
     "/audit/report/latest": {
       "get": {
         "summary": "Get Latest Audit Report",
-        "description": "Retrieve the latest audit report with integrity verification results, drift detection, and compliance metrics",
+        "description": "Get the latest audit report with integrity statistics",
         "operationId": "getLatestAuditReport",
-        "tags": [
-          "Audit"
-        ],
         "responses": {
           "200": {
             "description": "Audit report retrieved successfully",
@@ -236,230 +543,37 @@
         }
       }
     },
-    "/audit/run": {
-      "post": {
-        "summary": "Trigger Audit",
-        "description": "Manually trigger an audit run for integrity verification and drift detection",
-        "operationId": "triggerAudit",
-        "tags": [
-          "Audit"
-        ],
-        "requestBody": {
-          "required": false,
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "audit_type": {
-                    "type": "string",
-                    "enum": [
-                      "full",
-                      "incremental",
-                      "drift_only"
-                    ],
-                    "default": "incremental"
-                  },
-                  "function_id": {
-                    "type": "string",
-                    "description": "Specific function to audit (optional)"
-                  },
-                  "date_range": {
-                    "type": "object",
-                    "properties": {
-                      "start": {
-                        "type": "string",
-                        "format": "date-time"
-                      },
-                      "end": {
-                        "type": "string",
-                        "format": "date-time"
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          }
-        },
-        "responses": {
-          "202": {
-            "description": "Audit triggered successfully",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "audit_id": {
-                      "type": "string"
-                    },
-                    "status": {
-                      "type": "string"
-                    },
-                    "estimated_completion": {
-                      "type": "string",
-                      "format": "date-time"
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/registry/{function_id}/releases": {
-      "post": {
-        "summary": "Create Release",
-        "description": "Create a new release for a decision function with legal references and change documentation",
-        "operationId": "createRelease",
-        "tags": [
-          "Registry"
-        ],
-        "parameters": [
-          {
-            "name": "function_id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            },
-            "description": "Decision function identifier"
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/ReleaseRequest"
-              }
-            }
-          }
-        },
-        "responses": {
-          "201": {
-            "description": "Release created successfully",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "message": {
-                      "type": "string"
-                    },
-                    "release": {
-                      "$ref": "#/components/schemas/Release"
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad request - validation error or missing legal references",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/registry/{function_id}/releases/{version}/sign": {
-      "post": {
-        "summary": "Sign Release",
-        "description": "Sign a release with owner or reviewer signature for activation",
-        "operationId": "signRelease",
-        "tags": [
-          "Registry"
-        ],
-        "parameters": [
-          {
-            "name": "function_id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "version",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "required": [
-                  "signer_id",
-                  "role"
-                ],
-                "properties": {
-                  "signer_id": {
-                    "type": "string"
-                  },
-                  "role": {
-                    "type": "string",
-                    "enum": [
-                      "owner",
-                      "reviewer"
-                    ]
-                  },
-                  "signature": {
-                    "type": "string",
-                    "description": "KMS-backed signature"
-                  }
-                }
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Release signed successfully"
-          },
-          "400": {
-            "description": "Invalid signature or role"
-          }
-        }
-      }
-    },
-    "/health": {
+    "/trace/integrity": {
       "get": {
-        "summary": "Health Check",
-        "description": "Comprehensive health check including database connectivity, service status, and governance features",
-        "operationId": "healthCheck",
-        "tags": [
-          "System"
-        ],
+        "summary": "Verify Trace Integrity",
+        "description": "Verify the integrity of the trace ledger",
+        "operationId": "verifyTraceIntegrity",
         "responses": {
           "200": {
-            "description": "System healthy",
+            "description": "Integrity verification completed",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/HealthResponse"
+                  "$ref": "#/components/schemas/IntegrityReport"
                 }
               }
             }
-          },
-          "503": {
-            "description": "System unhealthy",
+          }
+        }
+      }
+    },
+    "/performance/summary": {
+      "get": {
+        "summary": "Get Performance Summary",
+        "description": "Get system performance metrics and statistics",
+        "operationId": "getPerformanceSummary",
+        "responses": {
+          "200": {
+            "description": "Performance summary retrieved successfully",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/HealthResponse"
+                  "$ref": "#/components/schemas/PerformanceSummary"
                 }
               }
             }
@@ -470,333 +584,18 @@
   },
   "components": {
     "securitySchemes": {
-      "JWT": {
+      "BearerAuth": {
         "type": "http",
         "scheme": "bearer",
-        "bearerFormat": "JWT",
-        "description": "JWT token with RS256 signature from trusted issuer"
+        "bearerFormat": "JWT"
       },
       "mTLS": {
-        "type": "mutualTLS",
-        "description": "Mutual TLS with certificate pinning"
+        "type": "mutualTLS"
       }
     },
     "schemas": {
-      "ExecutionRequest": {
+      "HealthStatus": {
         "type": "object",
-        "required": [
-          "function_id",
-          "version",
-          "input_data",
-          "nonce"
-        ],
-        "properties": {
-          "function_id": {
-            "type": "string",
-            "description": "Decision function identifier"
-          },
-          "version": {
-            "type": "string",
-            "pattern": "^\\d+\\.\\d+\\.\\d+$",
-            "description": "Function version"
-          },
-          "input_data": {
-            "type": "object",
-            "description": "Input data for the decision function"
-          },
-          "nonce": {
-            "type": "string",
-            "description": "Request nonce for replay protection"
-          },
-          "request_id": {
-            "type": "string",
-            "description": "External request identifier"
-          },
-          "correlation_id": {
-            "type": "string",
-            "description": "Correlation ID for distributed tracing"
-          }
-        }
-      },
-      "ExecutionResponse": {
-        "type": "object",
-        "required": [
-          "trace_id",
-          "status",
-          "output_data"
-        ],
-        "properties": {
-          "trace_id": {
-            "type": "string",
-            "format": "uuid",
-            "description": "Trace ID for this execution"
-          },
-          "status": {
-            "type": "string",
-            "enum": [
-              "success",
-              "error"
-            ],
-            "description": "Execution status"
-          },
-          "output_data": {
-            "type": "object",
-            "description": "Decision function output"
-          },
-          "execution_time_ms": {
-            "type": "number",
-            "description": "Execution time in milliseconds"
-          },
-          "legal_references": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/LegalReference"
-            },
-            "description": "Legal references used in this decision"
-          },
-          "explanation_url": {
-            "type": "string",
-            "format": "uri",
-            "description": "URL to get explanation for this decision"
-          }
-        }
-      },
-      "ExplanationResponse": {
-        "type": "object",
-        "required": [
-          "trace_id",
-          "decision",
-          "legal_basis"
-        ],
-        "properties": {
-          "trace_id": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "decision": {
-            "type": "string",
-            "description": "Human-readable decision explanation"
-          },
-          "legal_basis": {
-            "type": "array",
-            "items": {
-              "type": "object"
-            },
-            "description": "Legal references (redacted if sensitive)"
-          },
-          "decision_path": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            },
-            "description": "Decision reasoning steps"
-          },
-          "confidence_score": {
-            "type": "number",
-            "minimum": 0,
-            "maximum": 1,
-            "description": "Confidence score for the decision"
-          },
-          "redacted_fields": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            },
-            "description": "Fields that were redacted"
-          }
-        }
-      },
-      "AuditReport": {
-        "type": "object",
-        "required": [
-          "report_id",
-          "generated_at",
-          "summary"
-        ],
-        "properties": {
-          "report_id": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "generated_at": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "summary": {
-            "type": "object",
-            "properties": {
-              "total_traces": {
-                "type": "integer"
-              },
-              "integrity_failures": {
-                "type": "integer"
-              },
-              "drift_detected": {
-                "type": "integer"
-              },
-              "chain_breaks": {
-                "type": "integer"
-              }
-            }
-          },
-          "details": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/AuditResult"
-            }
-          }
-        }
-      },
-      "AuditResult": {
-        "type": "object",
-        "required": [
-          "check_type",
-          "status",
-          "message"
-        ],
-        "properties": {
-          "check_type": {
-            "type": "string",
-            "enum": [
-              "hash_verification",
-              "chain_integrity",
-              "drift_detection"
-            ]
-          },
-          "status": {
-            "type": "string",
-            "enum": [
-              "passed",
-              "failed",
-              "warning"
-            ]
-          },
-          "message": {
-            "type": "string"
-          },
-          "details": {
-            "type": "object"
-          }
-        }
-      },
-      "ReleaseRequest": {
-        "type": "object",
-        "required": [
-          "version",
-          "legal_references",
-          "change_summary"
-        ],
-        "properties": {
-          "version": {
-            "type": "string",
-            "pattern": "^\\d+\\.\\d+\\.\\d+$"
-          },
-          "legal_references": {
-            "type": "array",
-            "minItems": 1,
-            "items": {
-              "$ref": "#/components/schemas/LegalReference"
-            }
-          },
-          "change_summary": {
-            "type": "string"
-          },
-          "risk_assessment": {
-            "type": "string",
-            "enum": [
-              "LOW",
-              "MEDIUM",
-              "HIGH",
-              "CRITICAL"
-            ]
-          },
-          "compliance_checklist": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            }
-          },
-          "release_notes": {
-            "type": "string"
-          }
-        }
-      },
-      "Release": {
-        "type": "object",
-        "required": [
-          "function_id",
-          "version",
-          "status"
-        ],
-        "properties": {
-          "function_id": {
-            "type": "string"
-          },
-          "version": {
-            "type": "string"
-          },
-          "status": {
-            "type": "string",
-            "enum": [
-              "draft",
-              "pending",
-              "approved",
-              "active"
-            ]
-          },
-          "created_at": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "signatures": {
-            "type": "array",
-            "items": {
-              "type": "object",
-              "properties": {
-                "signer_id": {
-                  "type": "string"
-                },
-                "role": {
-                  "type": "string"
-                },
-                "signed_at": {
-                  "type": "string",
-                  "format": "date-time"
-                }
-              }
-            }
-          }
-        }
-      },
-      "LegalReference": {
-        "type": "object",
-        "required": [
-          "iri",
-          "title"
-        ],
-        "properties": {
-          "iri": {
-            "type": "string",
-            "format": "uri",
-            "description": "Validated IRI (Finlex/EUR-Lex)"
-          },
-          "title": {
-            "type": "string"
-          },
-          "section": {
-            "type": "string"
-          },
-          "subsection": {
-            "type": "string"
-          }
-        }
-      },
-      "HealthResponse": {
-        "type": "object",
-        "required": [
-          "status",
-          "timestamp"
-        ],
         "properties": {
           "status": {
             "type": "string",
@@ -810,79 +609,520 @@
             "type": "string",
             "format": "date-time"
           },
-          "services": {
+          "version": {
+            "type": "string"
+          },
+          "components": {
             "type": "object",
             "properties": {
               "database": {
-                "type": "string"
+                "type": "string",
+                "enum": [
+                  "healthy",
+                  "degraded",
+                  "unhealthy"
+                ]
               },
-              "trace_ledger": {
-                "type": "string"
+              "ledger": {
+                "type": "string",
+                "enum": [
+                  "healthy",
+                  "degraded",
+                  "unhealthy"
+                ]
               },
-              "audit_service": {
-                "type": "string"
-              },
-              "legal_refs": {
-                "type": "string"
+              "monitoring": {
+                "type": "string",
+                "enum": [
+                  "healthy",
+                  "degraded",
+                  "unhealthy"
+                ]
               }
             }
+          }
+        },
+        "required": [
+          "status",
+          "timestamp",
+          "version"
+        ]
+      },
+      "FunctionRegistrationRequest": {
+        "type": "object",
+        "properties": {
+          "function_id": {
+            "type": "string",
+            "pattern": "^[a-zA-Z0-9_-]+$"
+          },
+          "version": {
+            "type": "string",
+            "pattern": "^\\d+\\.\\d+\\.\\d+$"
+          },
+          "function_code": {
+            "type": "string"
+          },
+          "legal_references": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/LegalReference"
+            },
+            "minItems": 1
+          },
+          "input_schema": {
+            "type": "object"
+          },
+          "output_schema": {
+            "type": "object"
+          },
+          "explain": {
+            "type": "object",
+            "properties": {
+              "allow_fields": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "redaction_policy": {
+                "type": "string",
+                "enum": [
+                  "strict",
+                  "moderate",
+                  "permissive"
+                ]
+              }
+            },
+            "required": [
+              "allow_fields",
+              "redaction_policy"
+            ]
+          }
+        },
+        "required": [
+          "function_id",
+          "version",
+          "function_code",
+          "legal_references",
+          "input_schema",
+          "output_schema",
+          "explain"
+        ]
+      },
+      "FunctionRegistrationResponse": {
+        "type": "object",
+        "properties": {
+          "function_id": {
+            "type": "string"
           },
           "version": {
             "type": "string"
           },
-          "uptime_seconds": {
-            "type": "number"
+          "status": {
+            "type": "string",
+            "enum": [
+              "registered",
+              "pending_signature",
+              "active"
+            ]
+          },
+          "trace_id": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
           }
-        }
+        },
+        "required": [
+          "function_id",
+          "version",
+          "status",
+          "trace_id"
+        ]
+      },
+      "ExecutionRequest": {
+        "type": "object",
+        "properties": {
+          "input_data": {
+            "type": "object"
+          },
+          "nonce": {
+            "type": "string",
+            "description": "Unique nonce for replay protection"
+          },
+          "ttl_seconds": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 3600,
+            "description": "Time-to-live for replay protection"
+          },
+          "caller_id": {
+            "type": "string",
+            "description": "Identifier of the calling system"
+          }
+        },
+        "required": [
+          "input_data",
+          "nonce",
+          "ttl_seconds",
+          "caller_id"
+        ]
+      },
+      "ExecutionResponse": {
+        "type": "object",
+        "properties": {
+          "trace_id": {
+            "type": "string"
+          },
+          "function_id": {
+            "type": "string"
+          },
+          "version": {
+            "type": "string"
+          },
+          "result": {
+            "type": "object"
+          },
+          "execution_time_ms": {
+            "type": "integer"
+          },
+          "timestamp": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "success": {
+            "type": "boolean"
+          },
+          "legal_references": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/LegalReference"
+            }
+          }
+        },
+        "required": [
+          "trace_id",
+          "function_id",
+          "version",
+          "result",
+          "execution_time_ms",
+          "timestamp",
+          "success"
+        ]
+      },
+      "HistoryResponse": {
+        "type": "object",
+        "properties": {
+          "function_id": {
+            "type": "string"
+          },
+          "decisions": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/DecisionRecord"
+            }
+          },
+          "total_count": {
+            "type": "integer"
+          },
+          "limit": {
+            "type": "integer"
+          },
+          "offset": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "function_id",
+          "decisions",
+          "total_count",
+          "limit",
+          "offset"
+        ]
+      },
+      "ExplanationResponse": {
+        "type": "object",
+        "properties": {
+          "trace_id": {
+            "type": "string"
+          },
+          "function_id": {
+            "type": "string"
+          },
+          "version": {
+            "type": "string"
+          },
+          "explanation": {
+            "type": "string",
+            "description": "Human-readable explanation"
+          },
+          "reasoning_steps": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "applied_rules": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "legal_basis": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "timestamp": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "trace_id",
+          "function_id",
+          "version",
+          "explanation",
+          "timestamp"
+        ]
+      },
+      "AuditReport": {
+        "type": "object",
+        "properties": {
+          "report_id": {
+            "type": "string"
+          },
+          "timestamp": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "integrity_status": {
+            "type": "string",
+            "enum": [
+              "verified",
+              "failed",
+              "partial"
+            ]
+          },
+          "chain_breaks": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "unsigned_attempts": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "drift_detected": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "total_entries": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "verified_entries": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "summary": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "report_id",
+          "timestamp",
+          "integrity_status",
+          "chain_breaks",
+          "unsigned_attempts",
+          "drift_detected",
+          "total_entries",
+          "verified_entries"
+        ]
+      },
+      "IntegrityReport": {
+        "type": "object",
+        "properties": {
+          "is_valid": {
+            "type": "boolean"
+          },
+          "total_entries": {
+            "type": "integer"
+          },
+          "verified_entries": {
+            "type": "integer"
+          },
+          "chain_breaks": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "entry_id": {
+                  "type": "string"
+                },
+                "expected_hash": {
+                  "type": "string"
+                },
+                "actual_hash": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "verification_time_ms": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "is_valid",
+          "total_entries",
+          "verified_entries"
+        ]
+      },
+      "PerformanceSummary": {
+        "type": "object",
+        "properties": {
+          "timestamp": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "total_decisions": {
+            "type": "integer"
+          },
+          "average_execution_time_ms": {
+            "type": "number"
+          },
+          "p95_execution_time_ms": {
+            "type": "number"
+          },
+          "p99_execution_time_ms": {
+            "type": "number"
+          },
+          "error_rate": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1
+          },
+          "active_functions": {
+            "type": "integer"
+          },
+          "system_metrics": {
+            "type": "object",
+            "properties": {
+              "cpu_usage_percent": {
+                "type": "number"
+              },
+              "memory_usage_percent": {
+                "type": "number"
+              },
+              "disk_usage_percent": {
+                "type": "number"
+              }
+            }
+          }
+        },
+        "required": [
+          "timestamp",
+          "total_decisions",
+          "average_execution_time_ms",
+          "error_rate",
+          "active_functions"
+        ]
+      },
+      "DecisionRecord": {
+        "type": "object",
+        "properties": {
+          "trace_id": {
+            "type": "string"
+          },
+          "function_id": {
+            "type": "string"
+          },
+          "version": {
+            "type": "string"
+          },
+          "execution_time_ms": {
+            "type": "integer"
+          },
+          "timestamp": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "success": {
+            "type": "boolean"
+          },
+          "input_hash": {
+            "type": "string"
+          },
+          "result_hash": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "trace_id",
+          "function_id",
+          "version",
+          "execution_time_ms",
+          "timestamp",
+          "success"
+        ]
+      },
+      "LegalReference": {
+        "type": "object",
+        "properties": {
+          "system": {
+            "type": "string",
+            "enum": [
+              "finlex",
+              "eur-lex",
+              "custom"
+            ]
+          },
+          "act_id": {
+            "type": "string"
+          },
+          "section": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "uri": {
+            "type": "string",
+            "format": "uri"
+          }
+        },
+        "required": [
+          "system",
+          "act_id",
+          "section",
+          "title",
+          "uri"
+        ]
       },
       "ErrorResponse": {
         "type": "object",
-        "required": [
-          "error",
-          "message"
-        ],
         "properties": {
           "error": {
-            "type": "string",
-            "description": "Error code"
+            "type": "string"
           },
           "message": {
-            "type": "string",
-            "description": "Human-readable error message"
-          },
-          "details": {
-            "type": "string",
-            "description": "Additional error details"
+            "type": "string"
           },
           "trace_id": {
+            "type": "string"
+          },
+          "timestamp": {
             "type": "string",
-            "format": "uuid",
-            "description": "Trace ID for error tracking"
+            "format": "date-time"
           }
-        }
+        },
+        "required": [
+          "error",
+          "message",
+          "timestamp"
+        ]
       }
     }
-  },
-  "tags": [
-    {
-      "name": "Execution",
-      "description": "Decision function execution endpoints"
-    },
-    {
-      "name": "Explanation",
-      "description": "Decision explanation and transparency endpoints"
-    },
-    {
-      "name": "Audit",
-      "description": "Audit and compliance verification endpoints"
-    },
-    {
-      "name": "Registry",
-      "description": "Decision function registry and release management"
-    },
-    {
-      "name": "System",
-      "description": "System health and monitoring endpoints"
-    }
-  ]
+  }
 }

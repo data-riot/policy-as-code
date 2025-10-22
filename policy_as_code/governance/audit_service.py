@@ -13,7 +13,7 @@ from typing import Any, Dict, List, Optional, Set
 
 from .errors import DecisionLayerError
 from .release import Release, ReleaseManager
-from .trace_ledger import TraceRecord, TraceLedger
+from policy_as_code.tracing.ledger import TraceRecord, TraceLedger
 
 
 class AuditStatus(str, Enum):

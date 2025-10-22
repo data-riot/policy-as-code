@@ -1,159 +1,239 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "",
-  "title": "Trace Record",
-  "description": "Immutable trace record for Policy as Code decision execution with cryptographic integrity",
+  "title": "TraceRecord",
+  "description": "Immutable trace record for Policy as Code decisions",
   "version": "1.0.0",
   "type": "object",
-  "required": [
-    "trace_id",
-    "schema_version",
-    "function_id",
-    "version",
-    "df_hash",
-    "timestamp",
-    "caller",
-    "status",
-    "input_json",
-    "output_json",
-    "prev_hash",
-    "chain_hash",
-    "signer"
-  ],
   "properties": {
     "trace_id": {
       "type": "string",
       "format": "uuid",
-      "description": "Unique identifier for this trace record"
+      "description": "Unique trace identifier"
     },
-    "schema_version": {
+    "df_id": {
       "type": "string",
-      "pattern": "^\\d+\\.\\d+\\.\\d+$",
-      "description": "Schema version for trace record format",
-      "examples": ["1.0.0"]
+      "pattern": "^[A-Z0-9._-]+$",
+      "description": "Decision function identifier (e.g., MSSA.BENEFIT_23_4)"
     },
-    "function_id": {
+    "entry_id": {
       "type": "string",
-      "description": "Decision function identifier"
+      "pattern": "^[a-zA-Z0-9_-]+$",
+      "description": "Unique entry identifier within trace"
     },
     "version": {
       "type": "string",
       "pattern": "^\\d+\\.\\d+\\.\\d+$",
-      "description": "Decision function version"
+      "description": "Function version"
     },
     "df_hash": {
       "type": "string",
-      "pattern": "^[a-f0-9]{64}$",
-      "description": "SHA256 hash of the decision function code"
+      "pattern": "^sha256:",
+      "description": "SHA-256 hash of decision function"
     },
-    "timestamp": {
+    "ts": {
       "type": "string",
       "format": "date-time",
-      "description": "UTC timestamp of execution"
+      "description": "UTC timestamp of the event"
     },
-    "caller": {
-      "type": "string",
-      "description": "Caller identifier (JWT subject or certificate CN)"
-    },
-    "caller_cert_hash": {
+    "input_hash": {
       "type": "string",
       "pattern": "^[a-f0-9]{64}$",
-      "description": "SHA256 hash of caller certificate (for mTLS)"
+      "description": "SHA-256 hash of input data"
     },
-    "status": {
+    "result_hash": {
       "type": "string",
-      "enum": ["success", "error", "timeout", "rejected"],
-      "description": "Execution status"
-    },
-    "input_json": {
-      "type": "object",
-      "description": "Input data to the decision function"
-    },
-    "output_json": {
-      "type": "object",
-      "description": "Output data from the decision function"
-    },
-    "error_message": {
-      "type": "string",
-      "description": "Error message if status is error"
+      "pattern": "^[a-f0-9]{64}$",
+      "description": "SHA-256 hash of result data"
     },
     "execution_time_ms": {
-      "type": "number",
+      "type": "integer",
       "minimum": 0,
       "description": "Execution time in milliseconds"
     },
-    "prev_hash": {
+    "status": {
+      "type": "string",
+      "enum": [
+        "OK",
+        "ERROR"
+      ],
+      "description": "Execution status"
+    },
+    "error_message": {
+      "type": "string",
+      "description": "Error message if execution failed"
+    },
+    "caller_id": {
+      "type": "string",
+      "pattern": "^xroad:FI/ORG/",
+      "description": "X-Road caller identifier (e.g., xroad:FI/ORG/1234567-8/SERVICE_ID)"
+    },
+    "cert_thumbprint": {
       "type": "string",
       "pattern": "^[a-f0-9]{64}$",
-      "description": "SHA256 hash of previous trace record"
+      "description": "SHA-256 thumbprint of caller certificate"
+    },
+    "request_nonce": {
+      "type": "string",
+      "description": "Unique nonce for replay protection"
+    },
+    "input_ref": {
+      "type": "string",
+      "pattern": "^s3://",
+      "description": "S3 reference to redacted input data"
+    },
+    "output": {
+      "type": "object",
+      "description": "Decision output data"
     },
     "chain_hash": {
       "type": "string",
       "pattern": "^[a-f0-9]{64}$",
-      "description": "SHA256 hash of this record for chain integrity"
+      "description": "SHA-256 hash of previous entry + current data"
     },
-    "signer": {
+    "prev_hash": {
       "type": "string",
-      "description": "System component that created this trace"
+      "pattern": "^[a-f0-9]{64}$",
+      "description": "Hash of previous entry in chain"
+    },
+    "genesis_hash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$",
+      "description": "Hash of genesis entry"
     },
     "legal_references": {
       "type": "array",
-      "description": "Legal references used in this decision",
       "items": {
-        "$ref": "#/definitions/LegalReference"
+        "type": "object",
+        "properties": {
+          "system": {
+            "type": "string",
+            "enum": [
+              "finlex",
+              "eur-lex",
+              "custom"
+            ]
+          },
+          "act_id": {
+            "type": "string"
+          },
+          "section": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "uri": {
+            "type": "string",
+            "format": "uri"
+          }
+        },
+        "required": [
+          "system",
+          "act_id",
+          "section",
+          "title",
+          "uri"
+        ]
+      },
+      "description": "Legal references used in decision"
+    },
+    "explain_data": {
+      "type": "object",
+      "description": "Explanation data (privacy-filtered)",
+      "properties": {
+        "reasoning_steps": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "applied_rules": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "legal_basis": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
       }
     },
-    "feature_snapshot": {
-      "type": "object",
-      "description": "Point-in-time feature store snapshot"
-    },
-    "context_data": {
-      "type": "object",
-      "description": "Additional context data"
-    },
-    "nonce": {
-      "type": "string",
-      "description": "Request nonce for replay protection"
-    },
-    "request_id": {
-      "type": "string",
-      "description": "External request identifier"
-    },
-    "correlation_id": {
-      "type": "string",
-      "description": "Correlation ID for distributed tracing"
-    },
     "audit_flags": {
-      "type": "array",
-      "items": {"type": "string"},
-      "description": "Audit flags for special handling"
-    },
-    "retention_until": {
-      "type": "string",
-      "format": "date-time",
-      "description": "Data retention expiration timestamp"
-    }
-  },
-  "definitions": {
-    "LegalReference": {
       "type": "object",
-      "required": ["iri", "title"],
       "properties": {
-        "iri": {
+        "chain_verified": {
+          "type": "boolean",
+          "description": "Whether chain integrity is verified"
+        },
+        "signature_valid": {
+          "type": "boolean",
+          "description": "Whether signatures are valid"
+        },
+        "replay_detected": {
+          "type": "boolean",
+          "description": "Whether replay attack was detected"
+        },
+        "constraint_violations": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "List of constraint violations"
+        }
+      }
+    },
+    "metadata": {
+      "type": "object",
+      "properties": {
+        "environment": {
           "type": "string",
-          "format": "uri"
+          "enum": [
+            "development",
+            "staging",
+            "production"
+          ],
+          "description": "Deployment environment"
         },
-        "title": {
-          "type": "string"
+        "region": {
+          "type": "string",
+          "description": "Geographic region"
         },
-        "section": {
-          "type": "string"
+        "tenant_id": {
+          "type": "string",
+          "description": "Multi-tenant identifier"
         },
-        "subsection": {
-          "type": "string"
+        "retention_days": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Data retention period in days"
+        },
+        "compliance_tags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Compliance classification tags"
         }
       }
     }
   },
+  "required": [
+    "trace_id",
+    "df_id",
+    "version",
+    "df_hash",
+    "ts",
+    "caller_id",
+    "cert_thumbprint",
+    "request_nonce",
+    "input_ref",
+    "output",
+    "prev_hash",
+    "chain_hash",
+    "status"
+  ],
   "additionalProperties": false
 }

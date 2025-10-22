@@ -1,0 +1,156 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "EligibilityInput",
+  "description": "Input schema for eligibility decisions",
+  "version": "1.0.0",
+  "type": "object",
+  "properties": {
+    "person_id": {
+      "type": "string",
+      "description": "HETU or VTJ ID",
+      "pattern": "^(\\d{6}[+-A]\\d{3}[0-9A-Z]|VTJ_[0-9]+)$"
+    },
+    "income": {
+      "type": "object",
+      "properties": {
+        "monthly_net_eur": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Monthly net income in euros"
+        },
+        "source": {
+          "type": "string",
+          "enum": [
+            "vero",
+            "kela",
+            "manual"
+          ],
+          "description": "Income data source"
+        }
+      },
+      "required": [
+        "monthly_net_eur",
+        "source"
+      ]
+    },
+    "residence": {
+      "type": "object",
+      "properties": {
+        "municipality_code": {
+          "type": "string",
+          "pattern": "^[0-9]{3}$",
+          "description": "VTJ municipality code"
+        },
+        "residence_status": {
+          "type": "string",
+          "enum": [
+            "citizen",
+            "permanent_resident",
+            "temporary_resident",
+            "refugee",
+            "other"
+          ],
+          "description": "Legal residence status"
+        }
+      },
+      "required": [
+        "municipality_code",
+        "residence_status"
+      ]
+    },
+    "family": {
+      "type": "object",
+      "properties": {
+        "dependents": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "description": "Dependent person ID"
+              },
+              "relationship": {
+                "type": "string",
+                "enum": [
+                  "child",
+                  "spouse",
+                  "parent",
+                  "sibling",
+                  "other"
+                ]
+              },
+              "age": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 150
+              }
+            },
+            "required": [
+              "id",
+              "relationship"
+            ]
+          }
+        },
+        "care_responsibilities": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "child_care",
+              "elderly_care",
+              "disabled_care",
+              "none"
+            ]
+          }
+        }
+      }
+    },
+    "economic_activity": {
+      "type": "object",
+      "properties": {
+        "employment_status": {
+          "type": "string",
+          "enum": [
+            "employed",
+            "unemployed",
+            "student",
+            "retired",
+            "disabled",
+            "other"
+          ]
+        },
+        "work_capacity": {
+          "type": "string",
+          "enum": [
+            "full",
+            "partial",
+            "limited",
+            "none"
+          ]
+        },
+        "barriers_to_work": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "health",
+              "care_responsibilities",
+              "education",
+              "language",
+              "transportation",
+              "discrimination",
+              "other"
+            ]
+          }
+        }
+      }
+    }
+  },
+  "required": [
+    "person_id",
+    "income",
+    "residence"
+  ],
+  "additionalProperties": false
+}

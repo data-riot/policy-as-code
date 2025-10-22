@@ -1,6 +1,8 @@
 # Agentic AI Capabilities for Policy-as-Code
 
-This document describes the new agentic AI capabilities that have been added to the policy-as-code platform, transforming it from a "Policy as Code" system into a true "Agentic State" platform.
+This document describes the agentic AI capabilities that have been added to the policy-as-code platform, transforming it from a "Policy as Code" system into a true "Agentic State" platform.
+
+> **⚠️ Status**: This is a production-grade foundation with comprehensive framework implementation. Requires production hardening for deployment.
 
 ## 🚀 What's New
 
@@ -409,6 +411,8 @@ The system is designed to scale horizontally:
 3. **Cross-Border Coordination**: Coordinate with international agencies
 4. **Advanced Security**: Enhanced security for agentic operations
 5. **Citizen Feedback Integration**: Learn from citizen feedback
+6. **Nordic AI Commons Integration**: Cross-border collaboration across Nordic countries
+7. **Multilingual Support**: Support for Finnish, Swedish, Norwegian, Danish, Icelandic
 
 ### Research Areas
 
@@ -416,6 +420,83 @@ The system is designed to scale horizontally:
 2. **Explainable AI**: Enhanced explainability for complex decisions
 3. **Ethical AI**: Advanced ethical decision-making frameworks
 4. **Human-AI Collaboration**: Improved human-AI collaboration patterns
+5. **Cross-Border AI**: AI systems that work seamlessly across Nordic-Baltic countries
+6. **Multilingual AI**: AI that understands Nordic-Baltic languages and cultural contexts
+7. **EU AI Commons**: Shared AI infrastructure and services across EU region
+
+## 🌐 EU AI Commons Integration - Nordic-Baltic Pioneer Region
+
+**Cross-Border Coordination**: The agentic AI capabilities are designed to support cross-border collaboration across European Union countries, with the Nordic-Baltic region serving as the pioneering implementation. See [EU AI Commons Strategy](../strategic/nordic-ai-commons.md) for the complete cross-border vision.
+
+#### **Cross-Border Services**
+- **Seamless citizen services** across Finland, Sweden, Norway, Denmark, Iceland, Estonia, Latvia, Lithuania
+- **Shared decision functions** for common policies
+- **Cross-border data** sharing with privacy protection
+- **Multilingual AI** assistants for Nordic-Baltic languages
+
+#### **EU AI Commons Architecture - Nordic-Baltic Pioneer Region**
+```
+┌─────────────────────────────────────────────────────────────┐
+│                    EU AI Commons                            │
+├─────────────────────────────────────────────────────────────┤
+│  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐         │
+│  │ Nordic-     │  │   Central   │  │   Eastern   │         │
+│  │ Baltic      │  │   Europe    │  │   Europe    │         │
+│  │ Agents      │  │   Agents    │  │   Agents    │         │
+│  └─────────────┘  └─────────────┘  └─────────────┘         │
+│  ┌─────────────┐  ┌─────────────┐                          │
+│  │   Western   │  │   Southern  │                          │
+│  │   Europe    │  │   Europe    │                          │
+│  │   Agents    │  │   Agents    │                          │
+│  └─────────────┘  └─────────────┘                          │
+├─────────────────────────────────────────────────────────────┤
+│              Shared Policy as Code Platform                 │
+│  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐          │
+│  │   Cross-    │  │   Shared    │  │   Common    │          │
+│  │   Border    │  │   AI        │  │   Legal     │          │
+│  │   Workflows │  │   Models    │  │   Framework │          │
+│  └─────────────┘  └─────────────┘  └─────────────┘          │
+└─────────────────────────────────────────────────────────────┘
+```
+
+#### **Multilingual Support**
+- **Finnish Language Models** - Native language support
+- **Swedish Language Models** - Cross-border service delivery
+- **Norwegian Language Models** - Regional collaboration
+- **Danish Language Models** - Nordic integration
+- **Icelandic Language Models** - Complete Nordic coverage
+- **Estonian Language Models** - Digital governance leadership
+- **Latvian Language Models** - Baltic cooperation
+- **Lithuanian Language Models** - Regional integration
+
+#### **Cross-Border Use Cases**
+1. **Healthcare Coordination** - Patient data sharing across Nordic-Baltic countries
+2. **Social Services** - Benefit portability and cross-border eligibility
+3. **Education** - Student mobility and credit transfer
+4. **Business Services** - Company registration and compliance across Nordic-Baltic region
+5. **Emergency Response** - Cross-border crisis coordination
+6. **Immigration** - Nordic-Baltic citizen services and visa processing
+7. **Tax Services** - Cross-border tax coordination and compliance
+
+### Implementation Strategy
+
+#### **Phase 1: Nordic-Baltic Pioneer Foundation**
+- **Multilingual AI** models for Nordic-Baltic languages
+- **Cross-border API** development
+- **Shared data** commons establishment
+- **Legal framework** harmonization within Nordic-Baltic region
+
+#### **Phase 2: Nordic-Baltic Integration**
+- **Cross-border services** pilot programs
+- **Shared AI models** and training data
+- **Joint training** programs
+- **Nordic-Baltic AI governance** framework
+
+#### **Phase 3: EU Expansion**
+- **Complete cross-border** service delivery across EU
+- **Shared infrastructure** across EU countries
+- **EU AI Commons** platform
+- **Regional AI** ecosystem
 
 ## 📞 Support
 
@@ -424,6 +505,7 @@ For questions, issues, or contributions:
 - **Documentation**: See the main README.md
 - **Issues**: Report issues on GitHub
 - **Discussions**: Join discussions on GitHub
+- **Nordic AI Commons**: See [Nordic AI Commons Strategy](../strategic/nordic-ai-commons.md)
 - **Email**: Contact the development team
 
 ## 🎉 Conclusion
@@ -434,6 +516,8 @@ The agentic AI capabilities transform the policy-as-code platform from a traditi
 - **Proactive Citizen Services**: Anticipating and meeting citizen needs
 - **Intelligent Coordination**: Seamless coordination between agencies
 - **Continuous Improvement**: Self-optimizing government services
+- **Cross-Border Collaboration**: Nordic AI Commons integration
+- **Multilingual Support**: Native language AI across Nordic countries
 - **Enhanced Transparency**: Clear explanations for all decisions
 - **Robust Compliance**: Maintained legal and regulatory compliance
 

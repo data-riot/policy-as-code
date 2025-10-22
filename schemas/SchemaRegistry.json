@@ -1,0 +1,257 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "SchemaRegistry",
+  "description": "Registry of versioned input/output schemas",
+  "version": "1.0.0",
+  "type": "object",
+  "properties": {
+    "schemas": {
+      "type": "object",
+      "properties": {
+        "urn:schema:eligibility_input:v1": {
+          "type": "object",
+          "properties": {
+            "uri": {
+              "type": "string",
+              "const": "urn:schema:eligibility_input:v1"
+            },
+            "file": {
+              "type": "string",
+              "const": "schemas/EligibilityInput.json"
+            },
+            "version": {
+              "type": "string",
+              "const": "1.0.0"
+            },
+            "description": {
+              "type": "string",
+              "const": "Input schema for eligibility decisions"
+            },
+            "created_at": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "deprecated": {
+              "type": "boolean",
+              "default": false
+            }
+          },
+          "required": [
+            "uri",
+            "file",
+            "version",
+            "description",
+            "created_at"
+          ]
+        },
+        "urn:schema:eligibility_output:v1": {
+          "type": "object",
+          "properties": {
+            "uri": {
+              "type": "string",
+              "const": "urn:schema:eligibility_output:v1"
+            },
+            "file": {
+              "type": "string",
+              "const": "schemas/EligibilityOutput.json"
+            },
+            "version": {
+              "type": "string",
+              "const": "1.0.0"
+            },
+            "description": {
+              "type": "string",
+              "const": "Output schema for eligibility decisions"
+            },
+            "created_at": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "deprecated": {
+              "type": "boolean",
+              "default": false
+            }
+          },
+          "required": [
+            "uri",
+            "file",
+            "version",
+            "description",
+            "created_at"
+          ]
+        },
+        "urn:schema:benefit_input:v1": {
+          "type": "object",
+          "properties": {
+            "uri": {
+              "type": "string",
+              "const": "urn:schema:benefit_input:v1"
+            },
+            "file": {
+              "type": "string",
+              "const": "schemas/BenefitInput.json"
+            },
+            "version": {
+              "type": "string",
+              "const": "1.0.0"
+            },
+            "description": {
+              "type": "string",
+              "const": "Input schema for benefit calculations"
+            },
+            "created_at": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "deprecated": {
+              "type": "boolean",
+              "default": false
+            }
+          },
+          "required": [
+            "uri",
+            "file",
+            "version",
+            "description",
+            "created_at"
+          ]
+        },
+        "urn:schema:benefit_output:v1": {
+          "type": "object",
+          "properties": {
+            "uri": {
+              "type": "string",
+              "const": "urn:schema:benefit_output:v1"
+            },
+            "file": {
+              "type": "string",
+              "const": "schemas/BenefitOutput.json"
+            },
+            "version": {
+              "type": "string",
+              "const": "1.0.0"
+            },
+            "description": {
+              "type": "string",
+              "const": "Output schema for benefit calculations"
+            },
+            "created_at": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "deprecated": {
+              "type": "boolean",
+              "default": false
+            }
+          },
+          "required": [
+            "uri",
+            "file",
+            "version",
+            "description",
+            "created_at"
+          ]
+        },
+        "urn:schema:visa_input:v1": {
+          "type": "object",
+          "properties": {
+            "uri": {
+              "type": "string",
+              "const": "urn:schema:visa_input:v1"
+            },
+            "file": {
+              "type": "string",
+              "const": "schemas/VisaInput.json"
+            },
+            "version": {
+              "type": "string",
+              "const": "1.0.0"
+            },
+            "description": {
+              "type": "string",
+              "const": "Input schema for visa processing"
+            },
+            "created_at": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "deprecated": {
+              "type": "boolean",
+              "default": false
+            }
+          },
+          "required": [
+            "uri",
+            "file",
+            "version",
+            "description",
+            "created_at"
+          ]
+        },
+        "urn:schema:visa_output:v1": {
+          "type": "object",
+          "properties": {
+            "uri": {
+              "type": "string",
+              "const": "urn:schema:visa_output:v1"
+            },
+            "file": {
+              "type": "string",
+              "const": "schemas/VisaOutput.json"
+            },
+            "version": {
+              "type": "string",
+              "const": "1.0.0"
+            },
+            "description": {
+              "type": "string",
+              "const": "Output schema for visa processing"
+            },
+            "created_at": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "deprecated": {
+              "type": "boolean",
+              "default": false
+            }
+          },
+          "required": [
+            "uri",
+            "file",
+            "version",
+            "description",
+            "created_at"
+          ]
+        }
+      }
+    },
+    "metadata": {
+      "type": "object",
+      "properties": {
+        "registry_version": {
+          "type": "string",
+          "const": "1.0.0"
+        },
+        "last_updated": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "total_schemas": {
+          "type": "integer",
+          "minimum": 0
+        }
+      },
+      "required": [
+        "registry_version",
+        "last_updated",
+        "total_schemas"
+      ]
+    }
+  },
+  "required": [
+    "schemas",
+    "metadata"
+  ],
+  "additionalProperties": false
+}

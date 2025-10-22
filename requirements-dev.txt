@@ -14,7 +14,7 @@ flake8==6.1.0
 mypy==1.7.1
 isort==5.13.2
 bandit==1.7.5
-safety==2.3.5
+safety==3.0.1
 
 # Testing utilities
 factory-boy==3.3.0

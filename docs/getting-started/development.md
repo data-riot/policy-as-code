@@ -1,6 +1,8 @@
 # Development Guide & Roadmap
 
-This comprehensive guide covers development setup, tools, best practices, and the project roadmap for contributing to the Decision Layer project.
+This comprehensive guide covers development setup, tools, best practices, and the project roadmap for contributing to the Policy as Code project.
+
+> **⚠️ Status**: This is a production-grade foundation, not a production-ready system. Requires production hardening for deployment.
 
 ## 🚀 Quick Start & Installation
 
@@ -573,6 +575,38 @@ python -m cProfile run_api.py
 - **Edge Computing**: Edge deployment capabilities
 - **Quantum Computing**: Quantum-resistant cryptography
 
+## 🤝 Contributing
+
+This is an open source project! We welcome contributions from developers, government technologists, and researchers.
+
+### **Getting Started as a Contributor**
+
+1. **Fork the repository** and clone your fork
+2. **Read the [Contributing Guidelines](../CONTRIBUTING.md)** for detailed contribution process
+3. **Check the [Development Roadmap](../DEVELOPMENT_ROADMAP.md)** for current priorities
+4. **Review [Production Readiness](production-readiness.md)** for implementation status
+5. **Create a new branch** for your contribution
+
+### **Development Workflow**
+
+```bash
+# Create feature branch
+git checkout -b feature/your-feature-name
+
+# Make changes and test
+make test
+make lint
+
+# Commit changes
+git add .
+git commit -m "feat: add your feature description"
+
+# Push to your fork
+git push origin feature/your-feature-name
+
+# Create pull request
+```
+
 ## 📞 Support and Resources
 
 ### Getting Help
@@ -581,15 +615,15 @@ python -m cProfile run_api.py
 - **Examples**: Working examples in `examples/` directory
 - **Issues**: Report bugs on GitHub Issues
 - **Discussions**: Join GitHub Discussions
-- **Community**: Join the community Discord/Slack
+- **Contributing**: Read [CONTRIBUTING.md](../CONTRIBUTING.md)
 
 ### Resources
 
 - **API Documentation**: `http://localhost:8000/docs`
-- **Architecture Guide**: `docs/architecture.md`
-- **Deployment Guide**: `docs/deployment.md`
+- **Architecture Guide**: `docs/architecture/`
+- **Compliance Guide**: `docs/compliance/`
 - **Security Guide**: `docs/security.md`
 
 ---
 
-**Ready to contribute?** Start with the [Installation Guide](installation.md) and then dive into the [Architecture Documentation](architecture.md) to understand the system design! 🚀
+**Ready to contribute?** Start with the [Contributing Guidelines](../CONTRIBUTING.md) and then dive into the [Architecture Documentation](architecture/) to understand the system design! 🚀

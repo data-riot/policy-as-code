@@ -15,6 +15,10 @@ Decision Engineering defines every automated decision as a **Decision Function**
 
 The approach enables Finland to automate with integrity — strengthening legal certainty, transparency, and efficiency without new legislation.
 
+**EU AI Commons Vision**: This Decision Engineering framework serves as the foundation for an EU AI Commons, enabling cross-border collaboration and shared AI infrastructure across European Union countries. See [EU AI Commons Strategy](nordic-ai-commons.md) for the complete cross-border vision.
+
+**Sources**: This whitepaper is based on Finnish government digital infrastructure including Finlex, Finnish Government APIs, DVV Population Information System, Kanta Services, and AuroraAI initiatives.
+
 ---
 
 ## 2. Rationale
@@ -62,7 +66,7 @@ The national architecture has four layers:
 |-------|----------|-------|
 | **Normative Layer** | Law text and legislative metadata (Finlex ELI) | Legal Register Centre |
 | **Model Layer** | Decision Functions with formal schemas and logic | Legal Engineering Office |
-| **Execution Layer** | Systems and agents calling DFs via Suomi.fi/X-Road APIs | Agencies |
+| **Execution Layer** | Systems and agents calling DFs via Finnish Government APIs | Agencies |
 | **Integrity Layer** | Immutable Trace Ledger and Audit Service verifying lawful execution | Audit & Integrity Agency |
 
 **Core components:**
@@ -78,7 +82,7 @@ The national architecture has four layers:
 | Existing asset | Use in Decision Engineering |
 |----------------|----------------------------|
 | **Finlex / ELI** | Legal identifiers for all laws and sections (used as DF references) |
-| **Suomi.fi / X-Road** | Secure data exchange layer for DF API traffic between agencies |
+| **Finnish Government APIs** | Secure data exchange layer for DF API traffic between agencies |
 | **DVV Population Information System** | Canonical ontology for person and address data |
 | **Kanta Services** | Model for immutable logging and access audit discipline |
 | **AuroraAI** | Human-centric orchestration layer that will call DFs for lawful automation |

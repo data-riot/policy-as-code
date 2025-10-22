@@ -4,6 +4,8 @@
 
 The Decision Layer provides a structured approach to managing business decision logic as versioned, testable functions with structured observability. It treats decisions as software artifacts that can be versioned, tested, and monitored with the same rigor applied to code, data, and models.
 
+> **⚠️ Status**: This is a production-grade foundation with comprehensive framework implementation. Requires production hardening for deployment.
+
 ## 🏗️ System Architecture
 
 ### Core Components
@@ -368,6 +370,86 @@ class CustomValidationPlugin(DecisionPlugin):
 - **Alerting**: Configurable alerts for anomalies
 - **Dashboards**: Pre-built monitoring dashboards
 - **Integration**: Prometheus, Grafana, and other monitoring tools
+
+## 🌐 EU AI Commons Integration - Nordic-Baltic Pioneer Region
+
+**Cross-Border Architecture**: The Policy as Code platform is designed to support cross-border collaboration across European Union countries through a shared infrastructure approach, with the Nordic-Baltic region serving as the pioneering implementation. See [EU AI Commons Strategy](../strategic/nordic-ai-commons.md) for the complete cross-border vision.
+
+#### **EU AI Commons Architecture - Nordic-Baltic Pioneer Region**
+```
+┌─────────────────────────────────────────────────────────────┐
+│                    EU AI Commons                            │
+├─────────────────────────────────────────────────────────────┤
+│  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐         │
+│  │ Nordic-     │  │   Central   │  │   Eastern   │         │
+│  │ Baltic      │  │   Europe    │  │   Europe    │         │
+│  │ Pioneer     │  │   Services  │  │   Services  │         │
+│  │ Region      │  │             │  │             │         │
+│  └─────────────┘  └─────────────┘  └─────────────┘         │
+│  ┌─────────────┐  ┌─────────────┐                          │
+│  │   Western   │  │   Southern  │                          │
+│  │   Europe    │  │   Europe    │                          │
+│  │   Services  │  │   Services  │                          │
+│  └─────────────┘  └─────────────┘                          │
+├─────────────────────────────────────────────────────────────┤
+│              Shared Policy as Code Platform                 │
+│  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐          │
+│  │   Cross-    │  │   Shared    │  │   Common    │          │
+│  │   Border    │  │   Decision  │  │   Legal     │          │
+│  │   APIs      │  │   Functions │  │   Framework │          │
+│  └─────────────┘  └─────────────┘  └─────────────┘          │
+├─────────────────────────────────────────────────────────────┤
+│              Multilingual AI Infrastructure                 │
+│  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐          │
+│  │ Nordic-     │  │   Major EU  │  │   Regional  │          │
+│  │ Baltic      │  │   Languages │  │   Languages │          │
+│  │ Languages   │  │   (EN,DE,FR)│  │   (ES,IT,PL)│          │
+│  │ (8 langs)   │  │             │  │             │          │
+│  └─────────────┘  └─────────────┘  └─────────────┘          │
+└─────────────────────────────────────────────────────────────┘
+```
+
+#### **Cross-Border Components**
+
+1. **Shared Decision Functions**
+   - Common policies across Nordic-Baltic countries
+   - Shared legal frameworks
+   - Cross-border service delivery
+
+2. **Multilingual Support**
+   - Native language AI models for Nordic-Baltic languages
+   - Cultural context awareness
+   - Cross-language service delivery
+
+3. **Cross-Border APIs**
+   - Seamless data exchange
+   - Shared service endpoints
+   - Common authentication
+
+4. **Shared Data Commons**
+   - Cross-border data sharing
+   - Privacy protection
+   - Common data standards
+
+### Implementation Strategy
+
+#### **Phase 1: Nordic-Baltic Pioneer Foundation**
+- **Multilingual AI** models for Nordic-Baltic languages
+- **Cross-border API** development
+- **Shared data** commons establishment
+- **Legal framework** harmonization within Nordic-Baltic region
+
+#### **Phase 2: Nordic-Baltic Integration**
+- **Cross-border services** pilot programs
+- **Shared AI models** and training data
+- **Joint training** programs
+- **Nordic-Baltic AI governance** framework
+
+#### **Phase 3: EU Expansion**
+- **Complete cross-border** service delivery across EU
+- **Shared infrastructure** across EU countries
+- **EU AI Commons** platform
+- **Regional AI** ecosystem
 
 ## 🎯 Design Principles
 

@@ -4,6 +4,8 @@
 
 This document provides a comprehensive legal compliance assessment of the Policy as Code platform's use cases, identifying and addressing potential legal issues to ensure full compliance with EU AI Act, GDPR, and anti-discrimination laws.
 
+> **⚠️ Status**: This is a production-grade foundation with comprehensive compliance framework implementation. Requires production hardening for deployment.
+
 ## ✅ **Legal Issues Identified and Resolved**
 
 ### 1. **Age-Based Discrimination** (Immigration System) - RESOLVED ✅

@@ -1,0 +1,151 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "EligibilityOutput",
+  "description": "Output schema for eligibility decisions",
+  "version": "1.0.0",
+  "type": "object",
+  "properties": {
+    "decision": {
+      "type": "string",
+      "enum": [
+        "APPROVED",
+        "DENIED",
+        "CONDITIONAL_APPROVAL",
+        "DEFERRED",
+        "REQUIRES_APPEAL"
+      ],
+      "description": "Primary decision outcome"
+    },
+    "basis": {
+      "type": "object",
+      "properties": {
+        "rule": {
+          "type": "string",
+          "description": "Primary rule applied"
+        },
+        "thresholds": {
+          "type": "object",
+          "description": "Threshold values used in decision"
+        },
+        "criteria_met": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "List of criteria that were met"
+        },
+        "criteria_not_met": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "List of criteria that were not met"
+        }
+      },
+      "required": [
+        "rule"
+      ]
+    },
+    "conditions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": [
+              "documentation",
+              "verification",
+              "time_limit",
+              "review"
+            ],
+            "description": "Type of condition"
+          },
+          "description": {
+            "type": "string",
+            "description": "Human-readable condition description"
+          },
+          "deadline": {
+            "type": "string",
+            "format": "date",
+            "description": "Condition deadline if applicable"
+          }
+        },
+        "required": [
+          "type",
+          "description"
+        ]
+      },
+      "description": "Conditions for conditional approval"
+    },
+    "appeal_info": {
+      "type": "object",
+      "properties": {
+        "appeal_deadline": {
+          "type": "string",
+          "format": "date",
+          "description": "Appeal deadline"
+        },
+        "appeal_authority": {
+          "type": "string",
+          "description": "Authority handling appeals"
+        },
+        "appeal_process": {
+          "type": "string",
+          "description": "Description of appeal process"
+        }
+      },
+      "description": "Appeal information for denied decisions"
+    },
+    "legal_basis": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "law_reference": {
+            "type": "string",
+            "format": "uri",
+            "description": "ELI URI to legal basis"
+          },
+          "section": {
+            "type": "string",
+            "description": "Specific section or article"
+          },
+          "description": {
+            "type": "string",
+            "description": "Human-readable legal basis"
+          }
+        },
+        "required": [
+          "law_reference",
+          "section"
+        ]
+      },
+      "description": "Legal basis for the decision"
+    },
+    "reasoning": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Step-by-step reasoning for the decision"
+    },
+    "confidence_score": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1,
+      "description": "Confidence score for the decision (0-1)"
+    },
+    "next_review_date": {
+      "type": "string",
+      "format": "date",
+      "description": "Date for next review if applicable"
+    }
+  },
+  "required": [
+    "decision",
+    "basis",
+    "legal_basis"
+  ],
+  "additionalProperties": false
+}

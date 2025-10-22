@@ -1,0 +1,566 @@
+# Domain-First Autonomous Data Architecture Configuration
+
+# Core domain data architecture settings
+domain_data_architecture:
+  enabled: true
+  version: "1.0.0"
+
+  # Global settings
+  global:
+    max_context_tokens: 4000
+    relevance_threshold: 0.7
+    compression_strategy: "semantic_preservation"
+    drift_monitoring_enabled: true
+    drift_check_interval_minutes: 5
+    comprehensive_analysis_interval_hours: 1
+
+# Domain-specific configurations
+domains:
+  healthcare:
+    enabled: true
+    max_context_tokens: 5000
+    relevance_threshold: 0.8
+    compression_strategy: "domain_focused"
+
+    data_products:
+      - patient_eligibility_context
+      - medical_procedure_semantics
+      - insurance_coverage_mapping
+      - clinical_guidelines_ontology
+      - medical_device_compliance
+
+    model_config:
+      model_type: "clinical_decision"
+      base_model: "claude-3-sonnet"
+      temperature: 0.3
+      max_tokens: 3000
+      domain_expertise: "medical"
+
+    drift_thresholds:
+      concept_drift: 0.15
+      data_drift: 0.20
+      performance_drift: 0.10
+      context_drift: 0.25
+      semantic_drift: 0.18
+
+    semantic_keywords:
+      - "patient"
+      - "medical"
+      - "health"
+      - "treatment"
+      - "procedure"
+      - "insurance"
+      - "doctor"
+      - "hospital"
+      - "clinical"
+      - "diagnosis"
+      - "therapy"
+      - "medication"
+
+  taxation:
+    enabled: true
+    max_context_tokens: 4000
+    relevance_threshold: 0.7
+    compression_strategy: "token_efficiency"
+
+    data_products:
+      - income_verification_context
+      - tax_bracket_semantics
+      - deduction_eligibility_mapping
+      - tax_calculation_rules
+      - compliance_verification
+
+    model_config:
+      model_type: "tax_calculation"
+      base_model: "claude-3-sonnet"
+      temperature: 0.2
+      max_tokens: 2500
+      domain_expertise: "taxation"
+
+    drift_thresholds:
+      concept_drift: 0.12
+      data_drift: 0.18
+      performance_drift: 0.08
+      context_drift: 0.20
+      semantic_drift: 0.15
+
+    semantic_keywords:
+      - "income"
+      - "tax"
+      - "deduction"
+      - "credit"
+      - "filing"
+      - "bracket"
+      - "rate"
+      - "calculation"
+      - "amount"
+      - "refund"
+      - "liability"
+      - "exemption"
+      - "withholding"
+
+  immigration:
+    enabled: true
+    max_context_tokens: 4500
+    relevance_threshold: 0.8
+    compression_strategy: "intent_based"
+
+    data_products:
+      - visa_eligibility_context
+      - security_check_semantics
+      - document_verification_mapping
+      - immigration_law_ontology
+      - background_check_rules
+
+    model_config:
+      model_type: "immigration_decision"
+      base_model: "claude-3-sonnet"
+      temperature: 0.4
+      max_tokens: 3500
+      domain_expertise: "immigration"
+
+    drift_thresholds:
+      concept_drift: 0.18
+      data_drift: 0.22
+      performance_drift: 0.12
+      context_drift: 0.28
+      semantic_drift: 0.20
+
+    semantic_keywords:
+      - "visa"
+      - "passport"
+      - "immigration"
+      - "citizen"
+      - "resident"
+      - "application"
+      - "status"
+      - "document"
+      - "security"
+      - "background"
+      - "check"
+      - "verification"
+
+  social_benefits:
+    enabled: true
+    max_context_tokens: 3500
+    relevance_threshold: 0.7
+    compression_strategy: "semantic_preservation"
+
+    data_products:
+      - benefit_eligibility_context
+      - income_threshold_mapping
+      - family_composition_semantics
+      - benefit_calculation_rules
+      - special_circumstances_handling
+
+    model_config:
+      model_type: "benefits_allocation"
+      base_model: "claude-3-sonnet"
+      temperature: 0.3
+      max_tokens: 2000
+      domain_expertise: "social_benefits"
+
+    drift_thresholds:
+      concept_drift: 0.14
+      data_drift: 0.19
+      performance_drift: 0.09
+      context_drift: 0.23
+      semantic_drift: 0.17
+
+    semantic_keywords:
+      - "benefit"
+      - "welfare"
+      - "support"
+      - "assistance"
+      - "unemployment"
+      - "housing"
+      - "childcare"
+      - "disability"
+      - "income"
+      - "threshold"
+      - "eligibility"
+      - "allocation"
+
+  environmental:
+    enabled: true
+    max_context_tokens: 4000
+    relevance_threshold: 0.7
+    compression_strategy: "domain_focused"
+
+    data_products:
+      - environmental_impact_context
+      - compliance_requirement_mapping
+      - risk_assessment_semantics
+      - permit_requirement_rules
+      - mitigation_measure_guidelines
+
+    model_config:
+      model_type: "compliance_assessment"
+      base_model: "claude-3-sonnet"
+      temperature: 0.3
+      max_tokens: 3000
+      domain_expertise: "compliance"
+
+    drift_thresholds:
+      concept_drift: 0.16
+      data_drift: 0.21
+      performance_drift: 0.11
+      context_drift: 0.26
+      semantic_drift: 0.19
+
+    semantic_keywords:
+      - "environmental"
+      - "impact"
+      - "compliance"
+      - "permit"
+      - "risk"
+      - "assessment"
+      - "mitigation"
+      - "sustainability"
+      - "carbon"
+      - "emission"
+      - "ecosystem"
+      - "biodiversity"
+
+  education:
+    enabled: true
+    max_context_tokens: 3000
+    relevance_threshold: 0.6
+    compression_strategy: "token_efficiency"
+
+    data_products:
+      - education_eligibility_context
+      - qualification_requirement_mapping
+      - program_availability_semantics
+      - enrollment_criteria_rules
+      - scholarship_eligibility_guidelines
+
+    model_config:
+      model_type: "eligibility_determination"
+      base_model: "claude-3-sonnet"
+      temperature: 0.3
+      max_tokens: 2000
+      domain_expertise: "eligibility"
+
+    drift_thresholds:
+      concept_drift: 0.13
+      data_drift: 0.17
+      performance_drift: 0.08
+      context_drift: 0.22
+      semantic_drift: 0.16
+
+    semantic_keywords:
+      - "education"
+      - "qualification"
+      - "program"
+      - "enrollment"
+      - "scholarship"
+      - "degree"
+      - "course"
+      - "student"
+      - "academic"
+      - "curriculum"
+      - "certification"
+      - "diploma"
+
+# Intent discovery configuration
+intent_discovery:
+  enabled: true
+  relevance_threshold: 0.7
+  max_data_products_per_intent: 5
+  confidence_threshold: 0.6
+
+  intent_patterns:
+    eligibility_check:
+      keywords: ["eligible", "qualify", "meet requirements", "criteria"]
+      data_types: ["eligibility_rules", "criteria", "requirements"]
+
+    calculation:
+      keywords: ["calculate", "compute", "determine amount", "figure out"]
+      data_types: ["calculation_rules", "formulas", "rates"]
+
+    risk_assessment:
+      keywords: ["risk", "assess", "evaluate", "danger"]
+      data_types: ["risk_factors", "assessment_criteria", "scoring"]
+
+    compliance_verification:
+      keywords: ["comply", "verify", "check compliance", "follow rules"]
+      data_types: ["compliance_rules", "regulations", "standards"]
+
+    document_processing:
+      keywords: ["process", "review", "analyze document", "handle"]
+      data_types: ["document_schemas", "validation_rules", "templates"]
+
+    decision_making:
+      keywords: ["decide", "determine", "make decision", "choose"]
+      data_types: ["decision_trees", "policies", "guidelines"]
+
+    information_retrieval:
+      keywords: ["find", "get", "retrieve", "lookup", "search"]
+      data_types: ["reference_data", "lookup_tables", "databases"]
+
+# Context compression configuration
+context_compression:
+  enabled: true
+  default_strategy: "semantic_preservation"
+
+  strategies:
+    semantic_preservation:
+      preserve_relationships: true
+      preserve_rules: true
+      preserve_concepts: true
+      max_tokens: 4000
+
+    token_efficiency:
+      remove_redundant: true
+      remove_low_value: true
+      optimize_word_choice: true
+      max_tokens: 3000
+
+    domain_focused:
+      prioritize_domain_keywords: true
+      preserve_domain_context: true
+      remove_generic_content: true
+      max_tokens: 3500
+
+    intent_based:
+      filter_by_intent: true
+      preserve_intent_relevant: true
+      remove_irrelevant: true
+      max_tokens: 4000
+
+  compression_levels:
+    minimal:
+      max_tokens: 500
+      keep_essential_only: true
+      remove_low_confidence: true
+
+    moderate:
+      max_tokens: 2000
+      keep_essential_only: false
+      remove_low_confidence: false
+
+    detailed:
+      max_tokens: 4000
+      keep_essential_only: false
+      remove_low_confidence: false
+
+    full:
+      max_tokens: 8000
+      keep_essential_only: false
+      remove_low_confidence: false
+
+# Multimodal data integration configuration
+multimodal_integration:
+  enabled: true
+
+  text_processing:
+    enabled: true
+    extract_clinical_terms: true
+    extract_policies: true
+    extract_legal_references: true
+
+  structured_data:
+    enabled: true
+    process_schemas: true
+    validate_data_types: true
+    cross_reference_apis: true
+
+  unstructured_data:
+    enabled: true
+    process_documents: true
+    extract_text_from_images: true
+    parse_forms: true
+
+  data_fusion:
+    strategy: "domain_centric"
+    weight_text: 0.4
+    weight_structured: 0.4
+    weight_unstructured: 0.2
+
+# Drift detection configuration
+drift_detection:
+  enabled: true
+
+  monitoring:
+    continuous_monitoring: true
+    lightweight_check_interval_minutes: 5
+    comprehensive_analysis_interval_hours: 1
+    alert_threshold: 0.2
+
+  drift_types:
+    concept_drift:
+      enabled: true
+      threshold: 0.15
+      severity_levels:
+        low: 0.1
+        medium: 0.2
+        high: 0.3
+        critical: 0.5
+
+    data_drift:
+      enabled: true
+      threshold: 0.20
+      severity_levels:
+        low: 0.15
+        medium: 0.25
+        high: 0.4
+        critical: 0.6
+
+    performance_drift:
+      enabled: true
+      threshold: 0.10
+      severity_levels:
+        low: 0.05
+        medium: 0.15
+        high: 0.25
+        critical: 0.4
+
+    context_drift:
+      enabled: true
+      threshold: 0.25
+      severity_levels:
+        low: 0.2
+        medium: 0.3
+        high: 0.5
+        critical: 0.7
+
+    semantic_drift:
+      enabled: true
+      threshold: 0.18
+      severity_levels:
+        low: 0.15
+        medium: 0.25
+        high: 0.4
+        critical: 0.6
+
+  alerting:
+    enabled: true
+    email_alerts: true
+    slack_alerts: true
+    webhook_alerts: true
+    alert_cooldown_minutes: 30
+
+# Performance monitoring configuration
+performance_monitoring:
+  enabled: true
+
+  metrics:
+    token_efficiency:
+      enabled: true
+      target_threshold: 0.8
+      alert_threshold: 0.6
+
+    response_time:
+      enabled: true
+      target_threshold_ms: 100
+      alert_threshold_ms: 500
+
+    confidence_score:
+      enabled: true
+      target_threshold: 0.9
+      alert_threshold: 0.7
+
+    error_rate:
+      enabled: true
+      target_threshold: 0.01
+      alert_threshold: 0.05
+
+  reporting:
+    enabled: true
+    daily_reports: true
+    weekly_reports: true
+    monthly_reports: true
+    real_time_dashboard: true
+
+# Integration settings
+integrations:
+  llm:
+    provider: "anthropic" # or "openai", "mock"
+    config:
+      api_key: "${ANTHROPIC_API_KEY}"
+      model: "claude-3-sonnet-20240229"
+      max_tokens: 4000
+      temperature: 0.3
+
+  knowledge_graph:
+    provider: "neo4j" # or "amazon_neptune", "mock"
+    config:
+      uri: "${NEO4J_URI}"
+      username: "${NEO4J_USERNAME}"
+      password: "${NEO4J_PASSWORD}"
+      database: "policy_as_code"
+
+  ontology:
+    provider: "owl" # or "custom", "mock"
+    config:
+      ontology_files: ["ontologies/government_ontology.owl"]
+      reasoner: "hermit"
+
+  monitoring:
+    provider: "prometheus" # or "datadog", "newrelic", "mock"
+    config:
+      endpoint: "${PROMETHEUS_ENDPOINT}"
+      job_name: "policy_as_code"
+      scrape_interval: "15s"
+
+  alerting:
+    provider: "slack" # or "email", "webhook", "mock"
+    config:
+      webhook_url: "${SLACK_WEBHOOK_URL}"
+      channel: "#policy-as-code-alerts"
+      username: "PolicyAsCodeBot"
+
+# Security configuration
+security:
+  enabled: true
+
+  data_protection:
+    pii_detection: true
+    pii_redaction: true
+    encryption_at_rest: true
+    encryption_in_transit: true
+
+  access_control:
+    rbac_enabled: true
+    api_key_authentication: true
+    rate_limiting: true
+    ip_whitelisting: false
+
+  audit_logging:
+    enabled: true
+    log_level: "INFO"
+    retention_days: 90
+    sensitive_data_masking: true
+
+# Development and testing configuration
+development:
+  debug_mode: false
+  mock_integrations: false
+  test_data_enabled: true
+  performance_profiling: false
+
+  testing:
+    unit_tests: true
+    integration_tests: true
+    performance_tests: true
+    drift_simulation: false
+
+# Production configuration
+production:
+  debug_mode: false
+  mock_integrations: false
+  test_data_enabled: false
+  performance_profiling: true
+
+  scaling:
+    horizontal_scaling: true
+    load_balancing: true
+    auto_scaling: true
+    max_instances: 10
+
+  reliability:
+    circuit_breakers: true
+    retry_policies: true
+    timeout_handling: true
+    graceful_degradation: true

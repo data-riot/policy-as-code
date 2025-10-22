@@ -76,6 +76,35 @@ class StorageBackend(ABC):
         """Get decision statistics for a function"""
         pass
 
+    @abstractmethod
+    async def store_release(self, release_data: Dict[str, Any]) -> None:
+        """Store a release record"""
+        pass
+
+    @abstractmethod
+    async def get_release(self, release_id: str) -> Dict[str, Any]:
+        """Get a specific release record"""
+        pass
+
+    @abstractmethod
+    async def get_releases(
+        self, df_id: str = None, status: str = None
+    ) -> List[Dict[str, Any]]:
+        """Get releases with optional filtering"""
+        pass
+
+    @abstractmethod
+    async def update_release(
+        self, release_id: str, release_data: Dict[str, Any]
+    ) -> None:
+        """Update a release record"""
+        pass
+
+    @abstractmethod
+    async def retrieve_function_spec(self, df_id: str, version: str) -> Dict[str, Any]:
+        """Retrieve decision function specification"""
+        pass
+
 
 class FileStorage(StorageBackend):
     """File-based storage backend"""
@@ -326,6 +355,90 @@ class FileStorage(StorageBackend):
         except Exception as e:
             raise StorageError("read", f"Failed to get decision stats: {e}")
 
+    async def store_release(self, release_data: Dict[str, Any]) -> None:
+        """Store a release record to file"""
+        releases_dir = self.base_path / "releases"
+        releases_dir.mkdir(exist_ok=True)
+
+        release_file = releases_dir / f"{release_data['release_id']}.json"
+        try:
+            with open(release_file, "w") as f:
+                json.dump(release_data, f, indent=2, default=str)
+        except Exception as e:
+            raise StorageError("write", f"Failed to store release: {e}")
+
+    async def get_release(self, release_id: str) -> Dict[str, Any]:
+        """Get a specific release record from file"""
+        releases_dir = self.base_path / "releases"
+        release_file = releases_dir / f"{release_id}.json"
+
+        if not release_file.exists():
+            return None
+
+        try:
+            with open(release_file, "r") as f:
+                return json.load(f)
+        except Exception as e:
+            raise StorageError("read", f"Failed to get release: {e}")
+
+    async def get_releases(
+        self, df_id: str = None, status: str = None
+    ) -> List[Dict[str, Any]]:
+        """Get releases with optional filtering from files"""
+        releases_dir = self.base_path / "releases"
+        if not releases_dir.exists():
+            return []
+
+        releases = []
+        try:
+            for file_path in releases_dir.glob("*.json"):
+                with open(file_path, "r") as f:
+                    release = json.load(f)
+
+                    # Apply filters
+                    if df_id and release.get("df_id") != df_id:
+                        continue
+                    if status and release.get("status") != status:
+                        continue
+
+                    releases.append(release)
+
+            # Sort by created_at descending
+            releases.sort(key=lambda x: x.get("created_at", ""), reverse=True)
+            return releases
+        except Exception as e:
+            raise StorageError("read", f"Failed to get releases: {e}")
+
+    async def update_release(
+        self, release_id: str, release_data: Dict[str, Any]
+    ) -> None:
+        """Update a release record in file"""
+        releases_dir = self.base_path / "releases"
+        release_file = releases_dir / f"{release_id}.json"
+
+        if not release_file.exists():
+            raise StorageError("not_found", f"Release {release_id} not found")
+
+        try:
+            with open(release_file, "w") as f:
+                json.dump(release_data, f, indent=2, default=str)
+        except Exception as e:
+            raise StorageError("write", f"Failed to update release: {e}")
+
+    async def retrieve_function_spec(self, df_id: str, version: str) -> Dict[str, Any]:
+        """Retrieve decision function specification from file"""
+        spec_dir = self.base_path / "specs"
+        spec_file = spec_dir / f"{df_id}_{version}.json"
+
+        if not spec_file.exists():
+            return None
+
+        try:
+            with open(spec_file, "r") as f:
+                return json.load(f)
+        except Exception as e:
+            raise StorageError("read", f"Failed to retrieve function spec: {e}")
+
 
 class PostgreSQLStorage(StorageBackend):
     """PostgreSQL-based storage backend"""
@@ -378,6 +491,45 @@ class PostgreSQLStorage(StorageBackend):
                     timestamp TIMESTAMP NOT NULL,
                     result_data JSONB NOT NULL,
                     created_at TIMESTAMP DEFAULT NOW()
+                )
+            """
+            )
+
+            # Create releases table
+            await conn.execute(
+                """
+                CREATE TABLE IF NOT EXISTS releases (
+                    id SERIAL PRIMARY KEY,
+                    release_id TEXT UNIQUE NOT NULL,
+                    df_id TEXT NOT NULL,
+                    version TEXT NOT NULL,
+                    status TEXT NOT NULL DEFAULT 'PENDING',
+                    effective_from TIMESTAMP NOT NULL,
+                    sunset_date TIMESTAMP,
+                    change_summary TEXT NOT NULL,
+                    signatures JSONB NOT NULL,
+                    created_at TIMESTAMP DEFAULT NOW(),
+                    created_by TEXT,
+                    activated_at TIMESTAMP,
+                    activated_by TEXT,
+                    sunset_at TIMESTAMP,
+                    sunset_by TEXT,
+                    updated_at TIMESTAMP,
+                    updated_by TEXT
+                )
+            """
+            )
+
+            # Create function_specs table
+            await conn.execute(
+                """
+                CREATE TABLE IF NOT EXISTS function_specs (
+                    id SERIAL PRIMARY KEY,
+                    df_id TEXT NOT NULL,
+                    version TEXT NOT NULL,
+                    spec_data JSONB NOT NULL,
+                    created_at TIMESTAMP DEFAULT NOW(),
+                    UNIQUE(df_id, version)
                 )
             """
             )
@@ -726,6 +878,148 @@ class PostgreSQLStorage(StorageBackend):
         """Close the connection pool"""
         if self.pool:
             await self.pool.close()
+
+    async def store_release(self, release_data: Dict[str, Any]) -> None:
+        """Store a release record to PostgreSQL"""
+        if not self.pool:
+            await self.connect()
+
+        try:
+            if self.pool is None:
+                raise StorageError("operation", "Database pool not initialized")
+            async with self.pool.acquire() as conn:
+                await conn.execute(
+                    """
+                    INSERT INTO releases (
+                        release_id, df_id, version, status, effective_from,
+                        sunset_date, change_summary, signatures, created_at, created_by
+                    ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+                    """,
+                    release_data["release_id"],
+                    release_data["df_id"],
+                    release_data["version"],
+                    release_data["status"],
+                    release_data["effective_from"],
+                    release_data["sunset_date"],
+                    release_data["change_summary"],
+                    json.dumps(release_data["signatures"]),
+                    release_data["created_at"],
+                    release_data["created_by"],
+                )
+        except Exception as e:
+            raise StorageError("write", f"Failed to store release: {e}")
+
+    async def get_release(self, release_id: str) -> Dict[str, Any]:
+        """Get a specific release record from PostgreSQL"""
+        if not self.pool:
+            await self.connect()
+
+        try:
+            if self.pool is None:
+                raise StorageError("operation", "Database pool not initialized")
+            async with self.pool.acquire() as conn:
+                row = await conn.fetchrow(
+                    "SELECT * FROM releases WHERE release_id = $1", release_id
+                )
+                if not row:
+                    return None
+
+                release_data = dict(row)
+                release_data["signatures"] = json.loads(release_data["signatures"])
+                return release_data
+        except Exception as e:
+            raise StorageError("read", f"Failed to get release: {e}")
+
+    async def get_releases(
+        self, df_id: str = None, status: str = None
+    ) -> List[Dict[str, Any]]:
+        """Get releases with optional filtering from PostgreSQL"""
+        if not self.pool:
+            await self.connect()
+
+        try:
+            if self.pool is None:
+                raise StorageError("operation", "Database pool not initialized")
+            async with self.pool.acquire() as conn:
+                query = "SELECT * FROM releases WHERE 1=1"
+                params = []
+
+                if df_id:
+                    query += " AND df_id = $" + str(len(params) + 1)
+                    params.append(df_id)
+
+                if status:
+                    query += " AND status = $" + str(len(params) + 1)
+                    params.append(status)
+
+                query += " ORDER BY created_at DESC"
+
+                rows = await conn.fetch(query, *params)
+                releases = []
+                for row in rows:
+                    release_data = dict(row)
+                    release_data["signatures"] = json.loads(release_data["signatures"])
+                    releases.append(release_data)
+
+                return releases
+        except Exception as e:
+            raise StorageError("read", f"Failed to get releases: {e}")
+
+    async def update_release(
+        self, release_id: str, release_data: Dict[str, Any]
+    ) -> None:
+        """Update a release record in PostgreSQL"""
+        if not self.pool:
+            await self.connect()
+
+        try:
+            if self.pool is None:
+                raise StorageError("operation", "Database pool not initialized")
+            async with self.pool.acquire() as conn:
+                await conn.execute(
+                    """
+                    UPDATE releases SET
+                        status = $2,
+                        effective_from = $3,
+                        sunset_date = $4,
+                        change_summary = $5,
+                        signatures = $6,
+                        updated_at = $7,
+                        updated_by = $8
+                    WHERE release_id = $1
+                    """,
+                    release_id,
+                    release_data["status"],
+                    release_data.get("effective_from"),
+                    release_data.get("sunset_date"),
+                    release_data.get("change_summary"),
+                    json.dumps(release_data.get("signatures", [])),
+                    datetime.utcnow(),
+                    release_data.get("updated_by", "unknown"),
+                )
+        except Exception as e:
+            raise StorageError("write", f"Failed to update release: {e}")
+
+    async def retrieve_function_spec(self, df_id: str, version: str) -> Dict[str, Any]:
+        """Retrieve decision function specification from PostgreSQL"""
+        if not self.pool:
+            await self.connect()
+
+        try:
+            if self.pool is None:
+                raise StorageError("operation", "Database pool not initialized")
+            async with self.pool.acquire() as conn:
+                row = await conn.fetchrow(
+                    "SELECT spec_data FROM function_specs WHERE df_id = $1 AND version = $2",
+                    df_id,
+                    version,
+                )
+                if not row:
+                    return None
+
+                return json.loads(row["spec_data"])
+        except Exception as e:
+            raise StorageError("read", f"Failed to retrieve function spec: {e}")
 
 
 def create_storage_backend(backend_type: str, config: Dict[str, Any]) -> StorageBackend:

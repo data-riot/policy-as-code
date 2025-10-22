@@ -5,7 +5,7 @@ Separated to avoid circular imports
 
 from dataclasses import dataclass
 from datetime import datetime
-from typing import Any, Dict, Optional
+from typing import Any, Dict, Optional, Callable
 
 
 @dataclass(frozen=True)
@@ -31,3 +31,26 @@ class DecisionResult:
     timestamp: datetime
     success: bool
     error_message: Optional[str] = None
+
+
+@dataclass
+class DecisionInput:
+    """Input data for decision execution"""
+
+    data: Dict[str, Any]
+    context: Optional[Dict[str, Any]] = None
+    metadata: Optional[Dict[str, Any]] = None
+
+
+@dataclass
+class DecisionOutput:
+    """Output data from decision execution"""
+
+    result: Dict[str, Any]
+    confidence: Optional[float] = None
+    reasoning: Optional[str] = None
+    metadata: Optional[Dict[str, Any]] = None
+
+
+# Type alias for decision functions
+DecisionFunction = Callable[[DecisionInput], DecisionOutput]

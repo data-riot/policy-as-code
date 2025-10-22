@@ -4,6 +4,8 @@
 
 This document outlines the Policy as Code platform's compliance with the European Union's Artificial Intelligence Act (EU AI Act), effective from August 2, 2025. The platform implements comprehensive compliance measures across all use cases to ensure adherence to EU AI Act requirements.
 
+> **⚠️ Status**: This is a production-grade foundation with comprehensive compliance framework implementation. Requires production hardening for deployment.
+
 ## EU AI Act Risk Classifications
 
 The Policy as Code platform includes AI systems across different risk categories:

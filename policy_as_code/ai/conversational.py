@@ -15,8 +15,8 @@ from dataclasses import dataclass
 from enum import Enum
 
 
-from .core import DecisionEngine
-from .llm_integration import LLMIntegration, AgenticContext, ReasoningMode
+from policy_as_code.core.enhanced_engine import DecisionEngine
+from .llm import LLMIntegration, AgenticContext, ReasoningMode
 
 logger = logging.getLogger(__name__)
 

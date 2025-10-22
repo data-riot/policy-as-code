@@ -1,6 +1,8 @@
 # Policy as Code - Production Governance Platform
 
-A production-grade agentic governance platform with immutable trace ledger, legal compliance, digital signatures, and independent audit capabilities.
+A production-grade foundation for agentic governance with immutable trace ledger, legal compliance, digital signatures, and independent audit capabilities.
+
+> **⚠️ Status**: This is a production-grade foundation with comprehensive framework implementation. Requires production hardening for deployment.
 
 ## Production-Grade Governance Features
 

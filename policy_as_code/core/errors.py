@@ -33,6 +33,24 @@ class ValidationError(DecisionLayerError):
     pass
 
 
+class ConfigurationError(DecisionLayerError):
+    """Configuration error"""
+
+    pass
+
+
+class SecurityError(DecisionLayerError):
+    """Security error"""
+
+    pass
+
+
+class DomainError(DecisionLayerError):
+    """Domain-specific error"""
+
+    pass
+
+
 class StorageError(DecisionLayerError):
     """Storage error"""
 

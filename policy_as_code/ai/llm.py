@@ -15,9 +15,25 @@ from enum import Enum
 
 import httpx
 
-from .core import DecisionContext, DecisionFunction
-from .errors import DecisionLayerError, ValidationError
-from .config import DecisionLayerConfig
+from policy_as_code.core.types import DecisionContext, DecisionFunction
+from policy_as_code.core.errors import DecisionLayerError, ValidationError
+
+
+# Simple config class for now
+class DecisionLayerConfig:
+    def __init__(self):
+        self.integrations = type(
+            "obj",
+            (object,),
+            {
+                "llm": type(
+                    "obj",
+                    (object,),
+                    {"provider": "mock", "config": type("obj", (object,), {})()},
+                )()
+            },
+        )()
+
 
 logger = logging.getLogger(__name__)
 

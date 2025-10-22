@@ -226,10 +226,13 @@ async def execute_decision(
                 return cached_result["response"]
 
         # Create decision context
+        input_hash = hashlib.sha256(
+            json.dumps(request.input_data, sort_keys=True).encode()
+        ).hexdigest()
         context = DecisionContext(
             function_id=request.function_id,
             version=request.version,
-            result=request.input_data,
+            input_hash=input_hash,
             timestamp=datetime.now(),
             trace_id=request.trace_id or str(UUID()),
         )
@@ -280,7 +283,7 @@ def get_idempotency_key(request: DecisionRequest, x_road_client: str) -> str:
 
 
 # Global idempotency cache (in production, use Redis)
-idempotency_cache = {}
+idempotency_cache: Dict[str, Dict[str, Any]] = {}
 
 
 @app.get("/decisions/{trace_id}", response_model=DecisionResponse)
@@ -375,7 +378,7 @@ async def register_decision_function(
             )
 
         # Store the decision function specification
-        decision_engine.storage_backend.store_function_spec(
+        await decision_engine.storage_backend.store_function_spec(
             spec["id"], spec["version"], spec
         )
 
@@ -414,7 +417,7 @@ async def get_decision_function_spec(
     """Get specific version of decision function specification"""
     try:
         # Load DecisionFunctionSpec from storage
-        spec_data = decision_engine.storage_backend.retrieve_function_spec(
+        spec_data = await decision_engine.storage_backend.retrieve_function_spec(
             df_id, version
         )
         if not spec_data:
@@ -436,7 +439,7 @@ async def create_release(
     """Create a new release for a decision function"""
     try:
         # Validate ELI reference exists
-        spec_data = decision_engine.storage_backend.retrieve_function_spec(
+        spec_data = await decision_engine.storage_backend.retrieve_function_spec(
             release_request.df_id, release_request.version
         )
         if not spec_data:
@@ -551,7 +554,7 @@ async def list_releases(
 ):
     """List releases with optional filtering"""
     try:
-        releases = decision_engine.storage_backend.get_releases(df_id, status)
+        releases = await decision_engine.storage_backend.get_releases(df_id, status)
         return {"releases": releases, "total": len(releases)}
     except Exception as e:
         raise HTTPException(
@@ -566,7 +569,7 @@ async def activate_release(
     """Activate a pending release"""
     try:
         # Get release data
-        release_data = decision_engine.storage_backend.get_release(release_id)
+        release_data = await decision_engine.storage_backend.get_release(release_id)
         if not release_data:
             raise HTTPException(
                 status_code=404, detail=f"Release {release_id} not found"
@@ -582,7 +585,7 @@ async def activate_release(
         release_data["activated_at"] = datetime.utcnow()
         release_data["activated_by"] = current_user.get("user_id", "unknown")
 
-        decision_engine.storage_backend.update_release(release_id, release_data)
+        await decision_engine.storage_backend.update_release(release_id, release_data)
 
         return {"message": f"Release {release_id} activated successfully"}
 
@@ -601,7 +604,7 @@ async def sunset_release(
     """Sunset an active release"""
     try:
         # Get release data
-        release_data = decision_engine.storage_backend.get_release(release_id)
+        release_data = await decision_engine.storage_backend.get_release(release_id)
         if not release_data:
             raise HTTPException(
                 status_code=404, detail=f"Release {release_id} not found"
@@ -617,7 +620,7 @@ async def sunset_release(
         release_data["sunset_at"] = datetime.utcnow()
         release_data["sunset_by"] = current_user.get("user_id", "unknown")
 
-        decision_engine.storage_backend.update_release(release_id, release_data)
+        await decision_engine.storage_backend.update_release(release_id, release_data)
 
         return {"message": f"Release {release_id} sunset successfully"}
 
@@ -761,7 +764,9 @@ async def list_kms_keys(current_user: dict = Depends(get_current_user)):
 
 @app.post("/kms/keys")
 async def create_kms_key(
-    key_id: str, description: str = None, current_user: dict = Depends(get_current_user)
+    key_id: str,
+    description: Optional[str] = None,
+    current_user: dict = Depends(get_current_user),
 ):
     """Create a new KMS signing key"""
     try:
@@ -1180,7 +1185,7 @@ async def log_decision_execution(
         }
 
         # Append to trace ledger
-        await decision_engine.trace_ledger.append_decision_execution(trace_entry)
+        await decision_engine.trace_ledger.append_decision_execution(context, result)
 
         print(f"Decision executed: {result.trace_id} by X-Road client {x_road_client}")
 

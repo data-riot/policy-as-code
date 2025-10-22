@@ -1,0 +1,28 @@
+FROM python:3.11-slim
+
+# Install development tools
+RUN apt-get update && apt-get install -y \
+    curl \
+    git \
+    vim \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install Python dependencies
+RUN pip install \
+    rdflib \
+    pyshacl \
+    requests \
+    pyyaml \
+    pytest \
+    black \
+    flake8
+
+WORKDIR /app
+
+# Copy all files
+COPY . /app/
+
+# Make scripts executable
+RUN chmod +x /app/scripts/*.py
+
+CMD ["tail", "-f", "/dev/null"]

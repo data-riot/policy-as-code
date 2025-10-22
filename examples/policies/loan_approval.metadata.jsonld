@@ -1,0 +1,15 @@
+{
+  "@context": "https://example.org/policy-as-code/v1/context.jsonld",
+  "id": "https://example.org/policy/loan-approval/v1.2.0",
+  "type": "Policy",
+  "name": "Loan Approval",
+  "description": "Approves or denies loans based on applicant risk and credit data.",
+  "version": "1.2.0",
+  "owner": "Credit Risk Team",
+  "jurisdiction": "EU",
+  "controls": [
+    "https://example.org/control/gdpr-art6-1f",
+    "https://example.org/control/iso27001-A.8.2"
+  ],
+  "entrypoint": "authz.loan_approval.allow"
+}

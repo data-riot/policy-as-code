@@ -50,7 +50,7 @@ class ELIValidationResult:
     effective_date: Optional[date] = None
     expiry_date: Optional[date] = None
     error_message: Optional[str] = None
-    validated_at: datetime = None
+    validated_at: Optional[datetime] = None
 
     def __post_init__(self):
         if self.validated_at is None:
@@ -98,7 +98,9 @@ class ELIValidator:
 
         return year, number, section
 
-    async def _fetch_law_metadata(self, year: int, number: int) -> Dict[str, Any]:
+    async def _fetch_law_metadata(
+        self, year: int, number: int
+    ) -> Optional[Dict[str, Any]]:
         """Fetch law metadata from Finlex API"""
         if not self.session:
             raise RuntimeError(
@@ -235,21 +237,30 @@ class ELIValidator:
                 return result
 
             # Validate section exists
-            if section and not await self._validate_section_exists(metadata, section):
+            if (
+                section
+                and metadata
+                and not await self._validate_section_exists(metadata, section)
+            ):
                 result = ELIValidationResult(
                     status=ELIValidationStatus.SECTION_NOT_FOUND,
                     eli_uri=eli_uri,
                     law_year=year,
                     law_number=number,
                     section=section,
-                    law_title=metadata.get("title"),
+                    law_title=metadata.get("title") if metadata else None,
                     error_message=f"Section '{section}' not found in law {year}/{number}",
                 )
                 self.validation_cache[eli_uri] = result
                 return result
 
             # Check if law is effective
-            is_effective, effective_date, expiry_date = self._is_law_effective(metadata)
+            if metadata:
+                is_effective, effective_date, expiry_date = self._is_law_effective(
+                    metadata
+                )
+            else:
+                is_effective, effective_date, expiry_date = False, None, None
 
             if not is_effective:
                 result = ELIValidationResult(
@@ -258,7 +269,7 @@ class ELIValidator:
                     law_year=year,
                     law_number=number,
                     section=section,
-                    law_title=metadata.get("title"),
+                    law_title=metadata.get("title") if metadata else None,
                     effective_date=effective_date,
                     expiry_date=expiry_date,
                     error_message=f"Law {year}/{number} is not currently effective",
@@ -334,7 +345,7 @@ class ELIValidator:
         )
         invalid = total - valid
 
-        status_counts = {}
+        status_counts: Dict[str, int] = {}
         for result in results.values():
             status_counts[result.status.value] = (
                 status_counts.get(result.status.value, 0) + 1

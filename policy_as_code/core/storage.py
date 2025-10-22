@@ -7,7 +7,7 @@ import json
 from abc import ABC, abstractmethod
 from datetime import datetime, timedelta
 from pathlib import Path
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Optional
 
 import asyncpg
 
@@ -82,13 +82,13 @@ class StorageBackend(ABC):
         pass
 
     @abstractmethod
-    async def get_release(self, release_id: str) -> Dict[str, Any]:
+    async def get_release(self, release_id: str) -> Optional[Dict[str, Any]]:
         """Get a specific release record"""
         pass
 
     @abstractmethod
     async def get_releases(
-        self, df_id: str = None, status: str = None
+        self, df_id: Optional[str] = None, status: Optional[str] = None
     ) -> List[Dict[str, Any]]:
         """Get releases with optional filtering"""
         pass
@@ -101,7 +101,16 @@ class StorageBackend(ABC):
         pass
 
     @abstractmethod
-    async def retrieve_function_spec(self, df_id: str, version: str) -> Dict[str, Any]:
+    async def store_function_spec(
+        self, df_id: str, version: str, spec: Dict[str, Any]
+    ) -> None:
+        """Store decision function specification"""
+        pass
+
+    @abstractmethod
+    async def retrieve_function_spec(
+        self, df_id: str, version: str
+    ) -> Optional[Dict[str, Any]]:
         """Retrieve decision function specification"""
         pass
 
@@ -367,7 +376,7 @@ class FileStorage(StorageBackend):
         except Exception as e:
             raise StorageError("write", f"Failed to store release: {e}")
 
-    async def get_release(self, release_id: str) -> Dict[str, Any]:
+    async def get_release(self, release_id: str) -> Optional[Dict[str, Any]]:
         """Get a specific release record from file"""
         releases_dir = self.base_path / "releases"
         release_file = releases_dir / f"{release_id}.json"
@@ -382,7 +391,7 @@ class FileStorage(StorageBackend):
             raise StorageError("read", f"Failed to get release: {e}")
 
     async def get_releases(
-        self, df_id: str = None, status: str = None
+        self, df_id: Optional[str] = None, status: Optional[str] = None
     ) -> List[Dict[str, Any]]:
         """Get releases with optional filtering from files"""
         releases_dir = self.base_path / "releases"
@@ -425,7 +434,23 @@ class FileStorage(StorageBackend):
         except Exception as e:
             raise StorageError("write", f"Failed to update release: {e}")
 
-    async def retrieve_function_spec(self, df_id: str, version: str) -> Dict[str, Any]:
+    async def store_function_spec(
+        self, df_id: str, version: str, spec: Dict[str, Any]
+    ) -> None:
+        """Store decision function specification to file"""
+        spec_dir = self.base_path / "specs"
+        spec_dir.mkdir(parents=True, exist_ok=True)
+
+        spec_file = spec_dir / f"{df_id}_{version}.json"
+        try:
+            with open(spec_file, "w") as f:
+                json.dump(spec, f, indent=2, default=str)
+        except Exception as e:
+            raise StorageError("write", f"Failed to store function spec: {e}")
+
+    async def retrieve_function_spec(
+        self, df_id: str, version: str
+    ) -> Optional[Dict[str, Any]]:
         """Retrieve decision function specification from file"""
         spec_dir = self.base_path / "specs"
         spec_file = spec_dir / f"{df_id}_{version}.json"
@@ -909,7 +934,7 @@ class PostgreSQLStorage(StorageBackend):
         except Exception as e:
             raise StorageError("write", f"Failed to store release: {e}")
 
-    async def get_release(self, release_id: str) -> Dict[str, Any]:
+    async def get_release(self, release_id: str) -> Optional[Dict[str, Any]]:
         """Get a specific release record from PostgreSQL"""
         if not self.pool:
             await self.connect()
@@ -931,7 +956,7 @@ class PostgreSQLStorage(StorageBackend):
             raise StorageError("read", f"Failed to get release: {e}")
 
     async def get_releases(
-        self, df_id: str = None, status: str = None
+        self, df_id: Optional[str] = None, status: Optional[str] = None
     ) -> List[Dict[str, Any]]:
         """Get releases with optional filtering from PostgreSQL"""
         if not self.pool:
@@ -1000,7 +1025,37 @@ class PostgreSQLStorage(StorageBackend):
         except Exception as e:
             raise StorageError("write", f"Failed to update release: {e}")
 
-    async def retrieve_function_spec(self, df_id: str, version: str) -> Dict[str, Any]:
+    async def store_function_spec(
+        self, df_id: str, version: str, spec: Dict[str, Any]
+    ) -> None:
+        """Store decision function specification to PostgreSQL"""
+        if not self.pool:
+            await self.connect()
+
+        try:
+            if self.pool is None:
+                raise StorageError("operation", "Database pool not initialized")
+            async with self.pool.acquire() as conn:
+                await conn.execute(
+                    """
+                    INSERT INTO function_specs (df_id, version, spec_data, created_at, updated_at)
+                    VALUES ($1, $2, $3, $4, $5)
+                    ON CONFLICT (df_id, version) DO UPDATE SET
+                        spec_data = $3,
+                        updated_at = $5
+                    """,
+                    df_id,
+                    version,
+                    json.dumps(spec),
+                    datetime.utcnow(),
+                    datetime.utcnow(),
+                )
+        except Exception as e:
+            raise StorageError("write", f"Failed to store function spec: {e}")
+
+    async def retrieve_function_spec(
+        self, df_id: str, version: str
+    ) -> Optional[Dict[str, Any]]:
         """Retrieve decision function specification from PostgreSQL"""
         if not self.pool:
             await self.connect()

@@ -1,0 +1,29 @@
+@prefix sh: <http://www.w3.org/ns/shacl#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix pa: <https://example.org/policy-as-code/v1#> .
+
+pa:PolicyShape a sh:NodeShape ;
+  sh:targetClass pa:Policy ;
+  sh:property [
+    sh:path pa:entrypoint ;
+    sh:datatype xsd:string ;
+    sh:minCount 1 ;
+    sh:maxCount 1 ;
+    sh:message "Every policy must define a single entrypoint." ;
+  ] ;
+  sh:property [
+    sh:path pa:owner ;
+    sh:datatype xsd:string ;
+    sh:minCount 1 ;
+    sh:message "Every policy must declare an owner." ;
+  ] ;
+  sh:property [
+    sh:path pa:version ;
+    sh:pattern "^[0-9]+\\.[0-9]+\\.[0-9]+$" ;
+    sh:message "Version must follow semantic versioning (e.g., 1.2.0)." ;
+  ] ;
+  sh:property [
+    sh:path pa:controls ;
+    sh:minCount 1 ;
+    sh:message "At least one linked control URI required." ;
+  ] .

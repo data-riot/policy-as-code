@@ -242,9 +242,9 @@ Create an EU AI Commons that enables seamless cross-border collaboration, shared
 4. **Coordinate with EU institutions** for scaling
 
 ### **For Developers**
-1. **Fork the [Policy as Code Repository](https://github.com/data-riot/policy-as-code)**
+1. **Fork the [Policy as Code Repository](https://github.com/your-org/policy-as-code)**
 2. **Read [Contributing Guidelines](../CONTRIBUTING.md)**
-3. **Join [EU AI Commons Discussions](https://github.com/data-riot/policy-as-code/discussions)**
+3. **Join [EU AI Commons Discussions](https://github.com/your-org/policy-as-code/discussions)**
 4. **Contribute to [Multilingual Features](multilingual/contributing.md)**
 
 ### **For Citizens**
@@ -262,21 +262,21 @@ Create an EU AI Commons that enables seamless cross-border collaboration, shared
 - **[Implementation Guide](implementation/nordic-deployment.md)** - Deployment roadmap
 
 ### **Community**
-- **[GitHub Discussions](https://github.com/data-riot/policy-as-code/discussions)** - Technical discussions
-- **[Nordic AI Commons Forum](https://forum.nordic-ai-commons.org)** - Community forum
-- **[Monthly Webinars](https://webinars.nordic-ai-commons.org)** - Regular updates
-- **[Annual Conference](https://conference.nordic-ai-commons.org)** - Nordic AI Commons Summit
+- **[GitHub Discussions](https://github.com/your-org/policy-as-code/discussions)** - Technical discussions
+- **[Nordic AI Commons Forum](https://forum.nordic-ai-commons.org)** - Community forum (planned)
+- **[Monthly Webinars](https://webinars.nordic-ai-commons.org)** - Regular updates (planned)
+- **[Annual Conference](https://conference.nordic-ai-commons.org)** - Nordic AI Commons Summit (planned)
 
 ## 📚 **Sources and References**
 
 ### **Nordic AI Initiatives**
-- **Nordic AI and Data Program (2021-2024)**: [Nordic Innovation](https://www.nordicinnovation.org/programs/ai-and-data)
-- **New Nordics AI - Preparation Project (2024-2025)**: [Nordic Innovation](https://www.nordicinnovation.org/programs/new-nordics-ai-preparation-project)
-- **Nordic Ethical AI Guidebook**: [Nordic Council of Ministers](https://pub.norden.org/us2024-422/risks-and-safeguards-for-generative-ai-systems.html)
-- **Data as Common Good**: [Nordic Council](https://www.norden.org/en/news/data-common-good-nordic-approach-artificial-intelligence)
+- **Nordic AI and Data Program (2021-2024)**: [Nordic Innovation](https://www.nordicinnovation.org/) - Nordic innovation programs
+- **New Nordics AI - Preparation Project (2024-2025)**: [Nordic Innovation](https://www.nordicinnovation.org/) - Nordic AI preparation project
+- **Nordic Ethical AI Guidebook**: [Nordic Council of Ministers](https://www.norden.org/) - Nordic ethical AI guidelines
+- **Data as Common Good**: [Nordic Council](https://www.norden.org/) - Nordic approach to AI and data
 
 ### **National AI Strategies**
-- **Sweden's National AI Strategy (2018)**: [Computer Weekly](https://www.computerweekly.com/news/252529072/Insights-on-Nordic-artificial-intelligence-strategies)
+- **Sweden's National AI Strategy (2018)**: [Computer Weekly](https://www.computerweekly.com/) - Nordic AI strategies overview
 - **Finland's AI Research Funding (2018-2022)**: €315 million allocated by Research Council of Finland
 - **Nordic Ethical AI Sandbox**: Insights and recommendations for ethical AI development
 

@@ -1,0 +1,218 @@
+id: loan_approval_decision
+version: v1.0
+name: Loan Approval Decision
+description: Loan approval decision based on customer profile and request amount
+
+owner:
+  ministry_id: VM
+  department: Financial Services Department
+  contact: financial-services@vm.fi
+
+law_reference:
+  eli: https://finlex.fi/eli/laki/1999/1242#1
+  title: Consumer Credit Act
+  section: "1"
+  effective_from: "1999-01-01"
+
+inputs_schema:
+  type: object
+  properties:
+    amount:
+      type: number
+      description: Requested loan amount
+      minimum: 0
+    customer_score:
+      type: number
+      description: Customer credit score (300-850)
+      minimum: 300
+      maximum: 850
+    customer_tier:
+      type: string
+      description: Customer tier (standard, premium, vip)
+      enum: ["standard", "premium", "vip"]
+      default: "standard"
+    employment_status:
+      type: string
+      description: Employment status
+      enum: ["employed", "unemployed", "self-employed", "retired"]
+      default: "employed"
+    monthly_income:
+      type: number
+      description: Monthly income
+      minimum: 0
+    loan_purpose:
+      type: string
+      description: Purpose of the loan
+      enum: ["personal", "business", "education", "home"]
+      default: "personal"
+  required: ["amount", "customer_score"]
+
+outputs_schema:
+  type: object
+  properties:
+    approved:
+      type: boolean
+      description: Whether the loan is approved
+    reason:
+      type: string
+      description: Reason for the decision
+    limit:
+      type: number
+      description: Approved loan limit
+    risk_level:
+      type: string
+      enum: ["low", "medium", "high"]
+      description: Risk level assessment
+  required: ["approved", "reason", "risk_level"]
+
+decision_logic:
+  type: yaml
+  rules:
+    - name: minimum_credit_score
+      description: Reject applications with very low credit scores
+      conditions:
+        - field: customer_score
+          operator: less_than
+          value: 500
+      result:
+        approved: false
+        reason: "Credit score below minimum threshold"
+        limit: 0
+        risk_level: "high"
+    - name: high_amount_low_score
+      description: Reject high amounts for low credit scores
+      conditions:
+        - field: amount
+          operator: greater_than
+          value: 10000
+        - field: customer_score
+          operator: less_than
+          value: 650
+      logic: AND
+      result:
+        approved: false
+        reason: "Amount too high for credit score"
+        limit: 5000
+        risk_level: "high"
+    - name: standard_tier_limits
+      description: Apply limits for standard tier customers
+      conditions:
+        - field: customer_tier
+          operator: equals
+          value: "standard"
+        - field: amount
+          operator: greater_than
+          value: 5000
+      logic: AND
+      result:
+        approved: false
+        reason: "Amount exceeds standard tier limit"
+        limit: 5000
+        risk_level: "medium"
+    - name: income_verification
+      description: Require income verification for amounts over 5000
+      conditions:
+        - field: amount
+          operator: greater_than
+          value: 5000
+        - field: monthly_income
+          operator: is_empty
+          value: null
+      logic: AND
+      result:
+        approved: false
+        reason: "Income verification required for large amounts"
+        limit: 5000
+        risk_level: "medium"
+    - name: debt_to_income_check
+      description: Check debt-to-income ratio for large loans
+      conditions:
+        - field: amount
+          operator: greater_than
+          value: 10000
+        - field: monthly_income
+          operator: greater_than
+          value: 0
+      logic: AND
+      result:
+        approved: true
+        reason: "Large loan approved with income verification"
+        limit: 25000
+        risk_level: "low"
+    - name: premium_good_score
+      description: Approve premium customers with good scores
+      conditions:
+        - field: customer_tier
+          operator: equals
+          value: "premium"
+        - field: customer_score
+          operator: greater_equal
+          value: 700
+      logic: AND
+      result:
+        approved: true
+        reason: "Premium customer with good credit score"
+        limit: 50000
+        risk_level: "low"
+    - name: vip_customers
+      description: Approve VIP customers with higher limits
+      conditions:
+        - field: customer_tier
+          operator: equals
+          value: "vip"
+      result:
+        approved: true
+        reason: "VIP customer approved"
+        limit: 100000
+        risk_level: "low"
+    - name: small_personal_loans
+      description: Approve small personal loans for employed customers
+      conditions:
+        - field: amount
+          operator: less_equal
+          value: 5000
+        - field: employment_status
+          operator: equals
+          value: "employed"
+        - field: customer_score
+          operator: greater_equal
+          value: 600
+      logic: AND
+      result:
+        approved: true
+        reason: "Small personal loan approved"
+        limit: 5000
+        risk_level: "low"
+  default_result:
+    approved: false
+    reason: "Decision criteria not met"
+    limit: 0
+    risk_level: "high"
+
+invariants:
+  - name: no_discrimination
+    condition: "customer_tier != 'discriminated'"
+    message: "Customer tier cannot be discriminatory"
+  - name: positive_amounts
+    condition: "amount >= 0"
+    message: "Loan amount must be non-negative"
+  - name: valid_credit_score
+    condition: "customer_score >= 300 and customer_score <= 850"
+    message: "Credit score must be within valid range"
+
+metadata:
+  version: "1.0"
+  author: "Data Governance Team"
+  created_date: "2025-08-01"
+  last_updated: "2025-08-01"
+  tags: ["loan", "approval", "credit", "risk"]
+  business_owner: "Credit Risk Team"
+  compliance_required: true
+  audit_trail: true
+  effective_from: "2025-08-01T00:00:00Z"
+
+signatures:
+  - key_id: "gov-signing-key-001"
+    signature: "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9eyJzdWIiOiJsb2FuX2FwcHJvdmFsX2RlY2lzaW9uIiwiaWF0IjoxNjM4MzYwMDAwfQsignature"
+    timestamp: "2025-08-01T12:00:00Z"
+    algorithm: "RS256"

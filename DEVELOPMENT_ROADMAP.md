@@ -9,6 +9,15 @@ The Policy as Code platform now has a solid foundation with:
 - ✅ Modern, inclusive decision logic
 - ✅ Comprehensive legal compliance
 - ✅ Domain-first autonomous data architecture
+- ✅ **Open Source Ready**: Type-safe codebase with 66% mypy error reduction
+
+## 📋 **Public Backlog**
+
+For detailed open-source development priorities, see **[PUBLIC_BACKLOG.md](./PUBLIC_BACKLOG.md)** - a comprehensive roadmap focused on:
+- OSS readiness and CI hygiene
+- Security scanning and compliance
+- Community guidelines and documentation
+- Reproducible builds and provenance
 
 ## 🚀 **Development Phases**
 

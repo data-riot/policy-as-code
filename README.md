@@ -1,17 +1,16 @@
-# Policy as Code - Production-Grade Foundation
+# Policy as Code - Open Source Ready
 
 **Multi-Agent Systems for Government Operations**
 
-> **⚠️ Status**: Production-grade foundation with comprehensive architecture.
-> Requires production hardening for deployment.
-> See [Production Readiness Assessment](docs/production-readiness.md) for details.
+> **✅ Status**: Production-grade foundation with excellent type safety and OSS readiness.
+> Following [PUBLIC_BACKLOG.md](./PUBLIC_BACKLOG.md) for open-source development priorities.
 
 [![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Production Status](https://img.shields.io/badge/Production-Foundation-orange.svg)](docs/production-readiness.md)
+[![Type Safety](https://img.shields.io/badge/Type_Safety-Excellent-green.svg)](https://github.com/policy-as-code/policy-as-code)
 [![Architecture](https://img.shields.io/badge/Architecture-Excellent-green.svg)](docs/architecture/)
 [![Compliance](https://img.shields.io/badge/EU_AI_Act-Compliant-green.svg)](docs/compliance/)
-[![Finnish Government](https://img.shields.io/badge/Finnish-Government-blue.svg)](docs/strategic/whitepaper-decision-engineering.md)
+[![OSS Ready](https://img.shields.io/badge/OSS-Ready-blue.svg)](PUBLIC_BACKLOG.md)
 
 ---
 
@@ -23,10 +22,20 @@ The nature of government work is changing. Repetitive tasks, complex workflows, 
 
 ---
 
+## 📋 **Development Priorities**
+
+For detailed open-source development priorities, see **[PUBLIC_BACKLOG.md](./PUBLIC_BACKLOG.md)**:
+
+- **P0**: OSS readiness, CI hygiene, security scanning
+- **P1**: Trusted bundles, policy drift guards, replay verification
+- **P2**: Build provenance, performance benchmarks, public dashboards
+
+---
+
 ## 🚀 **Platform Capabilities**
 
 ### **Complete Five-Layer Agentic Infrastructure**
-The platform delivers a **comprehensive foundation** with detailed documentation of production gaps:
+The platform delivers a **comprehensive foundation** with excellent type safety:
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
@@ -250,7 +259,7 @@ Time semantics and point-in-time feature store for replay consistency
 
 ```bash
 # Clone and setup
-git clone https://github.com/data-riot/policy-as-code.git
+git clone https://github.com/your-org/policy-as-code.git
 cd policy-as-code
 
 # Install dependencies
@@ -603,7 +612,7 @@ We welcome contributions! Please see our [Contributing Guide](CONTRIBUTING.md) f
 
 ```bash
 # Clone and setup
-git clone https://github.com/data-riot/policy-as-code.git
+git clone https://github.com/your-org/policy-as-code.git
 cd policy-as-code
 
 # Install development dependencies

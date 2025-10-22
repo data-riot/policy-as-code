@@ -270,17 +270,17 @@ The Policy as Code platform provides comprehensive multilingual support for Euro
 - **[Translation Services](translation-services.md)** - Translation service documentation
 
 ### **Community**
-- **[GitHub Discussions](https://github.com/data-riot/policy-as-code/discussions)** - Technical discussions
-- **[Multilingual Forum](https://forum.multilingual.policy-as-code.org)** - Multilingual community
-- **[Language Model Forum](https://forum.language-models.policy-as-code.org)** - Language model community
-- **[Cultural Context Forum](https://forum.cultural-context.policy-as-code.org)** - Cultural context community
+- **[GitHub Discussions](https://github.com/your-org/policy-as-code/discussions)** - Technical discussions
+- **[Multilingual Forum](https://forum.multilingual.policy-as-code.org)** - Multilingual community (planned)
+- **[Language Model Forum](https://forum.language-models.policy-as-code.org)** - Language model community (planned)
+- **[Cultural Context Forum](https://forum.cultural-context.policy-as-code.org)** - Cultural context community (planned)
 
 ## 📚 **Sources and References**
 
 ### **Nordic AI Initiatives**
-- **Nordic AI and Data Program (2021-2024)**: [Nordic Innovation](https://www.nordicinnovation.org/programs/ai-and-data)
-- **New Nordics AI - Preparation Project (2024-2025)**: [Nordic Innovation](https://www.nordicinnovation.org/programs/new-nordics-ai-preparation-project)
-- **Nordic Ethical AI Guidebook**: [Nordic Council of Ministers](https://pub.norden.org/us2024-422/risks-and-safeguards-for-generative-ai-systems.html)
+- **Nordic AI and Data Program (2021-2024)**: [Nordic Innovation](https://www.nordicinnovation.org/) - Nordic innovation programs
+- **New Nordics AI - Preparation Project (2024-2025)**: [Nordic Innovation](https://www.nordicinnovation.org/) - Nordic AI preparation project
+- **Nordic Ethical AI Guidebook**: [Nordic Council of Ministers](https://www.norden.org/) - Nordic ethical AI guidelines
 
 ### **Language Support**
 - **Finnish Language Models**: Based on existing Finnish government digital services

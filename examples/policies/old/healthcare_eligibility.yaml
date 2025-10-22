@@ -1,0 +1,25 @@
+id: "healthcare_eligibility"
+version: "1.0.0"
+owner: "healthcare_team"
+entrypoint: "decision_function"
+status: "active"
+description: "Healthcare eligibility decision function with EU AI Act compliance"
+
+legal_references:
+  - uri: "https://finlex.fi/fi/laki/alkup/2010/20100580#L1"
+    title: "Patient Safety Act"
+    section: "Section 1"
+  - uri: "https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:32016R0679"
+    title: "GDPR"
+    section: "Article 6"
+
+decision_function:
+  name: "healthcare_eligibility_df"
+  language: "python"
+  risk_level: "high_risk"
+  eu_ai_act_compliant: true
+
+metadata:
+  created: "2024-01-15"
+  last_updated: "2024-01-15"
+  tags: ["healthcare", "eligibility", "ai-act"]

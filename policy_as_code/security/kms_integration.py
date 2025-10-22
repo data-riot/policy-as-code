@@ -66,7 +66,9 @@ class KMSClient(ABC):
     """Abstract KMS client interface"""
 
     @abstractmethod
-    async def create_key(self, key_id: str, description: str = None) -> KeyInfo:
+    async def create_key(
+        self, key_id: str, description: Optional[str] = None
+    ) -> KeyInfo:
         """Create a new signing key"""
         pass
 
@@ -99,14 +101,16 @@ class KMSClient(ABC):
 class AWSKMSClient(KMSClient):
     """AWS KMS client implementation"""
 
-    def __init__(self, region: str = "eu-west-1", profile: str = None):
+    def __init__(self, region: str = "eu-west-1", profile: Optional[str] = None):
         if not AWS_AVAILABLE:
             raise ImportError("boto3 not available. Install with: pip install boto3")
 
         self.region = region
         self.client = boto3.client("kms", region_name=region, profile_name=profile)
 
-    async def create_key(self, key_id: str, description: str = None) -> KeyInfo:
+    async def create_key(
+        self, key_id: str, description: Optional[str] = None
+    ) -> KeyInfo:
         """Create a new signing key in AWS KMS"""
         try:
             response = self.client.create_key(
@@ -250,7 +254,9 @@ class GCPKMSClient(KMSClient):
         self.client = kms.KeyManagementServiceClient()
         self.location_name = f"projects/{project_id}/locations/{location}"
 
-    async def create_key(self, key_id: str, description: str = None) -> KeyInfo:
+    async def create_key(
+        self, key_id: str, description: Optional[str] = None
+    ) -> KeyInfo:
         """Create a new signing key in GCP KMS"""
         try:
             key_ring_name = f"{self.location_name}/keyRings/policy-as-code"
@@ -411,7 +417,9 @@ class LocalKMSClient(KMSClient):
         self._padding = padding
         self._serialization = serialization
 
-    async def create_key(self, key_id: str, description: str = None) -> KeyInfo:
+    async def create_key(
+        self, key_id: str, description: Optional[str] = None
+    ) -> KeyInfo:
         """Create a new signing key locally"""
         private_key = self._rsa.generate_private_key(
             public_exponent=65537,
@@ -530,7 +538,7 @@ class KMSManager:
         self.provider = provider
         self.config = config
         self.client = self._create_client()
-        self.key_registry = {}  # Cache for key information
+        self.key_registry: Dict[str, KeyInfo] = {}  # Cache for key information
 
     def _create_client(self) -> KMSClient:
         """Create KMS client based on provider"""
@@ -549,7 +557,9 @@ class KMSManager:
         else:
             raise ValueError(f"Unsupported KMS provider: {self.provider}")
 
-    async def create_signing_key(self, key_id: str, description: str = None) -> KeyInfo:
+    async def create_signing_key(
+        self, key_id: str, description: Optional[str] = None
+    ) -> KeyInfo:
         """Create a new signing key"""
         key_info = await self.client.create_key(key_id, description)
         self.key_registry[key_id] = key_info
@@ -586,7 +596,7 @@ class KMSManager:
     async def publish_public_keys(self) -> Dict[str, str]:
         """Publish all public keys for verification"""
         keys = await self.client.list_keys()
-        public_keys = {}
+        public_keys: Dict[str, str] = {}
 
         for key_info in keys:
             public_keys[key_info.key_id] = key_info.public_key

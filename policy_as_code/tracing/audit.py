@@ -24,7 +24,7 @@ class TraceAuditor:
 
     async def audit_trace(self, trace: TraceRecord) -> Dict[str, Any]:
         """Perform comprehensive audit of a trace record"""
-        audit_result = {
+        audit_result: Dict[str, Any] = {
             "trace_id": trace.trace_id,
             "audit_timestamp": datetime.utcnow(),
             "passed": True,
@@ -72,7 +72,7 @@ class TraceAuditor:
 
     async def _check_integrity(self, trace: TraceRecord) -> Dict[str, Any]:
         """Check trace integrity"""
-        result = {"passed": True, "issues": [], "checks_performed": []}
+        result: Dict[str, Any] = {"passed": True, "issues": [], "checks_performed": []}
 
         try:
             # Check trace ID format
@@ -114,7 +114,7 @@ class TraceAuditor:
 
     async def _check_compliance(self, trace: TraceRecord) -> Dict[str, Any]:
         """Check trace compliance with policies"""
-        result = {"passed": True, "issues": [], "policies_checked": []}
+        result: Dict[str, Any] = {"passed": True, "issues": [], "policies_checked": []}
 
         try:
             # Check data retention policy
@@ -145,7 +145,7 @@ class TraceAuditor:
 
     async def _check_performance(self, trace: TraceRecord) -> Dict[str, Any]:
         """Check trace performance metrics"""
-        result = {"passed": True, "warnings": [], "metrics_checked": []}
+        result: Dict[str, Any] = {"passed": True, "warnings": [], "metrics_checked": []}
 
         try:
             # Check execution time
@@ -167,7 +167,7 @@ class TraceAuditor:
 
     async def _check_security(self, trace: TraceRecord) -> Dict[str, Any]:
         """Check trace security"""
-        result = {"passed": True, "issues": [], "security_checks": []}
+        result: Dict[str, Any] = {"passed": True, "issues": [], "security_checks": []}
 
         try:
             # Check for suspicious patterns

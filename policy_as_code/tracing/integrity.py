@@ -24,7 +24,7 @@ class TraceIntegrityChecker:
 
     async def verify_trace_integrity(self, trace: TraceRecord) -> Dict[str, Any]:
         """Verify the integrity of a trace record"""
-        integrity_result = {
+        integrity_result: Dict[str, Any] = {
             "trace_id": trace.trace_id,
             "verification_timestamp": datetime.utcnow(),
             "passed": True,
@@ -95,7 +95,7 @@ class TraceIntegrityChecker:
 
     async def _verify_timestamps(self, trace: TraceRecord) -> Dict[str, Any]:
         """Verify timestamp integrity"""
-        result = {"passed": True, "issues": []}
+        result: Dict[str, Any] = {"passed": True, "issues": []}
 
         try:
             # Check if start time is valid
@@ -140,7 +140,7 @@ class TraceIntegrityChecker:
 
     async def _verify_events(self, trace: TraceRecord) -> Dict[str, Any]:
         """Verify event integrity"""
-        result = {"passed": True, "issues": []}
+        result: Dict[str, Any] = {"passed": True, "issues": []}
 
         try:
             if not trace.events:
@@ -168,7 +168,7 @@ class TraceIntegrityChecker:
 
     async def _verify_data_consistency(self, trace: TraceRecord) -> Dict[str, Any]:
         """Verify data consistency"""
-        result = {"passed": True, "issues": []}
+        result: Dict[str, Any] = {"passed": True, "issues": []}
 
         try:
             # Check JSON serializability
@@ -202,7 +202,7 @@ class TraceIntegrityChecker:
 
     async def _verify_metadata(self, trace: TraceRecord) -> Dict[str, Any]:
         """Verify metadata integrity"""
-        result = {"passed": True, "issues": []}
+        result: Dict[str, Any] = {"passed": True, "issues": []}
 
         try:
             if not trace.metadata:

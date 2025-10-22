@@ -18,7 +18,7 @@ This comprehensive guide covers development setup, tools, best practices, and th
 
 ```bash
 # Clone the repository
-git clone https://github.com/data-riot/policy-as-code.git
+git clone https://github.com/your-org/policy-as-code.git
 cd policy-as-code
 
 # Install dependencies
@@ -35,7 +35,7 @@ python -c "import policy_as_code; print('✅ Policy as Code installed successful
 
 ```bash
 # Clone the repository
-git clone https://github.com/data-riot/policy-as-code.git
+git clone https://github.com/your-org/policy-as-code.git
 cd policy-as-code
 
 # Create virtual environment
@@ -59,7 +59,7 @@ pre-commit install --hook-type commit-msg
 
 ```bash
 # Clone the repository
-git clone https://github.com/data-riot/policy-as-code.git
+git clone https://github.com/your-org/policy-as-code.git
 cd policy-as-code
 
 # Build and run with Docker Compose

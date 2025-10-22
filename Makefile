@@ -221,6 +221,23 @@ emergency-restart: emergency-stop ## Emergency restart all services
 	$(VENV)/bin/python run_production_api.py --background
 	@echo "$(GREEN)✓ Emergency restart complete$(NC)"
 
+# Ontology validation targets
+ontology-setup: ## Setup ontology validation environment
+	@echo "$(BLUE)Setting up ontology validation...$(NC)"
+	docker-compose -f docker-compose.ontology.yml up -d
+	@echo "$(GREEN)✓ Ontology validation environment ready$(NC)"
+
+ontology-test: ## Test ontology validation
+	@echo "$(BLUE)Testing ontology validation...$(NC)"
+	python scripts/yaml_to_jsonld.py examples/policies/healthcare_eligibility.yaml docs/ontology/context.jsonld > /tmp/test.jsonld
+	python scripts/validate_shacl.py examples/policies/healthcare_eligibility.yaml docs/ontology/context.jsonld
+	@echo "$(GREEN)✓ Ontology validation test passed$(NC)"
+
+ontology-clean: ## Clean up ontology validation environment
+	@echo "$(BLUE)Cleaning up ontology validation...$(NC)"
+	docker-compose -f docker-compose.ontology.yml down
+	@echo "$(GREEN)✓ Ontology validation environment cleaned$(NC)"
+
 # Show current status
 status: ## Show current system status
 	@echo "$(BLUE)System Status:$(NC)"

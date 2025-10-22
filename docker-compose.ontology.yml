@@ -1,0 +1,53 @@
+version: "3.8"
+
+services:
+  # Apache Jena Fuseki - Lightweight triplestore for testing
+  fuseki:
+    image: apache/jena-fuseki:4.9.0
+    ports:
+      - "3030:3030"
+    environment:
+      - FUSEKI_DATASET_1=policy-as-code
+      - FUSEKI_DATASET_1_TYPE=mem
+    volumes:
+      - ./data/fuseki:/fuseki
+    command: ["fuseki-server", "--mem", "--update", "/policy-as-code"]
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3030/$/ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # SHACL validator service
+  shacl-validator:
+    build:
+      context: .
+      dockerfile: Dockerfile.shacl
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./schemas:/app/schemas
+      - ./scripts:/app/scripts
+    depends_on:
+      fuseki:
+        condition: service_healthy
+    environment:
+      - FUSEKI_URL=http://fuseki:3030/policy-as-code
+      - SHACL_SCHEMA_PATH=/app/schemas/policy_shape.ttl
+
+  # Development tools
+  dev-tools:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    volumes:
+      - .:/app
+      - ./scripts:/app/scripts
+    working_dir: /app
+    command: tail -f /dev/null
+    depends_on:
+      - fuseki
+      - shacl-validator
+
+volumes:
+  fuseki-data:

@@ -51,6 +51,12 @@ class DomainError(DecisionLayerError):
     pass
 
 
+class RegistryError(DecisionLayerError):
+    """Registry error"""
+
+    pass
+
+
 class StorageError(DecisionLayerError):
     """Storage error"""
 

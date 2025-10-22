@@ -1,0 +1,477 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Policy as Code - Decision Function Specification",
+  "description": "Schema for validating decision function specifications",
+  "type": "object",
+  "required": [
+    "id",
+    "version",
+    "name",
+    "description",
+    "owner",
+    "law_reference",
+    "inputs_schema",
+    "outputs_schema",
+    "decision_logic",
+    "metadata"
+  ],
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z0-9_-]+$",
+      "description": "Unique identifier for the decision function"
+    },
+    "version": {
+      "type": "string",
+      "pattern": "^v[0-9]+\\.[0-9]+$",
+      "description": "Semantic version of the decision function"
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 100,
+      "description": "Human-readable name of the decision function"
+    },
+    "description": {
+      "type": "string",
+      "minLength": 10,
+      "maxLength": 500,
+      "description": "Detailed description of the decision function"
+    },
+    "owner": {
+      "type": "object",
+      "required": [
+        "ministry_id",
+        "department",
+        "contact"
+      ],
+      "properties": {
+        "ministry_id": {
+          "type": "string",
+          "pattern": "^[A-Z]{2,4}$",
+          "description": "Ministry identifier (e.g., 'STM', 'VM', 'TEM')"
+        },
+        "department": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 100,
+          "description": "Department name"
+        },
+        "contact": {
+          "type": "string",
+          "format": "email",
+          "description": "Contact email for the decision function"
+        }
+      }
+    },
+    "law_reference": {
+      "type": "object",
+      "required": [
+        "eli",
+        "title",
+        "section"
+      ],
+      "properties": {
+        "eli": {
+          "type": "string",
+          "pattern": "^https://finlex\\.fi/eli/laki/[0-9]{4}/[0-9]+#.*$",
+          "description": "European Legislation Identifier URI"
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200,
+          "description": "Title of the law"
+        },
+        "section": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 50,
+          "description": "Specific section of the law"
+        },
+        "effective_from": {
+          "type": "string",
+          "format": "date",
+          "description": "Date when the law becomes effective"
+        },
+        "sunset_date": {
+          "type": "string",
+          "format": "date",
+          "description": "Date when the law expires"
+        }
+      }
+    },
+    "inputs_schema": {
+      "type": "object",
+      "description": "JSON Schema for input validation",
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "object"
+          ]
+        },
+        "properties": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "object",
+            "required": [
+              "type",
+              "description"
+            ],
+            "properties": {
+              "type": {
+                "type": "string",
+                "enum": [
+                  "string",
+                  "number",
+                  "boolean",
+                  "array",
+                  "object"
+                ]
+              },
+              "description": {
+                "type": "string",
+                "minLength": 1
+              },
+              "required": {
+                "type": "boolean"
+              },
+              "default": {
+                "description": "Default value for the field"
+              },
+              "enum": {
+                "type": "array",
+                "description": "Allowed values for the field"
+              },
+              "minimum": {
+                "type": "number",
+                "description": "Minimum value for numeric fields"
+              },
+              "maximum": {
+                "type": "number",
+                "description": "Maximum value for numeric fields"
+              },
+              "minLength": {
+                "type": "integer",
+                "minimum": 0,
+                "description": "Minimum length for string fields"
+              },
+              "maxLength": {
+                "type": "integer",
+                "minimum": 1,
+                "description": "Maximum length for string fields"
+              }
+            }
+          }
+        },
+        "required": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "outputs_schema": {
+      "type": "object",
+      "description": "JSON Schema for output validation",
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "object"
+          ]
+        },
+        "properties": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "object",
+            "required": [
+              "type",
+              "description"
+            ],
+            "properties": {
+              "type": {
+                "type": "string",
+                "enum": [
+                  "string",
+                  "number",
+                  "boolean",
+                  "array",
+                  "object"
+                ]
+              },
+              "description": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          }
+        },
+        "required": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "decision_logic": {
+      "type": "object",
+      "required": [
+        "type",
+        "rules"
+      ],
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "rego",
+            "yaml",
+            "python"
+          ]
+        },
+        "rules": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "required": [
+              "name",
+              "description",
+              "conditions",
+              "result"
+            ],
+            "properties": {
+              "name": {
+                "type": "string",
+                "pattern": "^[a-z0-9_]+$"
+              },
+              "description": {
+                "type": "string",
+                "minLength": 1
+              },
+              "conditions": {
+                "type": "array",
+                "minItems": 1,
+                "items": {
+                  "type": "object",
+                  "required": [
+                    "field",
+                    "operator",
+                    "value"
+                  ],
+                  "properties": {
+                    "field": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "operator": {
+                      "type": "string",
+                      "enum": [
+                        "equals",
+                        "not_equals",
+                        "greater_than",
+                        "less_than",
+                        "greater_equal",
+                        "less_equal",
+                        "contains",
+                        "not_contains",
+                        "is_empty",
+                        "is_not_empty"
+                      ]
+                    },
+                    "value": {
+                      "description": "Value to compare against"
+                    }
+                  }
+                }
+              },
+              "logic": {
+                "type": "string",
+                "enum": [
+                  "AND",
+                  "OR"
+                ],
+                "default": "AND"
+              },
+              "result": {
+                "type": "object",
+                "required": [
+                  "approved"
+                ],
+                "properties": {
+                  "approved": {
+                    "type": "boolean"
+                  },
+                  "reason": {
+                    "type": "string"
+                  },
+                  "limit": {
+                    "type": "number"
+                  },
+                  "max_allowed": {
+                    "type": "number"
+                  },
+                  "risk_level": {
+                    "type": "string",
+                    "enum": [
+                      "low",
+                      "medium",
+                      "high"
+                    ]
+                  },
+                  "conditions": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "default_result": {
+          "type": "object",
+          "required": [
+            "approved"
+          ],
+          "properties": {
+            "approved": {
+              "type": "boolean"
+            },
+            "reason": {
+              "type": "string"
+            },
+            "limit": {
+              "type": "number"
+            },
+            "risk_level": {
+              "type": "string",
+              "enum": [
+                "low",
+                "medium",
+                "high"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "invariants": {
+      "type": "array",
+      "description": "Business invariants that must always be true",
+      "items": {
+        "type": "object",
+        "required": [
+          "name",
+          "condition",
+          "message"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "pattern": "^[a-z0-9_]+$"
+          },
+          "condition": {
+            "type": "string",
+            "description": "Expression that must evaluate to true"
+          },
+          "message": {
+            "type": "string",
+            "description": "Error message if invariant is violated"
+          }
+        }
+      }
+    },
+    "metadata": {
+      "type": "object",
+      "required": [
+        "version",
+        "author",
+        "created_date",
+        "last_updated"
+      ],
+      "properties": {
+        "version": {
+          "type": "string",
+          "pattern": "^[0-9]+\\.[0-9]+$"
+        },
+        "author": {
+          "type": "string",
+          "minLength": 1
+        },
+        "created_date": {
+          "type": "string",
+          "format": "date"
+        },
+        "last_updated": {
+          "type": "string",
+          "format": "date"
+        },
+        "tags": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[a-z0-9_-]+$"
+          }
+        },
+        "business_owner": {
+          "type": "string",
+          "minLength": 1
+        },
+        "compliance_required": {
+          "type": "boolean"
+        },
+        "audit_trail": {
+          "type": "boolean"
+        },
+        "effective_from": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "sunset_date": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "signatures": {
+      "type": "array",
+      "description": "Digital signatures for the decision function",
+      "items": {
+        "type": "object",
+        "required": [
+          "key_id",
+          "signature",
+          "timestamp"
+        ],
+        "properties": {
+          "key_id": {
+            "type": "string",
+            "pattern": "^[a-z0-9_-]+$"
+          },
+          "signature": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9+/=]+$"
+          },
+          "timestamp": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "algorithm": {
+            "type": "string",
+            "enum": [
+              "RS256",
+              "ES256",
+              "PS256"
+            ]
+          }
+        }
+      }
+    }
+  },
+  "additionalProperties": false
+}

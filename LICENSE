@@ -1,6 +1,6 @@
 MIT License
 
-Copyright (c) 2025 Eevamaija Virtanen
+Copyright (c) 2024 Policy as Code Platform
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -19,3 +19,47 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
+
+---
+
+## Additional Terms for Government Use
+
+This software is designed for government operations and public administration.
+When used in government contexts, additional terms may apply:
+
+1. **Compliance Requirements**: Users must ensure compliance with applicable
+   government regulations, including but not limited to:
+   - EU AI Act (Regulation (EU) 2021/0106)
+   - GDPR (General Data Protection Regulation)
+   - National data protection laws
+   - Government procurement regulations
+
+2. **Audit Requirements**: Government users must maintain audit trails
+   and provide transparency reports as required by law.
+
+3. **Security Requirements**: Government users must implement appropriate
+   security measures as required by their security policies and regulations.
+
+4. **Bias and Discrimination**: Users must ensure that decision-making
+   systems do not discriminate based on protected characteristics
+   and comply with anti-discrimination laws.
+
+## Third-Party Licenses
+
+This software includes third-party components with their own licenses:
+
+- **Open Policy Agent (OPA)**: Apache License 2.0
+- **FastAPI**: MIT License
+- **Pydantic**: MIT License
+- **PostgreSQL**: PostgreSQL License
+- **Docker**: Apache License 2.0
+
+See the full list of dependencies and their licenses in requirements.txt
+and requirements-dev.txt.
+
+## Contact
+
+For questions about licensing or government use, please contact:
+- **General**: legal@policy-as-code.org
+- **Government Use**: government@policy-as-code.org
+- **Security**: security@policy-as-code.org

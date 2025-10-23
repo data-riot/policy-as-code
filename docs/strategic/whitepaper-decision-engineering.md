@@ -25,7 +25,7 @@ The approach enables Finland to automate with integrity — strengthening legal 
 
 Automation in public administration has grown organically. Individual agencies maintain their own rule engines, scripts, and exceptions. Each may be legal, but there is no unified control structure ensuring that the code running today matches the law in force.
 
-Recent reviews by the Chancellor of Justice and the National Audit Office highlight a gap: **who verifies that an automated decision is still lawful?**
+**Who verifies that an automated decision is still lawful?**
 
 Decision Engineering closes that gap. It brings the same discipline to legal decision logic that DevOps brought to code: versioning, traceability, and continuous audit.
 

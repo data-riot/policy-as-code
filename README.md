@@ -1,6 +1,6 @@
-# Policy as Code - Transform Business Rules into Executable Software
+# Policy as Code - Open Standard for Agentic State
 
-> **Turn your business decisions into versioned, auditable code** - with legal compliance, audit trails, and AI-powered reasoning.
+> **Open standard for Agentic State, where every automated decision is bound to law, signed and explainable.** Decision Engineering reference code of lawful, auditable and explainable automation. Turning policy and legislation into executable, accountable Decision Functions.
 
 [![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
@@ -24,32 +24,98 @@ python3 examples/simple_demo.py
 
 ---
 
-## 🎯 **What is Policy as Code?**
+## 🎯 **What is Agentic State?**
 
-Policy as Code transforms business rules into executable, auditable software. Think of it as **"Git for business decisions"** - every decision is:
+**Agentic State** represents the next evolution in governance: autonomous decision-making systems that operate within strict legal boundaries while maintaining full accountability and explainability.
 
-- ✅ **Versioned** - Track changes over time
-- ✅ **Signed** - Digital signatures for approval
-- ✅ **Auditable** - Complete decision history
-- ✅ **Compliant** - Built-in legal references
-- ✅ **Testable** - Automated testing and validation
+This platform implements **Decision Engineering** - an operational architecture that connects legislation, automated decision logic, and audit evidence. Every automated decision is represented as a **Decision Function (DF)** - a formally described, signed, and auditable unit of logic linked directly to its legal section.
 
-### **Real-World Example**
+### **Core Principles**
 
-Instead of this manual process:
-```
-❌ Manual: "Check if income > $50k and credit score > 700"
-❌ Manual: "Write decision in Word document"
-❌ Manual: "Email to manager for approval"
-❌ Manual: "Store in filing cabinet"
-```
+- 🔒 **Bound to Law** - Every decision function is directly linked to legal references (Finlex/EUR-Lex IRIs)
+- ✍️ **Signed & Accountable** - Digital signatures with separation of duties and immutable audit trails
+- 🔍 **Explainable** - Citizen-facing explanations with decision paths and legal basis
+- 🧠 **Agentic** - LLM-powered reasoning, conversational interfaces, and autonomous workflows
+- 🌐 **Cross-Border** - EU-wide deployment with Nordic-Baltic pioneer implementation
 
-You get this automated process:
+### **Decision Function Architecture**
+
 ```python
-✅ Code: def loan_approval(data):
-✅ Code:   return {"approved": data.income > 50000 and data.credit_score > 700}
-✅ Code: # Automatically versioned, signed, and audited
+DecisionFunction(
+    id: string,
+    version: semver,
+    law_reference: URI,           # Direct link to Finlex/EUR-Lex section
+    owner: ministry_id,
+    inputs_schema: JSON Schema,
+    outputs_schema: JSON Schema,
+    logic_hash: SHA256,           # Cryptographic integrity
+    signatures: [owner_sign, reviewer_sign]  # Separation of duties
+)
 ```
+
+This makes law executable without losing human accountability.
+
+### **Legal Binding in Action**
+
+Every Decision Function is bound to specific legal sections:
+
+```python
+# Healthcare eligibility function
+def healthcare_eligibility(patient_data):
+    """Healthcare eligibility based on Patient Safety Act Section 3"""
+    # Legal reference: https://finlex.fi/fi/laki/alkup/2010/20100580#L3
+    # EU AI Act compliance: High-risk medical device system
+
+    if patient_data.age < 18 and procedure.requires_adult_consent:
+        return {
+            "eligible": False,
+            "reason": "Requires adult consent per Patient Safety Act",
+            "legal_basis": "https://finlex.fi/fi/laki/alkup/2010/20100580#L3",
+            "requires_human_review": True
+        }
+```
+
+**Key Legal Features:**
+- **Direct IRI Links**: Every function links to specific Finlex/EUR-Lex sections
+- **Section-Level Granularity**: References specific subsections, not entire laws
+- **EU AI Act Compliance**: Built-in compliance for high-risk AI systems
+- **Required Legal References**: Functions cannot be deployed without valid legal basis
+
+### **Production-Grade Governance**
+
+**Digital Signatures & Change Control:**
+- **Separation of Duties**: Owner + reviewer signatures required
+- **Release State Machine**: draft → pending → approved → active
+- **Activation Gates**: Prevents execution of unsigned functions
+- **Audit Trail**: Complete signature event history
+
+**Immutable Trace Ledger:**
+- **Hash-Chained**: SHA-256 cryptographic integrity
+- **Append-Only**: Tamper-proof decision history
+- **Independent Audit**: Separate service for integrity verification
+- **Drift Detection**: Automatic detection of decision pattern changes
+
+**Citizen-Facing Explanation API:**
+- **Human-Readable Justifications**: Clear decision reasoning
+- **Legal Basis**: Direct links to regulations
+- **Decision Path**: Step-by-step reasoning process
+- **Privacy Controls**: Field redaction for sensitive data
+
+### **EU AI Act Compliance & Cross-Border Architecture**
+
+**EU AI Act Compliance:**
+- **High-Risk Systems**: Healthcare, immigration, social benefits with full compliance
+- **Bias Detection**: Active monitoring for protected characteristics
+- **Human Oversight**: Required for critical decisions
+- **Prohibited Practices**: Complete avoidance of banned AI practices
+- **Transparency**: Clear decision methodology and appeal processes
+
+**Cross-Border Architecture:**
+- **EU AI Commons Vision**: Shared infrastructure across European Union countries
+- **Nordic-Baltic Pioneer**: First implementation region with multilingual support
+- **Cross-Border APIs**: Seamless data exchange between countries
+- **Shared Decision Functions**: Common policies and legal frameworks
+- **Multilingual AI**: Native language models for Nordic-Baltic languages
 
 ---
 
@@ -139,18 +205,37 @@ REST, GraphQL, WebSocket, and Python SDK for any integration need.
 
 ---
 
-## 🏛️ **Architecture Overview**
+## 🏛️ **Agentic State Architecture**
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│                    Policy as Code Platform                  │
+│                    Agentic State Platform                   │
 ├─────────────────────────────────────────────────────────────┤
 │ • Decision Engine     • Immutable Trace Ledger             │
 │ • Legal Compliance    • Digital Signatures                 │
-│ • AI Integration      • Performance Monitoring             │
+│ • Agentic AI         • Performance Monitoring             │
 │ • Multiple APIs       • Audit & Governance                 │
+│ • Cross-Border       • EU AI Commons                      │
 └─────────────────────────────────────────────────────────────┘
 ```
+
+### **Four-Layer Architecture**
+
+| Layer | Function | Owner |
+|-------|----------|-------|
+| **Normative Layer** | Law text and legislative metadata (Finlex ELI) | Legal Register Centre |
+| **Model Layer** | Decision Functions with formal schemas and logic | Legal Engineering Office |
+| **Execution Layer** | Systems and agents calling DFs via APIs | Agencies |
+| **Integrity Layer** | Immutable Trace Ledger and Audit Service | Audit & Integrity Agency |
+
+### **Agentic AI Capabilities**
+
+- **🧠 LLM-Powered Reasoning**: Autonomous decision-making with full reasoning chains
+- **💬 Conversational Interface**: Natural language interaction with citizens
+- **🔄 Workflow Orchestration**: Self-managing government workflows
+- **📊 Performance Monitoring**: Real-time agent performance analysis
+- **🤝 Multi-Agent Coordination**: Intelligent coordination between AI agents
+- **🔍 Drift Detection**: Automatic detection of agent behavior changes
 
 ---
 
@@ -261,20 +346,21 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ---
 
-## 🌟 **Why Policy as Code?**
+## 🌟 **Why Agentic State?**
 
-**We're building the future of business decision-making.**
+**We're building the future of accountable automation.**
 
-Policy as Code represents the next evolution in how organizations handle business rules - from manual, error-prone processes to automated, auditable, and intelligent decision-making systems.
+Agentic State represents the next evolution in governance - autonomous decision-making systems that operate within strict legal boundaries while maintaining full accountability and explainability.
 
-- **✅ Production-Ready Foundation** - Comprehensive platform with enterprise features
-- **✅ Legal Compliance** - Built-in EU AI Act compliance and legal reference integration
-- **✅ Audit & Governance** - Complete traceability and digital signatures
-- **✅ AI-Powered** - LLM integration for complex reasoning
-- **✅ Open Source** - MIT licensed for maximum adoption
+- **✅ Law-Bound Automation** - Every decision directly linked to legal references
+- **✅ Production-Grade Governance** - Digital signatures, audit trails, and drift detection
+- **✅ EU AI Act Compliant** - Built-in compliance for high-risk AI systems
+- **✅ Agentic AI** - LLM-powered reasoning and conversational interfaces
+- **✅ Cross-Border Ready** - EU AI Commons vision with Nordic-Baltic pioneer implementation
+- **✅ Open Standard** - MIT licensed reference implementation
 
-**Ready to transform your business decisions?** [Get started now!](#-get-started-in-5-minutes) 🚀
+**Ready to transform governance with accountable automation?** [Get started now!](#-get-started-in-5-minutes) 🚀
 
 ---
 
-*Built with ❤️ for the future of business decision-making*
+*Built with ❤️ for the future of accountable automation*

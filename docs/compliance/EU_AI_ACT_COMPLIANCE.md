@@ -1,21 +1,41 @@
-# EU AI Act Compliance Documentation
+# EU AI Act Compliance Framework
 
 ## Overview
 
-This document outlines the Policy as Code platform's compliance with the European Union's Artificial Intelligence Act (EU AI Act), effective from August 2, 2025. The platform implements comprehensive compliance measures across all use cases to ensure adherence to EU AI Act requirements.
+This document outlines the Policy as Code Foundation's roadmap for compliance with the European Union's Artificial Intelligence Act (EU AI Act), effective from August 2, 2025. The foundation provides the essential building blocks for implementing comprehensive compliance measures across all use cases.
 
-> **⚠️ Status**: This is a production-grade foundation with comprehensive compliance framework implementation. Requires production hardening for deployment.
+> **⚠️ Status**: This is a foundation implementation with compliance framework design. EU AI Act compliance features are planned for future development.
 
-## EU AI Act Risk Classifications
+## Current Implementation Status
 
-The Policy as Code platform includes AI systems across different risk categories:
+### ✅ **Foundation Components (Working)**
+- **Basic Decision Functions** - Simple business logic with validation
+- **Working Examples** - Loan approval, basic approval, multi-criteria decisions
+- **Extensible Architecture** - FastAPI, PostgreSQL, Redis, monitoring stack
+- **Documentation** - Comprehensive guides and architecture docs
 
-### High-Risk AI Systems (Annex III)
+### 🚧 **EU AI Act Compliance (In Development)**
+- **Legal Compliance Framework** - Finlex/EUR-Lex integration
+- **Digital Signatures** - Change control and separation of duties
+- **Immutable Trace Ledger** - Hash-chained audit trail
+- **Agentic AI Integration** - LLM-powered reasoning
+
+### 🔮 **Future Compliance Features (Planned)**
+- **EU AI Act Compliance** - High-risk system compliance
+- **Cross-Border Architecture** - EU AI Commons implementation
+- **Citizen Explanation API** - Human-readable decision justifications
+- **Advanced Governance** - Drift detection and independent audit
+
+## EU AI Act Risk Classifications (Planned)
+
+The Policy as Code Foundation is designed to support AI systems across different risk categories:
+
+### High-Risk AI Systems (Annex III) - Planned
 
 #### 1. Healthcare Eligibility System
 - **Classification**: Medical Device AI System
 - **Risk Level**: High-Risk
-- **Compliance Measures**:
+- **Planned Compliance Measures**:
   - Human oversight for critical medical decisions
   - Comprehensive risk management system
   - Transparency and explainability requirements
@@ -25,7 +45,7 @@ The Policy as Code platform includes AI systems across different risk categories
 #### 2. Immigration Visa Processing System
 - **Classification**: Law Enforcement AI System
 - **Risk Level**: High-Risk
-- **Compliance Measures**:
+- **Planned Compliance Measures**:
   - Strict human oversight requirements
   - Prohibition of discriminatory practices
   - Individual risk assessment (no nationality-based decisions)

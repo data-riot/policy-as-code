@@ -1,0 +1,10 @@
+# Minimal requirements for Policy as Code quick start
+# Only essential dependencies for basic functionality
+
+# Core dependencies
+click>=8.0.0
+pydantic>=2.0.0
+pyyaml>=6.0
+
+# Optional: For better CLI experience
+rich>=13.0.0

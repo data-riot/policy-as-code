@@ -1,52 +1,64 @@
-# Policy as Code - Documentation Index
+# Policy as Code Foundation - Documentation Index
 
 ## 🎯 **Quick Start**
 
-### **New to Policy as Code?**
-1. **Read [PROJECT_STATUS.md](../PROJECT_STATUS.md)** - Complete project overview and current status
-2. **Check [README.md](../README.md)** - Main project introduction and capabilities
-3. **Follow [Development Guide](getting-started/development.md)** - Setup and installation
-4. **Explore [Examples](../examples/)** - Working implementations and demos
+### **New to Policy as Code Foundation?**
+1. **Read [README.md](../README.md)** - Main project introduction and current capabilities
+2. **Check [Implementation Status](../README.md#-implementation-status)** - What works now vs future vision
+3. **Follow [Getting Started Guide](../GETTING_STARTED.md)** - Setup and working examples
+4. **Explore [Working Examples](../examples/)** - Simple demos that actually work
 
-## 📋 **Project Status & Planning**
+## 📊 **Current Implementation Status**
 
-- **[PROJECT_STATUS.md](../PROJECT_STATUS.md)** - **Single source of truth** for project status, architecture, and roadmap
-- **[PUBLIC_BACKLOG.md](../PUBLIC_BACKLOG.md)** - Open-source development priorities and OSS readiness tasks
-- **[DEVELOPMENT_ROADMAP.md](../DEVELOPMENT_ROADMAP.md)** - Detailed development phases and milestones
-- **[DEVELOPMENT_STATUS.md](../DEVELOPMENT_STATUS.md)** - Historical Phase 1 completion details
-- **[PHASE1_COMPLETION_SUMMARY.md](../PHASE1_COMPLETION_SUMMARY.md)** - Phase 1 achievements summary
+### ✅ **What Works Now**
+- **Basic Decision Functions** - Simple business logic with validation
+- **Working Examples** - Loan approval, basic approval, multi-criteria decisions
+- **Extensible Architecture** - FastAPI, PostgreSQL, Redis, monitoring stack
+- **Documentation** - Comprehensive guides and architecture docs
+
+### 🚧 **In Development**
+- **Legal Compliance Framework** - Finlex/EUR-Lex integration
+- **Digital Signatures** - Change control and separation of duties
+- **Immutable Trace Ledger** - Hash-chained audit trail
+- **Agentic AI Integration** - LLM-powered reasoning
+
+### 🔮 **Future Vision**
+- **EU AI Act Compliance** - High-risk system compliance
+- **Cross-Border Architecture** - EU AI Commons implementation
+- **Citizen Explanation API** - Human-readable decision justifications
+- **Advanced Governance** - Drift detection and independent audit
 
 ## 🚀 **Getting Started**
 
+- **[Getting Started Guide](../GETTING_STARTED.md)** - Setup, installation, and working examples
+- **[Architecture Overview](../ARCHITECTURE_OVERVIEW.md)** - Current system design and future vision
 - **[Development Guide](getting-started/development.md)** - Setup, installation, configuration, and troubleshooting
 - **[Deployment Guide](getting-started/deployment.md)** - Production deployment and configuration
-- **[Claude AI Assistant](getting-started/claude.md)** - AI assistant capabilities and usage
 
 ## 🏗️ **Architecture & Design**
 
 - **[Architecture Overview](architecture/architecture.md)** - System design, component relationships, and data flow
 - **[Security Model](architecture/security.md)** - Security features, threat model, and best practices
-- **[Governance Features](architecture/governance.md)** - Legal compliance, audit capabilities, and digital signatures
-- **[Agentic AI Capabilities](architecture/agentic-ai.md)** - LLM integration, conversational interfaces, and autonomous workflows
-- **[Cross-Border Architecture](architecture/cross-border.md)** - EU AI Commons and Nordic-Baltic integration
-- **[Domain-First Architecture](domain-first-architecture.md)** - Advanced GenAI data architecture
+- **[Governance Features](architecture/governance.md)** - Legal compliance, audit capabilities, and digital signatures (planned)
+- **[Agentic AI Capabilities](architecture/agentic-ai.md)** - LLM integration, conversational interfaces, and autonomous workflows (planned)
+- **[Cross-Border Architecture](architecture/cross-border.md)** - EU AI Commons and Nordic-Baltic integration (planned)
 
 ## 📚 **Reference Documentation**
 
-- **[API Reference](reference/api.md)** - REST API endpoints and usage
-- **[CLI Reference](reference/cli.md)** - Command-line interface documentation
-- **[OpenAPI Specification](reference/openapi.json)** - Complete OpenAPI 3.0 specification
+- **[API Reference](reference/api.md)** - REST API endpoints and usage (framework ready)
+- **[CLI Reference](reference/cli.md)** - Command-line interface documentation (planned)
+- **[OpenAPI Specification](reference/openapi.json)** - Complete OpenAPI 3.0 specification (planned)
 
 ## 📖 **Strategic Documents**
 
 - **[Whitepaper: Decision Engineering](strategic/whitepaper-decision-engineering.md)** - Finnish government vision and technical foundation
 - **[EU AI Commons Strategy](strategic/nordic-ai-commons.md)** - Cross-border collaboration and scaling vision (Nordic-Baltic pioneer region)
 
-## ⚖️ **Compliance & Legal**
+## ⚖️ **Compliance & Legal (Framework)**
 
-- **[EU AI Act Compliance](compliance/EU_AI_ACT_COMPLIANCE.md)** - Comprehensive EU AI Act compliance assessment
-- **[Legal Compliance Assessment](compliance/LEGAL_COMPLIANCE_ASSESSMENT.md)** - Legal framework analysis
-- **[Nordic Compliance](legal/nordic-compliance.md)** - Nordic-Baltic legal framework compliance
+- **[EU AI Act Compliance](compliance/EU_AI_ACT_COMPLIANCE.md)** - Comprehensive EU AI Act compliance assessment (planned)
+- **[Legal Compliance Assessment](compliance/LEGAL_COMPLIANCE_ASSESSMENT.md)** - Legal framework analysis (planned)
+- **[Nordic Compliance](legal/nordic-compliance.md)** - Nordic-Baltic legal framework compliance (planned)
 
 ## 🌐 **Multilingual & Cultural**
 

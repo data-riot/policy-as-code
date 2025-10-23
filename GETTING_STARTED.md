@@ -1,17 +1,17 @@
 # 🚀 Getting Started Guide
 
-> **Everything you need to get up and running with Policy as Code**
+> **Everything you need to get up and running with Policy as Code Foundation**
 
-## 🎯 **Quick Start (5 minutes)**
+## 🎯 **Quick Start (2 minutes)**
 
 ```bash
-# Clone and install
+# Clone and install (minimal dependencies)
 git clone https://github.com/your-org/policy-as-code.git
 cd policy-as-code
-pip3 install -r requirements.txt
 pip3 install -e .
 
-# Run your first decision
+# Initialize and run your first decision
+policy-as-code init
 python3 examples/simple_demo.py
 ```
 
@@ -26,11 +26,34 @@ python3 examples/simple_demo.py
 
 ---
 
-## 🎓 **Progressive Learning**
+## 📊 **What Works Right Now**
 
-### **Level 1: Basic Decisions** (15 minutes)
+### ✅ **Core Features (Working)**
+- **CLI Interface** - Deploy, execute, and manage decision functions
+- **Basic Decision Functions** - Simple business logic with validation
+- **Working Examples** - Loan approval, basic approval, multi-criteria decisions
+- **Progressive Learning** - Step-by-step examples that actually work
+- **Extensible Architecture** - Ready for advanced features
 
-**Start here**: `python3 examples/level1_basic_approval.py`
+### 🚧 **In Development**
+- **Legal Compliance Framework** - Finlex/EUR-Lex integration
+- **Digital Signatures** - Change control and separation of duties
+- **Immutable Trace Ledger** - Hash-chained audit trail
+- **Agentic AI Integration** - LLM-powered reasoning
+
+### 🔮 **Future Vision**
+- **EU AI Act Compliance** - High-risk system compliance
+- **Cross-Border Architecture** - EU AI Commons implementation
+- **Citizen Explanation API** - Human-readable decision justifications
+- **Advanced Governance** - Drift detection and independent audit
+
+---
+
+## 🎓 **Progressive Learning Path**
+
+### **Level 1: Basic Decisions** (5 minutes)
+
+**Start here**: `python3 examples/simple_demo.py`
 
 **What you'll learn**:
 - Simple decision structure
@@ -40,25 +63,53 @@ python3 examples/simple_demo.py
 
 **Example**:
 ```python
-def basic_approval(input_data):
-    age = input_data.get("age", 0)
+def simple_loan_approval(input_data):
+    credit_score = input_data.get("credit_score", 0)
     income = input_data.get("income", 0)
 
-    if age >= 18 and income >= 30000:
-        return {"approved": True, "reason": "Meets requirements"}
+    if credit_score >= 700 and income >= 50000:
+        return {"approved": True, "amount": min(income * 3, 500000)}
     else:
-        return {"approved": False, "reason": "Does not meet requirements"}
+        return {"approved": False, "reason": "Criteria not met"}
 ```
 
-### **Level 2: Multi-Criteria Decisions** (30 minutes)
+### **Level 2: CLI Usage** (10 minutes)
 
-**Try this**: `python3 examples/level1_loan_approval.py`
+**Try this**: Use the CLI to deploy and execute functions
 
 **What you'll learn**:
-- Multiple decision criteria
-- Complex business logic
-- Risk assessment
-- Detailed output format
+- Function deployment
+- Execution with real data
+- Registry management
+- CLI commands
+
+**Commands**:
+```bash
+# Initialize the system
+policy-as-code init
+
+# Deploy a function
+policy-as-code deploy loan_approval 1.0 examples/simple_demo.py
+
+# Execute with data
+policy-as-code execute loan_approval '{"credit_score": 750, "income": 75000}'
+
+# List deployed functions
+policy-as-code list
+
+# Get function info
+policy-as-code info loan_approval
+```
+
+### **Level 3: Multi-Criteria Decisions** (15 minutes)
+
+**Try this**: `python3 examples/level1_basic_approval.py`
+
+**What you'll learn**:
+- Age and income validation
+- Multiple criteria checking
+- Clear error messages
+- Structured output format
 
 **Example**:
 ```python
@@ -88,25 +139,15 @@ def loan_approval(input_data):
     }
 ```
 
-### **Level 3: Real Applications** (45 minutes)
+### **Level 4: Build Your Own** (30 minutes)
 
-**Explore**: `examples/demos/` directory
-
-**What you'll learn**:
-- Domain-specific logic (healthcare, tax, immigration)
-- Legal compliance integration
-- Complex workflows
-- Production patterns
-
-### **Level 4: Production Systems** (60 minutes)
-
-**Build**: Use the API for real applications
+**Explore**: Create your own decision function
 
 **What you'll learn**:
-- API integration (REST, GraphQL, WebSocket)
-- Production deployment
-- Monitoring and observability
-- Scaling strategies
+- Writing decision functions
+- Deploying with CLI
+- Testing with real data
+- Understanding the architecture
 
 ---
 
@@ -118,38 +159,51 @@ def loan_approval(input_data):
 ┌─────────────────────────────────────────────────────────────┐
 │                    Policy as Code Platform                  │
 ├─────────────────────────────────────────────────────────────┤
-│ • Decision Engine     • Immutable Trace Ledger             │
-│ • Legal Compliance    • Digital Signatures                 │
-│ • AI Integration      • Performance Monitoring             │
-│ • Multiple APIs       • Audit & Governance                 │
+│ • CLI Interface      • Decision Engine                      │
+│ • Function Registry  • Basic Validation                     │
+│ • Working Examples   • Extensible Framework                 │
 └─────────────────────────────────────────────────────────────┘
 ```
 
 ### **Decision Flow**
 
 ```
-Input Data → Validation → Decision Function → Output Validation → Audit Trail
+Input Data → Validation → Decision Function → Output Validation → Registry
      ↓            ↓              ↓                ↓              ↓
-  JSON/YAML   Pydantic      Your Business    Pydantic      Immutable
-  Schema      Models        Logic Code       Models        Trace Ledger
+  JSON/YAML   Basic        Your Business    Basic        Function
+  Schema      Validation   Logic Code       Validation   Registry
      ↓            ↓              ↓                ↓              ↓
-  Type Safe   Error Handling  Deterministic   Consistent    Cryptographic
-  Input       & Reporting    Execution       Output        Hash Chaining
+  Type Safe   Error Handling  Deterministic   Consistent    Version
+  Input       & Reporting    Execution       Output        Control
 ```
 
 ### **Key Features**
 
-- **🔒 Immutable Audit Trail** - Every decision is cryptographically signed
-- **📜 Legal Compliance** - Built-in legal references (Finlex, EUR-Lex)
-- **🧠 AI-Powered Reasoning** - LLM integration for complex decisions
-- **📊 Performance Monitoring** - Real-time metrics and alerting
-- **🔌 Multiple APIs** - REST, GraphQL, WebSocket, Python SDK
+- **🔒 Function Registry** - Versioned storage of decision functions
+- **📜 CLI Interface** - Easy deployment and execution
+- **🧠 Decision Engine** - Basic function execution and validation
+- **📊 Audit Trail** - Every decision is logged
+- **🔌 Extensible** - Ready for advanced features
 
 ---
 
 ## 🆘 **Troubleshooting**
 
 ### **Common Issues**
+
+#### **"command not found: policy-as-code"**
+
+**Solution**:
+```bash
+# Reinstall the package
+pip3 install -e .
+
+# Check if CLI is installed
+which policy-as-code
+
+# If not found, add to PATH
+export PATH="$HOME/.local/bin:$PATH"
+```
 
 #### **"ModuleNotFoundError: No module named 'policy_as_code'"**
 
@@ -162,42 +216,31 @@ pip3 install -e .
 export PYTHONPATH="${PYTHONPATH}:$(pwd)"
 ```
 
-#### **"ImportError: cannot import name 'FastAPI'"**
-
-**Solution**:
-```bash
-# Install FastAPI
-pip3 install fastapi uvicorn
-
-# Or install all requirements
-pip3 install -r requirements.txt
-```
-
 #### **"Permission denied" errors**
 
 **Solution**:
 ```bash
 # Use user install
-pip3 install --user -r requirements.txt
+pip3 install --user -e .
 
 # Or use virtual environment
 python3 -m venv venv
 source venv/bin/activate
-pip3 install -r requirements.txt
+pip3 install -e .
 ```
 
-#### **"Port already in use"**
+#### **"Function not found in registry"**
 
 **Solution**:
 ```bash
-# Find what's using the port
-lsof -i :8000
+# Initialize the system first
+policy-as-code init
 
-# Kill the process
-kill -9 <PID>
+# Deploy a function
+policy-as-code deploy my_function 1.0 my_function.py
 
-# Or use a different port
-python3 run_api.py --port 8001
+# List available functions
+policy-as-code list
 ```
 
 ### **Quick Diagnosis**
@@ -209,8 +252,14 @@ python3 --version
 # Check if package is installed
 python3 -c "import policy_as_code; print('✅ Package installed')"
 
+# Check if CLI is working
+policy-as-code --help
+
 # Check if examples work
 python3 examples/simple_demo.py
+
+# Check system status
+policy-as-code status
 ```
 
 ### **Debug Mode**
@@ -219,8 +268,8 @@ python3 examples/simple_demo.py
 # Enable debug logging
 export DEBUG=1
 
-# Run with verbose output
-python3 examples/simple_demo.py --verbose
+# Run CLI with debug
+policy-as-code --debug execute loan_approval '{"credit_score": 750}'
 ```
 
 ---
@@ -230,17 +279,17 @@ python3 examples/simple_demo.py --verbose
 ### **After Level 1**
 1. **Modify the examples** - Change the business logic
 2. **Add more criteria** - Employment status, down payment, etc.
-3. **Try Level 2** - Multi-criteria decisions
+3. **Try Level 2** - Use the CLI interface
 
 ### **After Level 2**
-1. **Explore real examples** - Healthcare, tax, immigration
-2. **Understand the API** - REST, GraphQL, WebSocket
-3. **Try Level 3** - Real applications
+1. **Deploy your own function** - Create a new decision function
+2. **Test with real data** - Use the CLI to execute with your data
+3. **Try Level 3** - Multi-criteria decisions
 
 ### **After Level 3**
 1. **Build something real** - Your own decision function
-2. **Use the API** - Integrate with your application
-3. **Deploy to production** - Scalable systems
+2. **Use the CLI** - Deploy and execute your function
+3. **Explore architecture** - Understand how it all works
 
 ### **After Level 4**
 1. **Contribute** - Help improve the project
@@ -253,10 +302,10 @@ python3 examples/simple_demo.py --verbose
 
 **Choose your path**:
 
-- **Quick Explorer** (5 min): Run `python3 examples/simple_demo.py`
-- **Learner** (2 hours): Follow the progressive levels
-- **Builder** (1 hour): Jump to API integration
-- **Architect** (30 min): Read the architecture overview
+- **Quick Explorer** (2 min): Run `python3 examples/simple_demo.py`
+- **CLI User** (10 min): Use `policy-as-code` commands
+- **Learner** (1 hour): Follow the progressive levels
+- **Builder** (30 min): Create your own function
 
 **Need help?** Check the troubleshooting section above or open a GitHub issue.
 

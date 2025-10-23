@@ -1,0 +1,9 @@
+{
+  "function_id": "loan_approval",
+  "version": "1.0",
+  "file_path": "/Users/eevamaija/nimeto\u0308n kansio/policy-as-code/examples/simple_demo.py",
+  "function_name": "simple_loan_approval",
+  "deployed_at": "/Users/eevamaija/nimeto\u0308n kansio/policy-as-code",
+  "schema": null,
+  "metadata": null
+}

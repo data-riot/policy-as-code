@@ -1,7 +1,8 @@
-# White Paper: Decision Engineering for Accountable Automation
+# White Paper: Decision Engineering Foundation for Accountable Automation
 
 **Author:** Eevamaija Virtanen
 **Date:** October 2025
+**Status:** Foundation Implementation
 
 ---
 
@@ -11,7 +12,9 @@ Finland has built world-class digital infrastructure that enable secure data exc
 
 This paper proposes a new national capability: **Decision Engineering** — an operational architecture that connects legislation, automated decision logic, and audit evidence.
 
-Decision Engineering defines every automated decision as a **Decision Function**: a formally described, signed, and auditable unit of logic linked directly to its legal section (Finlex ELI URI). When a system or AI agent executes such a function, the action is automatically lawful, traceable, and explainable.
+**Current Implementation**: We have built a **Policy as Code Foundation** that provides the essential building blocks for Decision Engineering. This foundation includes working decision functions, extensible architecture, and a clear roadmap toward full Decision Engineering capabilities.
+
+**Future Vision**: Decision Engineering will define every automated decision as a **Decision Function**: a formally described, signed, and auditable unit of logic linked directly to its legal section (Finlex ELI URI). When a system or AI agent executes such a function, the action will be automatically lawful, traceable, and explainable.
 
 The approach enables Finland to automate with integrity — strengthening legal certainty, transparency, and efficiency without new legislation.
 
@@ -21,13 +24,27 @@ The approach enables Finland to automate with integrity — strengthening legal 
 
 ---
 
-## 2. Rationale
+## 2. Current Foundation Status
 
-Automation in public administration has grown organically. Individual agencies maintain their own rule engines, scripts, and exceptions. Each may be legal, but there is no unified control structure ensuring that the code running today matches the law in force.
+### **What We Have Built**
 
-**Who verifies that an automated decision is still lawful?**
+**Policy as Code Foundation** provides:
+- **Working Decision Functions** - Simple business logic with validation
+- **Progressive Learning Examples** - Loan approval, basic approval, multi-criteria decisions
+- **Extensible Architecture** - FastAPI, PostgreSQL, Redis, monitoring stack
+- **Clear Documentation** - Comprehensive guides and architecture docs
 
-Decision Engineering closes that gap. It brings the same discipline to legal decision logic that DevOps brought to code: versioning, traceability, and continuous audit.
+### **What We're Building Toward**
+
+**Decision Engineering** will provide:
+- **Legal Binding** - Direct links to Finlex/EUR-Lex sections
+- **Digital Signatures** - Change control and separation of duties
+- **Immutable Trace Ledger** - Hash-chained audit trail
+- **Agentic AI Integration** - LLM-powered reasoning
+
+---
+
+## 3. Rationale
 
 ---
 

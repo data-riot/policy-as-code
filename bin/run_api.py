@@ -1,63 +1,26 @@
 #!/usr/bin/env python3
 """
-Run the Decision Layer API server
+Simple API Server Runner
+Easy way to start the Policy as Code API server
 """
 
-import asyncio
-import os
+import sys
 from pathlib import Path
 
-from policy_as_code import DecisionEngine
-from policy_as_code.api import create_api
-from policy_as_code.config import load_config
+# Add project root to path
+project_root = Path(__file__).parent.parent
+sys.path.insert(0, str(project_root))
 
+try:
+    import sys
 
-def main():
-    """Main function to run the API server"""
-    # Starting Decision Layer API Server
-
-    # Load configuration
-    try:
-        config = load_config()
-        # Configuration loaded and validated
-    except Exception as e:
-        # Configuration error
-        print(f"Configuration error: {e}")
-        raise
-
-    # Create engine
-    try:
-        engine = DecisionEngine(config=config.to_dict())
-        # Decision engine initialized
-    except Exception as e:
-        # Engine initialization error
-        print(f"Engine initialization error: {e}")
-        raise
-
-    # Create API
-    api_config = config.api
-    host = api_config.host
-    port = api_config.port
-
-    api = create_api(engine, host=host, port=port)
-    # API created on {host}:{port}
-
-    # Start server
-    # API server starting on http://{host}:{port}
-    # API documentation available at http://{host}:{port}/docs
-    # Health check available at http://{host}:{port}/health
-    # Press Ctrl+C to stop the server
-
-    try:
-        api.run(host=host, port=port)
-    except KeyboardInterrupt:
-        # Server stopped by user
-        print("Server stopped by user")
-    except Exception as e:
-        # Server error
-        print(f"Server error: {e}")
-        raise
-
+    sys.path.insert(0, str(Path(__file__).parent.parent))
+    from policy_as_code.simple_api import main
+except ImportError as e:
+    print(f"❌ Failed to import API server: {e}")
+    print("   Make sure you're in the project root directory")
+    print("   Install dependencies with: pip install -e .[production]")
+    sys.exit(1)
 
 if __name__ == "__main__":
     main()

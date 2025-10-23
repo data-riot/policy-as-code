@@ -99,11 +99,12 @@ python3 examples/level1_loan_approval.py
 ```
 **What you'll learn**: Complex business logic, multiple criteria, error handling
 
-### **Level 4: Build Your Own** (30 minutes)
-- Create your own decision function
-- Deploy it with the CLI
-- Test with real data
-- Explore the architecture
+### **Level 4: OPA Integration** (60 minutes)
+- `python3 examples/opa_demo.py` - Shows Python-OPA bridge
+- OPA/Rego policy integration
+- Integration challenges and solutions
+
+### **Level 5: Build Your Own** (90 minutes)
 
 ---
 

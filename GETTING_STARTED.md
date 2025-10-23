@@ -139,7 +139,19 @@ def loan_approval(input_data):
     }
 ```
 
-### **Level 4: Build Your Own** (30 minutes)
+### **Level 4: OPA Integration** (60 minutes)
+
+**Try this**: `python3 examples/opa_demo.py`
+
+**What you'll learn**:
+- OPA/Rego policy integration
+- Python-OPA bridge (shows current gap)
+- Policy-as-code with Rego
+- Integration challenges and solutions
+
+**Note**: This demo shows the integration gap between Python examples and OPA/Rego policies that needs to be fixed.
+
+### **Level 5: Build Your Own** (90 minutes)
 
 **Explore**: Create your own decision function
 

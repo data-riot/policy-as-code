@@ -1,4 +1,4 @@
-# 📋 Public Backlog — Policy-as-Code (Open Source)
+# 📋 Public Backlog — Policy-as-Code Foundation (Open Source)
 
 ## Status Legend
 - ✅ = done
@@ -8,147 +8,116 @@
 
 ---
 
-## P0 — Immediate (OSS readiness, CI hygiene)
+## 🎯 **Current Reality: Python Foundation**
 
-### 1. Default-deny and package hygiene (OPA) — 🚧
-- Add explicit default deny = true in every entrypoint.
-- Normalize package naming (org.system.policy.v1).
-- Require metadata block in all Rego files (owner, version, description).
-- CI must fail on missing metadata or undefined results.
+### **What Works Now** ✅
+- **Python Decision Functions**: Working examples (`examples/simple_demo.py`, `level1_basic_approval.py`, `level1_loan_approval.py`)
+- **Progressive Learning**: Clear path from simple to complex decisions
+- **Extensible Architecture**: FastAPI, PostgreSQL, Redis framework ready
+- **OPA Infrastructure**: OPA binary and Rego policies exist but not integrated
+- **Documentation**: Honest foundation status with roadmap to Agentic State
 
-### 2. Schema validation in CI — 🚧
-- Validate every YAML policy against policy_schema.yaml.
-- Ensure registry → Rego entrypoint mapping exists.
-- Add a policy-validate job in CI with JSONPath error output.
+### **The Gap** ⚠️
+- **Two Separate Systems**: Python examples and OPA/Rego policies exist independently
+- **No Integration**: Users see Python examples but OPA/Rego system is hidden
+- **Missing Bridge**: No way to progress from Python to OPA/Rego
+- **CI/CD Missing**: No GitHub Actions workflows despite backlog claims
 
-### 3. Rego test coverage gate — 🚧
-- Add opa test --coverage step; enforce ≥80%.
-- Generate coverage summary in CI artifacts.
+---
 
-### 4. GitHub Actions hardening — 🚧
-- Pin all actions to commit SHAs.
-- Add actions-lint workflow to enforce pinned usage.
+## P0 — Immediate (Foundation Integration)
 
-### 5. Structured logging + error taxonomy — 🚧
-- Replace ad-hoc print with structured JSON logs.
-- Add exceptions: ConfigurationError, PolicyLoadError, EvaluationError.
-- Map exit codes 1/2/3 to those errors for CLI.
+### 1. Python-OPA Integration Bridge — 🚧
+- Create Python wrapper for OPA evaluation
+- Add `python3 examples/opa_demo.py` showing Rego policies
+- Integrate Python examples with existing Rego policies
+- Show users both Python and OPA approaches
 
-### 6. OPA client resilience — 🚧
-- Add per-request timeout and total budget.
-- Retry with jitter on transient errors.
-- Integration test forces simulated 5xx / EOF.
+### 2. Unified User Journey — 🚧
+- Level 1: Python examples (current)
+- Level 2: Python + OPA integration
+- Level 3: Pure OPA/Rego policies
+- Level 4: Production OPA bundles
 
-### 7. Pre-commit hook enforcement — 🚧
-- CI must run pre-commit run --all-files.
-- Keep hook versions identical across .pre-commit-config.yaml and CI.
+### 3. Documentation Alignment — 🚧
+- Update all docs to reflect Python foundation reality
+- Add OPA integration examples
+- Create migration path from Python to OPA
+- Honest status indicators throughout
 
-### 8. License & compliance audit — 🚧
-- Verify all dependencies are OSI-approved.
-- Add REUSE compliance badge and SPDX headers.
-- Publish LICENSE for Rego and Python separately if needed.
-
-### 9. Security scans — 🚧
-- Add trivy for container scan and gitleaks for secret detection.
-- Add tfsec for Terraform.
-- Fail build on high severity findings.
-
-### 10. Reproducible OPA bundle build — 🚧
-- CI builds policy-bundle.tar.gz, computes SHA256 digest, generates SBOM (SPDX).
-- Publish artifacts on each tagged release.
-- Sign bundle with GitHub Actions OIDC (cosign).
+### 4. Basic CI/CD Setup — 🚧
+- Add GitHub Actions workflow for Python examples
+- Add OPA test workflow
+- Add basic security scanning
+- Add dependency updates (Dependabot exists)
 
 ---
 
 ## P1 — Short term (2–3 weeks)
 
-### 11. Trusted bundle enforcement — 🧩
-- Engine accepts --bundle-digest.
-- Rejects unsigned or mismatched digest.
-- Add trust_store.json for approved digests.
+### 5. OPA Bundle Creation — 🚧
+- Create policy bundles from existing Rego files
+- Add bundle validation and signing
+- Integrate bundles with Python examples
+- Add bundle testing in CI
 
-### 12. Policy drift guard — 🚧
-- Generate Rego stubs and tests automatically from registry YAML.
-- CI job ensures no orphaned entrypoints.
+### 6. Policy Schema Validation — 🚧
+- Validate YAML policies against schema
+- Add policy-validate job in CI
+- Ensure registry → Rego entrypoint mapping
+- Add JSONPath error output
 
-### 13. Decision event schema & immutable audit trail — 🚧
-- JSON schema with fields: policy_id, bundle_digest, input_hash, decision, timestamp.
-- Validate before writing to trace store.
+### 7. Rego Test Coverage — 🚧
+- Add `opa test --coverage` step
+- Enforce ≥80% coverage
+- Generate coverage summary in CI
+- Add missing test cases
 
-### 14. Replay verification CLI — 🚧
-- Command: policy-as-code replay <event-file> --bundle <bundle>
-- Returns diff if non-deterministic.
-
-### 15. Deep tests & counterexamples — 🚧
-- For each policy: one positive, one negative, one boundary.
-- Coverage ≥90%.
-
-### 16. Typed configuration — 🚧
-- Replace YAML parsing with Pydantic models.
-- CI fails on unknown config fields.
-
-### 17. CLI strict mode — 🚧
-- --dry-run and --strict flags.
-- Reject unknown keys.
-- Document with real output examples.
-
-### 18. Terraform hardening — 🚧
-- Add required_providers, lock file, and backend config.
-- Enforce tags and encryption via tfvalidate.
-
-### 19. Community guidelines — 🚧
-- Add CODE_OF_CONDUCT.md, SECURITY.md, and CONTRIBUTING.md updates.
-- Include contact for vulnerability reporting (security@).
-
-### 20. Documentation cleanup — 🚧
-- Trim README.md to quickstart + example.
-- Move roadmap and whitepapers to /docs/strategic.
-- Add "How to write a policy" and "How to release a bundle" guides with copy-paste commands.
+### 8. Security & Compliance — 🚧
+- Add trivy for container scanning
+- Add gitleaks for secret detection
+- Verify OSI-approved dependencies
+- Add REUSE compliance
 
 ---
 
 ## P2 — Medium (4–6 weeks)
 
-### 21. Build provenance and SBOM publication — 🚧
-- Generate SLSA provenance with commit SHA, inputs, runner metadata.
-- Attach .intoto.jsonl to releases.
+### 9. Advanced OPA Features — 🚧
+- Trusted bundle enforcement
+- Policy drift detection
+- Decision event schema
+- Replay verification CLI
 
-### 22. Performance benchmarks — 🚧
-- Benchmark OPA eval latency under load.
-- Add benchmark/ folder and CI performance job (non-blocking).
-
-### 23. Multi-environment promotion gates — 🚧
-- Require signed bundle and passing replay tests for promotion.
-- Approval step with digest pin in GitHub Environments.
-
-### 24. Policy style guide & linter — 🚧
-- Add docs/policy-style.md.
-- Build custom opa lint plugin to enforce naming and metadata.
-
-### 25. Public dashboard & alerts — 🚧
-- Publish CI metrics (coverage, build status, scan results) to GitHub Pages or Shields.
-- Add JSON feed for policy bundle digests.
+### 10. Production Readiness — 🚧
+- Multi-environment promotion gates
+- Performance benchmarks
+- Public dashboard & alerts
+- Build provenance and SBOM
 
 ---
 
 ## Meta / Governance
 
-### 26. Versioning policy — 🚧
-- Define how policy versions (v1.0, v1.1) map to semantic bundle tags.
+### 11. Community Guidelines — 🚧
+- Update CODE_OF_CONDUCT.md
+- Add SECURITY.md with contact info
+- Update CONTRIBUTING.md for Python + OPA
+- Add vulnerability reporting process
 
-### 27. Backward compatibility tests — 🚧
-- Replay random subset of old trace logs against new bundles; report drift %.
-
-### 28. Transparency reporting — 🚧
-- Automate weekly summary of bundle digests, passing tests, and compliance stats.
+### 12. Versioning Policy — 🚧
+- Define Python → OPA migration strategy
+- Policy version mapping
+- Backward compatibility tests
+- Transparency reporting
 
 ---
 
-## Done Definition (Public OSS)
-- All GitHub Actions pinned and reproducible
-- LICENSE + SPDX headers present
-- CI passes with ≥80% Rego + code coverage
-- All policies validated against schema
-- Default-deny enforced globally
-- Bundle artifacts signed and attached to GitHub release
-- No critical security or license violations
+## Done Definition (Foundation Integration)
+- Python examples work and are documented ✅
+- OPA/Rego policies work and are tested ✅
+- Integration bridge between Python and OPA 🚧
+- Unified user journey from Python to OPA 🚧
+- Basic CI/CD with Python and OPA tests 🚧
+- Honest documentation reflecting reality 🚧
+- Community guidelines and security process 🚧

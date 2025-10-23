@@ -22,6 +22,12 @@ from pydantic import (
     ConfigDict,
 )
 
+# Regex patterns to avoid flake8 F722 errors
+PERSON_ID_PATTERN = (
+    r"^(\d{6}[+\-A]\d{3}[0-9A-Z]|VTJ_\d+|PASSPORT_[A-Z0-9]+|OTHER_[A-Z0-9]+)$"
+)
+MUNICIPALITY_CODE_PATTERN = r"^\d{3}$"
+POSTAL_CODE_PATTERN = r"^\d{5}$"
 
 # Strict configuration for Pydantic models
 STRICT_CONFIG = ConfigDict(
@@ -61,9 +67,7 @@ class PersonId(BaseModel):
 
     model_config = STRICT_CONFIG
 
-    id: constr(
-        pattern=r"^(\d{6}[+-A]\d{3}[0-9A-Z]|VTJ_\d+|PASSPORT_[A-Z0-9]+|OTHER_[A-Z0-9]+)$"
-    ) = Field(
+    id: constr(pattern=PERSON_ID_PATTERN) = Field(
         ..., description="Person identifier (HETU, VTJ, Passport, or Other format)"
     )
     type: PersonIdType = Field(..., description="Type of identifier")
@@ -162,12 +166,12 @@ class Residence(BaseModel):
 
     model_config = STRICT_CONFIG
 
-    municipality_code: constr(pattern=r"^\d{3}$") = Field(
+    municipality_code: constr(pattern=MUNICIPALITY_CODE_PATTERN) = Field(
         ..., description="VTJ municipality code (3 digits)"
     )
     residence_status: ResidenceStatus = Field(..., description="Legal residence status")
     address: Optional[str] = Field(None, max_length=500, description="Full address")
-    postal_code: Optional[constr(pattern=r"^\d{5}$")] = Field(
+    postal_code: Optional[constr(pattern=POSTAL_CODE_PATTERN)] = Field(
         None, description="Postal code (5 digits)"
     )
     country_code: Literal["FI"] = Field(default="FI", description="Country code")

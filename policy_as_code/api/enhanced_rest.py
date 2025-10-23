@@ -1184,6 +1184,15 @@ async def log_decision_execution(
             "status": "OK" if result.success else "ERROR",
         }
 
+        # Create DecisionContext for trace ledger
+        context = DecisionContext(
+            function_id=result.function_id,
+            version=result.version,
+            input_hash=f"sha256:{hashlib.sha256(str(result.result).encode()).hexdigest()}",
+            timestamp=result.timestamp,
+            trace_id=result.trace_id,
+        )
+
         # Append to trace ledger
         await decision_engine.trace_ledger.append_decision_execution(context, result)
 

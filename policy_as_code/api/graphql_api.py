@@ -1,6 +1,6 @@
 """
 GraphQL API for Policy as Code Platform
-Provides flexible querying capabilities for decision data
+Provides flexible querying capabilities for decision data with comprehensive security
 """
 
 from datetime import datetime
@@ -8,11 +8,29 @@ from typing import Any, Dict, List, Optional
 import strawberry
 from strawberry.fastapi import GraphQLRouter
 from strawberry.types import Info
+from fastapi import FastAPI, Request, Depends
+from starlette.middleware.base import BaseHTTPMiddleware
 
 from policy_as_code.core.enhanced_engine import DecisionEngine
 from policy_as_code.core.types import DecisionContext, DecisionResult
 from policy_as_code.tracing.enhanced_ledger import (
     TraceEntryType as LedgerTraceEntryType,
+)
+from policy_as_code.security.nonce_auth import (
+    NonceAuthMiddleware,
+    AuthConfig,
+    create_auth_config,
+    get_current_user,
+    get_client_id,
+)
+from policy_as_code.security.ingress_security import (
+    apply_security_middleware,
+    create_security_config,
+)
+from policy_as_code.monitoring.metrics_logs_health import (
+    create_monitoring_app,
+    MetricsCollector,
+    StructuredLogger,
 )
 
 
@@ -104,10 +122,17 @@ class DateRangeInput:
 
 
 class GraphQLContext:
-    """GraphQL context with decision engine"""
+    """GraphQL context with decision engine and security"""
 
-    def __init__(self, decision_engine: DecisionEngine):
+    def __init__(
+        self,
+        decision_engine: DecisionEngine,
+        user: Dict[str, Any] = None,
+        client_id: str = None,
+    ):
         self.decision_engine = decision_engine
+        self.user = user or {}
+        self.client_id = client_id or "anonymous"
 
 
 @strawberry.type
@@ -289,10 +314,16 @@ class Mutation:
 schema = strawberry.Schema(query=Query, mutation=Mutation)
 
 
-def create_graphql_router(decision_engine: DecisionEngine) -> GraphQLRouter:
-    """Create GraphQL router with decision engine context"""
+def create_graphql_router(
+    decision_engine: DecisionEngine, auth_config: AuthConfig = None
+) -> GraphQLRouter:
+    """Create GraphQL router with decision engine context and security"""
 
-    async def get_context():
-        return GraphQLContext(decision_engine)
+    async def get_context(request: Request):
+        # Extract user and client info from request state (set by middleware)
+        user = getattr(request.state, "user", None)
+        client_id = getattr(request.state, "client_id", "anonymous")
+
+        return GraphQLContext(decision_engine, user, client_id)
 
     return GraphQLRouter(schema, context_getter=get_context, path="/graphql")

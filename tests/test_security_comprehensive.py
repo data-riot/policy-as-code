@@ -1,341 +1,432 @@
 """
-Comprehensive test suite for security components
+Comprehensive Security Test Suite
+Tests authentication, authorization, rate limiting, DDoS protection, and monitoring
 """
 
 import pytest
-import jwt
-from unittest.mock import Mock, patch
+import asyncio
+import json
+import time
 from datetime import datetime, timedelta
+from typing import Dict, Any
 
-from policy_as_code.security.auth import AuthenticationService, JWTAuthProvider
-from policy_as_code.security.caller_auth import CallerAuthenticationService
-from policy_as_code.security.kms import KMSService, KMSConfig
-from policy_as_code.security.replay import ReplayProtector, NonceGenerator
+from fastapi.testclient import TestClient
+from fastapi import FastAPI
 
-
-class TestJWTAuthProvider:
-    """Test JWT authentication provider"""
-
-    @pytest.fixture
-    def jwt_provider(self):
-        """Create a test JWT provider"""
-        return JWTAuthProvider(secret_key="test_secret")
-
-    def test_generate_token(self, jwt_provider):
-        """Test generating a JWT token"""
-        user_id = "test_user"
-        token = jwt_provider.generate_token(user_id)
-
-        assert token is not None
-        assert isinstance(token, str)
-
-        # Verify token can be decoded
-        decoded = jwt.decode(token, "test_secret", algorithms=["HS256"])
-        assert decoded["user_id"] == user_id
-
-    def test_validate_token(self, jwt_provider):
-        """Test validating a JWT token"""
-        user_id = "test_user"
-        token = jwt_provider.generate_token(user_id)
-
-        # Valid token
-        result = jwt_provider.validate_token(token)
-        assert result is not None
-        assert result["user_id"] == user_id
-
-        # Invalid token
-        invalid_token = "invalid_token"
-        result = jwt_provider.validate_token(invalid_token)
-        assert result is None
-
-    def test_token_expiration(self, jwt_provider):
-        """Test token expiration"""
-        # Create expired token
-        expired_payload = {
-            "user_id": "test_user",
-            "exp": datetime.utcnow() - timedelta(hours=1),
-        }
-        expired_token = jwt.encode(expired_payload, "test_secret", algorithm="HS256")
-
-        result = jwt_provider.validate_token(expired_token)
-        assert result is None
+from policy_as_code.api.secure_api import create_secure_api
+from policy_as_code.security.nonce_auth import (
+    NonceManager,
+    JWTManager,
+    AuthConfig,
+    generate_client_credentials,
+)
+from policy_as_code.security.ingress_security import (
+    RateLimiter,
+    DDoSProtection,
+    SecurityConfig,
+    SecurityConfigBuilder,
+)
+from policy_as_code.monitoring.metrics_logs_health import (
+    MetricsCollector,
+    StructuredLogger,
+    HealthChecker,
+)
 
 
-class TestAuthenticationService:
-    """Test authentication service"""
+class TestNonceAuthentication:
+    """Test nonce-based authentication"""
 
-    @pytest.fixture
-    def auth_service(self):
-        """Create a test authentication service"""
-        return AuthenticationService()
-
-    @pytest.mark.asyncio
-    async def test_authenticate_user(self, auth_service):
-        """Test user authentication"""
-        with patch.object(
-            auth_service.jwt_provider,
-            "validate_token",
-            return_value={"user_id": "test_user"},
-        ):
-            result = await auth_service.authenticate("valid_token")
-
-            assert result is not None
-            assert result["user_id"] == "test_user"
-
-    @pytest.mark.asyncio
-    async def test_authenticate_invalid_token(self, auth_service):
-        """Test authentication with invalid token"""
-        with patch.object(
-            auth_service.jwt_provider, "validate_token", return_value=None
-        ):
-            result = await auth_service.authenticate("invalid_token")
-
-            assert result is None
-
-    @pytest.mark.asyncio
-    async def test_authorize_user(self, auth_service):
-        """Test user authorization"""
-        user_context = {"user_id": "test_user", "roles": ["admin"]}
-
-        # Authorized user
-        result = await auth_service.authorize(user_context, "admin")
-        assert result is True
-
-        # Unauthorized user
-        result = await auth_service.authorize(user_context, "super_admin")
-        assert result is False
-
-
-class TestCallerAuthenticationService:
-    """Test caller authentication service"""
-
-    @pytest.fixture
-    def caller_auth(self):
-        """Create a test caller authentication service"""
-        return CallerAuthenticationService()
-
-    @pytest.mark.asyncio
-    async def test_authenticate_caller(self, caller_auth):
-        """Test caller authentication"""
-        caller_id = "test_caller"
-        api_key = "valid_api_key"
-
-        with patch.object(caller_auth, "_validate_api_key", return_value=True):
-            result = await caller_auth.authenticate_caller(caller_id, api_key)
-
-            assert result is not None
-            assert result["caller_id"] == caller_id
-
-    @pytest.mark.asyncio
-    async def test_authenticate_invalid_caller(self, caller_auth):
-        """Test authentication with invalid caller"""
-        caller_id = "invalid_caller"
-        api_key = "invalid_api_key"
-
-        with patch.object(caller_auth, "_validate_api_key", return_value=False):
-            result = await caller_auth.authenticate_caller(caller_id, api_key)
-
-            assert result is None
-
-
-class TestKMSService:
-    """Test KMS service"""
-
-    @pytest.fixture
-    def kms_service(self):
-        """Create a test KMS service"""
-        config = KMSConfig(
-            provider="mock", endpoint="http://localhost:8080", key_id="test_key"
+    def setup_method(self):
+        """Setup test environment"""
+        self.auth_config = AuthConfig(
+            nonce_ttl_seconds=60,
+            jwt_expiry_minutes=5,
+            redis_url="redis://localhost:6379",
         )
-        return KMSService(config)
+        self.nonce_manager = NonceManager(self.auth_config)
+        self.jwt_manager = JWTManager(self.auth_config)
 
-    @pytest.mark.asyncio
-    async def test_encrypt_data(self, kms_service):
-        """Test data encryption"""
-        plaintext = "sensitive_data"
-
-        with patch.object(kms_service, "_encrypt", return_value="encrypted_data"):
-            result = await kms_service.encrypt(plaintext)
-
-            assert result == "encrypted_data"
-
-    @pytest.mark.asyncio
-    async def test_decrypt_data(self, kms_service):
-        """Test data decryption"""
-        ciphertext = "encrypted_data"
-
-        with patch.object(kms_service, "_decrypt", return_value="sensitive_data"):
-            result = await kms_service.decrypt(ciphertext)
-
-            assert result == "sensitive_data"
-
-    @pytest.mark.asyncio
-    async def test_generate_key(self, kms_service):
-        """Test key generation"""
-        with patch.object(kms_service, "_generate_key", return_value="new_key_id"):
-            result = await kms_service.generate_key()
-
-            assert result == "new_key_id"
-
-
-class TestReplayProtector:
-    """Test replay protection"""
-
-    @pytest.fixture
-    def replay_protector(self):
-        """Create a test replay protector"""
-        return ReplayProtector()
-
-    @pytest.fixture
-    def nonce_generator(self):
-        """Create a test nonce generator"""
-        return NonceGenerator()
-
-    def test_generate_nonce(self, nonce_generator):
+    def test_nonce_generation(self):
         """Test nonce generation"""
-        nonce = nonce_generator.generate_nonce()
+        client_id = "test_client"
+        request_data = {"test": "data"}
+
+        nonce = self.nonce_manager.generate_nonce(client_id, request_data)
 
         assert nonce is not None
-        assert isinstance(nonce, str)
-        assert len(nonce) > 0
+        assert len(nonce) == self.auth_config.nonce_length
 
-    def test_nonce_uniqueness(self, nonce_generator):
-        """Test nonce uniqueness"""
-        nonces = set()
-        for _ in range(100):
-            nonce = nonce_generator.generate_nonce()
-            nonces.add(nonce)
+    def test_nonce_validation(self):
+        """Test nonce validation"""
+        client_id = "test_client"
+        request_data = {"test": "data"}
 
-        # All nonces should be unique
-        assert len(nonces) == 100
+        # Generate nonce
+        nonce = self.nonce_manager.generate_nonce(client_id, request_data)
 
-    @pytest.mark.asyncio
-    async def test_validate_request(self, replay_protector):
-        """Test request validation"""
-        request_id = "test_request"
-        nonce = "test_nonce"
-        timestamp = datetime.utcnow()
+        # Validate nonce
+        is_valid = self.nonce_manager.validate_nonce(nonce, client_id, request_data)
+        assert is_valid is True
 
-        # Valid request
-        result = await replay_protector.validate_request(request_id, nonce, timestamp)
-        assert result is True
+        # Try to reuse nonce (should fail)
+        is_valid = self.nonce_manager.validate_nonce(nonce, client_id, request_data)
+        assert is_valid is False
 
-        # Replay attack (same request_id and nonce)
-        result = await replay_protector.validate_request(request_id, nonce, timestamp)
-        assert result is False
+    def test_nonce_expiration(self):
+        """Test nonce expiration"""
+        client_id = "test_client"
+        request_data = {"test": "data"}
 
-    @pytest.mark.asyncio
-    async def test_cleanup_expired_nonces(self, replay_protector):
-        """Test cleanup of expired nonces"""
-        # Add some expired nonces
-        old_timestamp = datetime.utcnow() - timedelta(hours=2)
-        await replay_protector.validate_request(
-            "old_request", "old_nonce", old_timestamp
+        # Generate nonce with short TTL
+        self.auth_config.nonce_ttl_seconds = 1
+        nonce = self.nonce_manager.generate_nonce(client_id, request_data)
+
+        # Wait for expiration
+        time.sleep(2)
+
+        # Try to validate expired nonce
+        is_valid = self.nonce_manager.validate_nonce(nonce, client_id, request_data)
+        assert is_valid is False
+
+    def test_jwt_generation_and_validation(self):
+        """Test JWT token generation and validation"""
+        user_id = "test_user"
+        roles = ["user", "admin"]
+        client_id = "test_client"
+
+        # Generate token
+        token = self.jwt_manager.generate_token(user_id, roles, client_id)
+        assert token is not None
+
+        # Validate token
+        payload = self.jwt_manager.validate_token(token)
+        assert payload is not None
+        assert payload["user_id"] == user_id
+        assert payload["roles"] == roles
+        assert payload["client_id"] == client_id
+
+    def test_jwt_expiration(self):
+        """Test JWT token expiration"""
+        user_id = "test_user"
+        roles = ["user"]
+        client_id = "test_client"
+
+        # Generate token with short expiry
+        self.auth_config.jwt_expiry_minutes = 1
+        token = self.jwt_manager.generate_token(user_id, roles, client_id)
+
+        # Wait for expiration
+        time.sleep(70)
+
+        # Try to validate expired token
+        payload = self.jwt_manager.validate_token(token)
+        assert payload is None
+
+
+class TestRateLimiting:
+    """Test rate limiting functionality"""
+
+    def setup_method(self):
+        """Setup test environment"""
+        self.security_config = SecurityConfig(
+            rate_limit_requests=5,
+            rate_limit_window=60,
+            burst_limit=10,
+            redis_url="redis://localhost:6379",
+        )
+        self.rate_limiter = RateLimiter(self.security_config)
+
+    def test_rate_limiting_allows_requests(self):
+        """Test that rate limiter allows requests within limits"""
+        client_id = "test_client"
+
+        # Make requests within limit
+        for i in range(5):
+            is_allowed, info = self.rate_limiter.is_allowed(client_id)
+            assert is_allowed is True
+            assert info["remaining"] >= 0
+
+    def test_rate_limiting_blocks_excess_requests(self):
+        """Test that rate limiter blocks excess requests"""
+        client_id = "test_client"
+
+        # Make requests up to limit
+        for i in range(5):
+            is_allowed, info = self.rate_limiter.is_allowed(client_id)
+            assert is_allowed is True
+
+        # Next request should be blocked
+        is_allowed, info = self.rate_limiter.is_allowed(client_id)
+        assert is_allowed is False
+        assert info["remaining"] == 0
+
+    def test_burst_protection(self):
+        """Test burst protection"""
+        client_id = "test_client"
+
+        # Make burst requests
+        for i in range(10):
+            is_allowed, info = self.rate_limiter.is_allowed(client_id)
+            assert is_allowed is True
+
+        # Next request should be blocked by burst limit
+        is_allowed, info = self.rate_limiter.is_allowed(client_id)
+        assert is_allowed is False
+
+
+class TestDDoSProtection:
+    """Test DDoS protection functionality"""
+
+    def setup_method(self):
+        """Setup test environment"""
+        self.security_config = SecurityConfig(
+            ddos_protection_enabled=True,
+            ddos_threshold=5,
+            ddos_window=10,
+            ddos_block_duration=60,
+            redis_url="redis://localhost:6379",
+        )
+        self.ddos_protection = DDoSProtection(self.security_config)
+
+    def test_ddos_protection_allows_normal_traffic(self):
+        """Test that DDoS protection allows normal traffic"""
+        client_ip = "192.168.1.1"
+
+        # Make normal requests
+        for i in range(3):
+            is_allowed, message = self.ddos_protection.check_ddos(client_ip)
+            assert is_allowed is True
+            assert message is None
+
+    def test_ddos_protection_blocks_attack(self):
+        """Test that DDoS protection blocks attack traffic"""
+        client_ip = "192.168.1.2"
+
+        # Make requests exceeding threshold
+        for i in range(6):
+            is_allowed, message = self.ddos_protection.check_ddos(client_ip)
+            if i < 5:
+                assert is_allowed is True
+            else:
+                assert is_allowed is False
+                assert "DDoS detected" in message
+
+
+class TestMonitoring:
+    """Test monitoring and metrics functionality"""
+
+    def setup_method(self):
+        """Setup test environment"""
+        self.metrics_collector = MetricsCollector()
+        self.logger = StructuredLogger("test")
+        self.health_checker = HealthChecker()
+
+    def test_metrics_collection(self):
+        """Test metrics collection"""
+        # Record some metrics
+        self.metrics_collector.record_request("GET", "/test", 200, 0.1)
+        self.metrics_collector.record_decision("test_func", "1.0.0", "success", 0.05)
+        self.metrics_collector.record_error("test_error", "test_component")
+
+        # Verify metrics were recorded
+        assert self.metrics_collector.request_count._value.sum() > 0
+        assert self.metrics_collector.decision_count._value.sum() > 0
+        assert self.metrics_collector.error_count._value.sum() > 0
+
+    def test_health_checks(self):
+        """Test health check functionality"""
+
+        async def run_health_checks():
+            checks = await self.health_checker.run_checks()
+            assert len(checks) > 0
+
+            for check in checks:
+                assert check.name is not None
+                assert check.status is not None
+                assert check.message is not None
+                assert check.response_time_ms >= 0
+
+        asyncio.run(run_health_checks())
+
+
+class TestSecureAPI:
+    """Test the complete secure API"""
+
+    def setup_method(self):
+        """Setup test environment"""
+        self.app = create_secure_api("development")
+        self.client = TestClient(self.app)
+
+    def test_health_endpoints(self):
+        """Test health check endpoints"""
+        # Test /health endpoint
+        response = self.client.get("/health")
+        assert response.status_code == 200
+        data = response.json()
+        assert "status" in data
+        assert "timestamp" in data
+
+        # Test /healthz endpoint
+        response = self.client.get("/healthz")
+        assert response.status_code == 200
+        data = response.json()
+        assert "status" in data
+
+    def test_metrics_endpoint(self):
+        """Test metrics endpoint"""
+        response = self.client.get("/metrics")
+        assert response.status_code == 200
+        assert "text/plain" in response.headers["content-type"]
+
+    def test_root_endpoint(self):
+        """Test root endpoint"""
+        response = self.client.get("/")
+        assert response.status_code == 200
+        data = response.json()
+        assert data["name"] == "Policy as Code API"
+        assert data["security"] == "enabled"
+
+    def test_authentication_required(self):
+        """Test that authentication is required for protected endpoints"""
+        # Try to access protected endpoint without auth
+        response = self.client.post(
+            "/api/v1/decisions", json={"function_id": "test", "input_data": {}}
+        )
+        assert response.status_code == 401
+
+    def test_rate_limiting_headers(self):
+        """Test that rate limiting headers are present"""
+        response = self.client.get("/")
+        assert response.status_code == 200
+
+        # Check for rate limit headers
+        assert "X-RateLimit-Limit" in response.headers
+        assert "X-RateLimit-Remaining" in response.headers
+        assert "X-RateLimit-Reset" in response.headers
+
+    def test_security_headers(self):
+        """Test that security headers are present"""
+        response = self.client.get("/")
+        assert response.status_code == 200
+
+        # Check for security headers
+        assert "X-Content-Type-Options" in response.headers
+        assert "X-Frame-Options" in response.headers
+        assert "X-XSS-Protection" in response.headers
+        assert "Referrer-Policy" in response.headers
+
+
+class TestClientCredentials:
+    """Test client credential generation"""
+
+    def test_generate_credentials(self):
+        """Test client credential generation"""
+        client_id = "test_client"
+        roles = ["user", "admin"]
+
+        credentials = generate_client_credentials(client_id, roles)
+
+        assert "client_id" in credentials
+        assert "token" in credentials
+        assert "roles" in credentials
+        assert credentials["client_id"] == client_id
+        assert credentials["roles"] == roles
+        assert credentials["token"] is not None
+
+
+class TestSecurityConfig:
+    """Test security configuration"""
+
+    def test_development_config(self):
+        """Test development security configuration"""
+        config = SecurityConfigBuilder().for_development().build()
+
+        assert config.environment.value == "development"
+        assert config.rate_limit_requests == 1000
+        assert config.ddos_protection_enabled is False
+        assert config.enable_security_headers is False
+
+    def test_production_config(self):
+        """Test production security configuration"""
+        config = SecurityConfigBuilder().for_production().build()
+
+        assert config.environment.value == "production"
+        assert config.rate_limit_requests == 100
+        assert config.ddos_protection_enabled is True
+        assert config.enable_security_headers is True
+
+    def test_custom_config(self):
+        """Test custom security configuration"""
+        config = (
+            SecurityConfigBuilder()
+            .for_production()
+            .with_rate_limits(200, 120, 300)
+            .with_ddos_protection(100, 20, 600)
+            .with_ip_whitelist(["192.168.1.0/24"])
+            .build()
         )
 
-        # Cleanup expired nonces
-        await replay_protector.cleanup_expired_nonces()
-
-        # Should be able to reuse the old nonce
-        result = await replay_protector.validate_request(
-            "new_request", "old_nonce", datetime.utcnow()
-        )
-        assert result is True
-
-
-class TestSecurityIntegration:
-    """Test security integration scenarios"""
-
-    @pytest.fixture
-    def auth_service(self):
-        """Create authentication service for integration tests"""
-        return AuthenticationService()
-
-    @pytest.fixture
-    def kms_service(self):
-        """Create KMS service for integration tests"""
-        config = KMSConfig(
-            provider="mock", endpoint="http://localhost:8080", key_id="test_key"
-        )
-        return KMSService(config)
-
-    @pytest.mark.asyncio
-    async def test_secure_decision_execution(self, auth_service, kms_service):
-        """Test secure decision execution workflow"""
-        # Authenticate user
-        token = "valid_token"
-        with patch.object(
-            auth_service.jwt_provider,
-            "validate_token",
-            return_value={"user_id": "test_user"},
-        ):
-            user_context = await auth_service.authenticate(token)
-            assert user_context is not None
-
-        # Encrypt sensitive data
-        sensitive_data = "credit_score:750"
-        with patch.object(
-            kms_service, "_encrypt", return_value="encrypted_credit_score"
-        ):
-            encrypted_data = await kms_service.encrypt(sensitive_data)
-            assert encrypted_data == "encrypted_credit_score"
-
-        # Decrypt data for processing
-        with patch.object(kms_service, "_decrypt", return_value="credit_score:750"):
-            decrypted_data = await kms_service.decrypt(encrypted_data)
-            assert decrypted_data == sensitive_data
-
-    @pytest.mark.asyncio
-    async def test_replay_attack_prevention(self):
-        """Test replay attack prevention"""
-        replay_protector = ReplayProtector()
-
-        # First request
-        request_id = "loan_request_123"
-        nonce = "unique_nonce_456"
-        timestamp = datetime.utcnow()
-
-        result1 = await replay_protector.validate_request(request_id, nonce, timestamp)
-        assert result1 is True
-
-        # Replay attack attempt
-        result2 = await replay_protector.validate_request(request_id, nonce, timestamp)
-        assert result2 is False
-
-        # Different request with same nonce should be allowed
-        result3 = await replay_protector.validate_request(
-            "different_request", nonce, timestamp
-        )
-        assert result3 is True
+        assert config.rate_limit_requests == 200
+        assert config.rate_limit_window == 120
+        assert config.burst_limit == 300
+        assert config.ddos_threshold == 100
+        assert config.ddos_window == 20
+        assert config.ddos_block_duration == 600
+        assert "192.168.1.0/24" in config.ip_whitelist
 
 
-class TestSecurityPerformance:
-    """Test security performance"""
+# Integration tests
+class TestIntegration:
+    """Integration tests for the complete system"""
 
-    @pytest.fixture
-    def auth_service(self):
-        """Create authentication service for performance tests"""
-        return AuthenticationService()
+    def setup_method(self):
+        """Setup test environment"""
+        self.app = create_secure_api("development")
+        self.client = TestClient(self.app)
 
-    def test_jwt_performance(self, auth_service):
-        """Test JWT token generation and validation performance"""
-        import time
+    def test_complete_workflow(self):
+        """Test complete workflow with authentication"""
+        # Generate credentials
+        credentials = generate_client_credentials("test_client", ["user"])
 
-        # Test token generation performance
-        start_time = time.time()
-        for _ in range(1000):
-            auth_service.jwt_provider.generate_token("test_user")
-        generation_time = time.time() - start_time
+        # Create request data
+        request_data = {"test": "data"}
 
-        # Should be fast (less than 1 second for 1000 tokens)
-        assert generation_time < 1.0
+        # Generate nonce (this would normally be done by the client)
+        from policy_as_code.security.nonce_auth import NonceManager, AuthConfig
 
-        # Test token validation performance
-        token = auth_service.jwt_provider.generate_token("test_user")
-        start_time = time.time()
-        for _ in range(1000):
-            auth_service.jwt_provider.validate_token(token)
-        validation_time = time.time() - start_time
+        auth_config = AuthConfig()
+        nonce_manager = NonceManager(auth_config)
+        nonce = nonce_manager.generate_nonce("test_client", request_data)
 
-        # Should be fast (less than 1 second for 1000 validations)
-        assert validation_time < 1.0
+        # Make authenticated request
+        headers = {
+            "Authorization": f"Bearer {credentials['token']}",
+            "X-Request-Nonce": nonce,
+            "X-Client-ID": "test_client",
+        }
+
+        response = self.client.get("/", headers=headers)
+        assert response.status_code == 200
+
+        # Verify rate limiting headers
+        assert "X-RateLimit-Limit" in response.headers
+        assert "X-RateLimit-Remaining" in response.headers
+
+    def test_error_handling(self):
+        """Test error handling and logging"""
+        # Test 404
+        response = self.client.get("/nonexistent")
+        assert response.status_code == 404
+
+        # Test 401
+        response = self.client.post("/api/v1/decisions", json={})
+        assert response.status_code == 401
+
+        # Test 403 (would need proper setup)
+        # This would require setting up proper authorization
+
+
+if __name__ == "__main__":
+    # Run tests
+    pytest.main([__file__, "-v"])

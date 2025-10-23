@@ -9,9 +9,10 @@ import tempfile
 import sys
 import os
 
+# Add parent directory to path for imports
 sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
 
-from scripts.graph_resolver import GraphResolver
+from scripts.graph_resolver import GraphResolver  # noqa: E402
 
 
 class TestGraphResolver(unittest.TestCase):

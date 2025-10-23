@@ -1,25 +1,174 @@
-id: "healthcare_eligibility"
-version: "1.0.0"
-owner: "healthcare_team"
-entrypoint: "decision_function"
-status: "active"
-description: "Healthcare eligibility decision function with EU AI Act compliance"
+id: healthcare_eligibility
+version: v1.0
+name: Healthcare Eligibility Decision
+description: Healthcare eligibility decision function with EU AI Act compliance
 
-legal_references:
-  - uri: "https://finlex.fi/fi/laki/alkup/2010/20100580#L1"
-    title: "Patient Safety Act"
-    section: "Section 1"
-  - uri: "https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:32016R0679"
-    title: "GDPR"
-    section: "Article 6"
+owner:
+  ministry_id: STM
+  department: Healthcare Services Department
+  contact: healthcare-services@stm.fi
 
-decision_function:
-  name: "healthcare_eligibility_df"
-  language: "python"
-  risk_level: "high_risk"
-  eu_ai_act_compliant: true
+law_reference:
+  eli: https://finlex.fi/eli/laki/2010/580#1
+  title: Patient Safety Act
+  section: "1"
+  effective_from: "2010-01-01"
+
+inputs_schema:
+  type: object
+  properties:
+    patient_age:
+      type: number
+      description: Patient age in years
+      minimum: 0
+      maximum: 120
+    patient_income:
+      type: number
+      description: Patient annual income
+      minimum: 0
+    patient_residency_status:
+      type: string
+      description: Patient residency status
+      enum: ["citizen", "permanent_resident", "temporary_resident", "visitor"]
+      default: "citizen"
+    medical_condition:
+      type: string
+      description: Primary medical condition
+      enum: ["emergency", "chronic", "preventive", "rehabilitation"]
+      default: "emergency"
+    treatment_cost:
+      type: number
+      description: Estimated treatment cost
+      minimum: 0
+    insurance_coverage:
+      type: string
+      description: Insurance coverage type
+      enum: ["public", "private", "mixed", "none"]
+      default: "public"
+  required: ["patient_age", "patient_residency_status", "medical_condition"]
+
+outputs_schema:
+  type: object
+  properties:
+    approved:
+      type: boolean
+      description: Whether patient is approved for healthcare services
+    coverage_level:
+      type: string
+      enum: ["full", "partial", "emergency_only", "none"]
+      description: Level of healthcare coverage
+    reason:
+      type: string
+      description: Reason for the eligibility decision
+    cost_share:
+      type: number
+      description: Patient's cost share percentage
+      minimum: 0
+      maximum: 100
+  required: ["approved", "coverage_level", "reason"]
+
+decision_logic:
+  type: yaml
+  rules:
+    - name: emergency_care_all
+      description: All patients eligible for emergency care
+      conditions:
+        - field: medical_condition
+          operator: equals
+          value: "emergency"
+      result:
+        approved: true
+        coverage_level: "emergency_only"
+        reason: "Emergency care available to all patients"
+        cost_share: 0
+    - name: citizens_full_coverage
+      description: Citizens get full healthcare coverage
+      conditions:
+        - field: patient_residency_status
+          operator: equals
+          value: "citizen"
+        - field: medical_condition
+          operator: not_equals
+          value: "emergency"
+      logic: AND
+      result:
+        approved: true
+        coverage_level: "full"
+        reason: "Citizen eligible for full healthcare coverage"
+        cost_share: 10
+    - name: permanent_residents_coverage
+      description: Permanent residents get healthcare coverage
+      conditions:
+        - field: patient_residency_status
+          operator: equals
+          value: "permanent_resident"
+        - field: medical_condition
+          operator: not_equals
+          value: "emergency"
+      logic: AND
+      result:
+        approved: true
+        coverage_level: "partial"
+        reason: "Permanent resident eligible for partial coverage"
+        cost_share: 20
+    - name: temporary_residents_emergency
+      description: Temporary residents only get emergency coverage
+      conditions:
+        - field: patient_residency_status
+          operator: equals
+          value: "temporary_resident"
+        - field: medical_condition
+          operator: equals
+          value: "emergency"
+      logic: AND
+      result:
+        approved: true
+        coverage_level: "emergency_only"
+        reason: "Temporary resident eligible for emergency care only"
+        cost_share: 50
+    - name: visitors_emergency_only
+      description: Visitors only get emergency care
+      conditions:
+        - field: patient_residency_status
+          operator: equals
+          value: "visitor"
+        - field: medical_condition
+          operator: equals
+          value: "emergency"
+      logic: AND
+      result:
+        approved: true
+        coverage_level: "emergency_only"
+        reason: "Visitor eligible for emergency care only"
+        cost_share: 100
+    - name: high_cost_treatment_review
+      description: High cost treatments require additional review
+      conditions:
+        - field: treatment_cost
+          operator: greater_than
+          value: 10000
+        - field: patient_residency_status
+          operator: equals
+          value: "citizen"
+      logic: AND
+      result:
+        approved: true
+        coverage_level: "partial"
+        reason: "High cost treatment requires additional review"
+        cost_share: 30
+  default_result:
+    approved: false
+    coverage_level: "none"
+    reason: "Eligibility criteria not met"
+    cost_share: 100
 
 metadata:
-  created: "2024-01-15"
+  version: "1.0"
+  author: "Healthcare Governance Team"
+  created_date: "2024-01-15"
   last_updated: "2024-01-15"
   tags: ["healthcare", "eligibility", "ai-act"]
+  business_owner: "Healthcare Services Team"
+  compliance_required: true
+  audit_trail: true
+  effective_from: "2024-01-15T00:00:00Z"

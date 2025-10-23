@@ -20,3 +20,9 @@ numpy>=1.24.0  # For numerical operations
 pyshacl>=0.30.0  # For SHACL validation
 rdflib>=7.0.0  # For RDF/JSON-LD processing
 jsonschema>=4.0.0  # For JSON schema validation
+
+# Security and monitoring dependencies
+redis>=4.5.0  # For caching and rate limiting
+PyJWT>=2.8.0  # For JWT token handling
+prometheus-client>=0.17.0  # For metrics collection
+psutil>=5.9.0  # For system monitoring

@@ -9,7 +9,7 @@ pytest-xdist==3.5.0
 pytest-benchmark==4.0.0
 
 # Code quality and linting
-black==23.11.0
+black==25.9.0
 flake8==6.1.0
 mypy==1.7.1
 isort==5.13.2

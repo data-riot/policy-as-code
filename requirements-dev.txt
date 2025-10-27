@@ -19,7 +19,7 @@ safety==3.0.1
 # Testing utilities
 factory-boy==3.3.0
 faker==20.1.0
-freezegun==1.2.2
+freezegun==1.5.5
 responses==0.24.1
 httpx==0.25.2
 

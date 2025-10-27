@@ -32,7 +32,7 @@ pytest-postgresql==5.0.0
 pytest-redis==3.0.0
 
 # Security testing
-cryptography==41.0.7
+cryptography==46.0.3
 pyjwt==2.8.0
 
 # Documentation

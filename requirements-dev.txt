@@ -28,7 +28,7 @@ locust==2.17.0
 memory-profiler==0.61.0
 
 # Database testing
-pytest-postgresql==5.0.0
+pytest-postgresql==7.0.2
 pytest-redis==3.0.0
 
 # Security testing
